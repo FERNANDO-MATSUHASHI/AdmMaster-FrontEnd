@@ -15,6 +15,7 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 ```sh
 npm install
 npm i bootstrap-icons
+npm i @flaticon/flaticon-uicons
 ```
 
 ### Compile and Hot-Reload for Development
