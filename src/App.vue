@@ -5,7 +5,7 @@
     <nav>
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <router-link to="/" class="navbar-brand ps-3">Adm - Master</router-link>
+            <router-link to="/" class="navbar-brand ps-3"><img src="/public/AdmMasterNome.png" alt="" style="width: 80%;"></router-link>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -29,58 +29,54 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <div class="sb-sidenav-menu-heading"></div>
                             <a class="nav-link">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                <router-link to="/dashboard" class="nav-link">Dashboard</router-link>
+                                <i class="fas fa-tachometer-alt"></i>
+                                <router-link to="/" class="nav-link">Home</router-link>
                             </a>
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-user-add"></i></div>
-                                <router-link to="/colaborador" class="nav-link">Colaboradores</router-link> 
+                                <i class="fi fi-rr-user-add"></i>
+                                <router-link to="/Colaborador" class="nav-link">Colaboradores</router-link> 
                             </a>
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-usd-circle"></i></div>
-                                <router-link to="/" class="nav-link">Gerar Comissões</router-link>
+                                <i class="fi fi-rr-usd-circle"></i>
+                                <router-link to="/GerarComissoes" class="nav-link">Gerar Comissões</router-link>
                             </a> 
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-chart-histogram"></i></div>
-                                <router-link to="/" class="nav-link">Faturamento</router-link> 
+                                <i class="fi fi-rr-chart-histogram"></i>
+                                <router-link to="/Faturamento" class="nav-link">Faturamento</router-link> 
                             </a>
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-hand-holding-usd"></i></div>
-                                <router-link to="/" class="nav-link">Gastos da Frota</router-link> 
+                                <i class="fi fi-rr-hand-holding-usd"></i>
+                                <router-link to="/GastosFrota" class="nav-link">Gastos da Frota</router-link> 
                             </a>
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-add"></i></div>
-                                <router-link to="/" class="nav-link">Despesas de Atendimento</router-link> 
+                                <i class="fi fi-rr-add"></i>
+                                <router-link to="/DespesasAtendimento" class="nav-link">Despesas de Atendimento</router-link> 
                             </a>
                             <a class="nav-link">
-                                <div><i class="fi fi-rr-search-dollar"></i></div>
-                                <router-link to="/" class="nav-link">Recebimento de Comissão</router-link> 
+                                <i class="fi fi-rr-search-dollar"></i>
+                                <router-link to="/RecebimentoComissao" class="nav-link">Recebimento de Comissão</router-link> 
+                            </a>
+                            <a class="nav-link">
+                                <i class="fi fi-rr-hand-holding-medical"></i>
+                                <router-link to="/AdicionarAtendimento" class="nav-link">Adicionar Atendimento</router-link> 
                             </a>
                         </div>
                     </div>
                 </nav>
             </div>
-
             <div id="layoutSidenav_content">
-                <div class="main">
-            <router-view></router-view>
-        </div>
+                <div class="main container mt-5">
+                    <router-view></router-view>
+                </div>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
+                            <div class="text-muted">Copyright &copy; AdmMaster 2023</div>
                         </div>
                     </div>
                 </footer>
             </div> 
         </div>
-
     </nav>
 </template>

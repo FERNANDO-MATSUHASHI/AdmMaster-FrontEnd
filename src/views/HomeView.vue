@@ -2,5 +2,7 @@
 </script>
 
 <template>
-    Home
+    <div class="d-flex justify-content-center mt-5">
+        <img src="public\AdmMasterLogo.jpg" alt="">
+    </div>
 </template>

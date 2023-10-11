@@ -10,14 +10,39 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/dashboard',
-      name: 'dashboard',
-      component: () => import('../views/DashboardView.vue')
+      path: '/Colaborador',
+      name: 'Colaborador',
+      component: () => import('../views/ColaboradorView.vue')
     },
     {
-      path: '/colaborador',
-      name: 'colaborador',
-      component: () => import('../views/ColaboradorView.vue')
+      path: '/GerarComissoes',
+      name: 'GerarComissoes',
+      component: () => import('../views/GerarComissoes.vue')
+    },
+    {
+      path: '/Faturamento',
+      name: 'Faturamento',
+      component: () => import('../views/Faturamento.vue')
+    },
+    {
+      path: '/GastosFrota',
+      name: 'GastosFrota',
+      component: () => import('../views/GastosFrota.vue')
+    },
+    {
+      path: '/DespesasAtendimento',
+      name: 'DespesasAtendimento',
+      component: () => import('../views/DespesasAtendimento.vue')
+    },
+    {
+      path: '/RecebimentoComissao',
+      name: 'RecebimentoComissao',
+      component: () => import('../views/RecebimentoComissao.vue')
+    },
+    {
+      path: '/AdicionarAtendimento',
+      name: 'AdicionarAtendimento',
+      component: () => import('../views/AdicionarAtendimento.vue')
     },
   ]
 })
