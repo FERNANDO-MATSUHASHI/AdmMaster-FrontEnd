@@ -1,8 +1,60 @@
 <script setup>
+import {reactive, ref } from 'vue';
+let status = reactive(ref(1));
 </script>
 
 <template>
-    <nav>
+    <div v-if="status == 1">
+        <div id="layoutAuthentication">
+            <div id="layoutAuthentication_content">
+                <main>
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-5">
+                                <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                    <div class="card-header">
+                                        <div class="d-flex justify-content-center">
+                                            <img src="/public/AdmMasterLogo.png" alt="" style="width: 70%;">
+                                        </div>
+                                        <h3 class="text-center font-weight-light my-4">Login</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
+                                                <label for="inputEmail">Email</label>
+                                            </div>
+                                            <div class="form-floating mb-3">
+                                                <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
+                                                <label for="inputPassword">Senha</label>
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                                <a class="small"></a>
+                                                <button id="buttonPrevious" type="button" v-on:click="status += 1" class="btn btn-dark">Login</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-footer text-center py-3">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+            <div id="layoutAuthentication_footer">
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; AdmMaster 2023</div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <nav v-if="status == 2">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
             <router-link to="/" class="navbar-brand ps-3"><img src="/public/AdmMasterNome.png" alt="" style="width: 80%;"></router-link>
@@ -79,4 +131,6 @@
             </div> 
         </div>
     </nav>
+
+
 </template>

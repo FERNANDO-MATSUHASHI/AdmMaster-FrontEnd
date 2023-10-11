@@ -3,6 +3,6 @@
 
 <template>
     <div class="d-flex justify-content-center mt-5">
-        <img src="public\AdmMasterLogo.jpg" alt="">
+        <img src="public\AdmMasterLogo.png" alt="">
     </div>
 </template>
