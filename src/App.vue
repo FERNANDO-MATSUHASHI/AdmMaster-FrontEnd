@@ -70,16 +70,18 @@
             </nav>
         </div>
     </div>
-    <div class="main">
-        <router-view></router-view>
-    </div>
-    <footer class="py-4 bg-light mt-auto">
-        <div class="container-fluid px-4">
-            <div class="d-flex align-items-center justify-content-between small">
-                <div class="text-muted">Copyright &copy; AdmMaster 2023</div>
-            </div>
-        </div>
-    </footer>
+    <div id="layoutSidenav_content">
+                <div class="main container mt-5">
+                    <router-view></router-view>
+                </div>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; AdmMaster 2023</div>
+                        </div>
+                    </div>
+                </footer>
+            </div> 
 </template>
 
 <style>
