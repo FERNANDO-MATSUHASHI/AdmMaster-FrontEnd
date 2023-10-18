@@ -1,4 +1,4 @@
-# admmaster
+# AdmMaster - FrontEnd
 
 # integrantes
 ```sh
