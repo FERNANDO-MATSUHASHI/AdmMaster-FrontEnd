@@ -1,10 +1,16 @@
 <script setup>
-import {reactive, ref } from 'vue';
-let status = reactive(ref(1));
+import {normalizeClass, reactive, ref, setBlockTracking } from 'vue';
+
+const visivel = ref(false);
+const mudarStatus = () => {
+    visivel.value = !visivel.value;
+}
 </script>
 
+
 <template>
-    <div v-if="status == 1">
+    <!-- <div v-if="status == 1"> -->
+    <div :style="{ display: visivel ? 'none' : 'block' }">
         <div id="layoutAuthentication">
             <div id="layoutAuthentication_content">
                 <main>
@@ -14,7 +20,7 @@ let status = reactive(ref(1));
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header">
                                         <div class="d-flex justify-content-center">
-                                            <img src="/public/AdmMasterLogo.png" alt="" style="width: 70%;">
+                                            <img src="/AdmMasterLogo.png" alt="" style="width: 70%;">
                                         </div>
                                         <h3 class="text-center font-weight-light my-4">Login</h3>
                                     </div>
@@ -30,7 +36,7 @@ let status = reactive(ref(1));
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                                 <a class="small"></a>
-                                                <button id="buttonPrevious" type="button" v-on:click="status += 1" class="btn btn-dark">Login</button>
+                                                <button id="buttonPrevious" type="button" @click="mudarStatus()" class="btn btn-dark">Login</button>
                                             </div>
                                         </form>
                                     </div>
@@ -54,10 +60,11 @@ let status = reactive(ref(1));
         </div>
     </div>
 
-    <nav v-if="status == 2">
+    <!-- <nav v-if="status == 2"> -->
+        <div :style="{ display: visivel ? 'block' : 'none' }">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <router-link to="/" class="navbar-brand ps-3"><img src="/public/AdmMasterNome.png" alt="" style="width: 80%;"></router-link>
+            <router-link to="/" class="navbar-brand ps-3"><img src="/AdmMasterNome.png" alt="" style="width: 80%;"></router-link>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -130,7 +137,16 @@ let status = reactive(ref(1));
                 </footer>
             </div> 
         </div>
-    </nav>
-
-
+        </div>
+    <!-- </nav> -->
 </template>
+
+<style>
+.visivel {
+  display: block;
+}
+
+.invisivel {
+  display: none;
+}
+</style>
