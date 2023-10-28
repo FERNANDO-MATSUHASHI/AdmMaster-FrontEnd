@@ -17,32 +17,32 @@ const router = createRouter({
     {
       path: '/GerarComissoes',
       name: 'GerarComissoes',
-      component: () => import('../views/GerarComissoes.vue')
+      component: () => import('../views/GerarComissoesView.vue')
     },
     {
       path: '/Faturamento',
       name: 'Faturamento',
-      component: () => import('../views/Faturamento.vue')
+      component: () => import('../views/FaturamentoView.vue')
     },
     {
       path: '/GastosFrota',
       name: 'GastosFrota',
-      component: () => import('../views/GastosFrota.vue')
+      component: () => import('../views/GastosFrotaView.vue')
     },
     {
       path: '/DespesasAtendimento',
       name: 'DespesasAtendimento',
-      component: () => import('../views/DespesasAtendimento.vue')
+      component: () => import('../views/DespesasAtendimentoView.vue')
     },
     {
       path: '/RecebimentoComissao',
       name: 'RecebimentoComissao',
-      component: () => import('../views/RecebimentoComissao.vue')
+      component: () => import('../views/RecebimentoComissaoView.vue')
     },
     {
       path: '/AdicionarAtendimento',
       name: 'AdicionarAtendimento',
-      component: () => import('../views/AdicionarAtendimento.vue')
+      component: () => import('../views/AdicionarAtendimentoView.vue')
     },
   ]
 })
