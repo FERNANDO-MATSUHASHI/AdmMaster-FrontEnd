@@ -1,12 +1,3 @@
-<script setup>
-import { normalizeClass, reactive, ref, setBlockTracking } from 'vue';
-
-const visivel = ref(false);
-const mudarStatus = () => {
-    visivel.value = !visivel.value;
-}
-</script>
-
 <template>
     <div :style="{ display: visivel ? 'none' : 'block' }">
         <div id="layoutAuthentication">
@@ -26,20 +17,39 @@ const mudarStatus = () => {
                                         <form>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputEmail" type="email"
-                                                    placeholder="name@example.com" />
+                                                    placeholder="name@example.com" v-model="formLogin.email" />
                                                 <label for="inputEmail">Email</label>
                                             </div>
                                             <div class="form-floating mb-3">
                                                 <input class="form-control" id="inputPassword" type="password"
-                                                    placeholder="Password" />
+                                                    placeholder="Password" v-model="formLogin.senha" />
                                                 <label for="inputPassword">Senha</label>
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                                 <a class="small"></a>
-                                                <button id="buttonPrevious" type="button" @click="mudarStatus()"
+                                                <button id="buttonPrevious" type="button" @click="Login()"
                                                     class="btn btn-dark">Login</button>
                                             </div>
                                         </form>
+                                        <div class="modal fade" id="erroModal" tabindex="-1"
+                                            aria-labelledby="successModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="successModalLabel">Erro</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Fechar"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        e-mail e/ou senha incorretos!
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-primary"
+                                                            data-bs-dismiss="modal">Fechar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="card-footer text-center py-3">
                                     </div>
@@ -82,7 +92,7 @@ const mudarStatus = () => {
                 <ul class="dropdown-menu dropdown-menu-right">
                     <button class="dropdown-item" type="button">Perfil</button>
                     <button class="dropdown-item" type="button">Configurações</button>
-                    <button class="dropdown-item" type="button" @click="mudarStatus()">Logout</button>
+                    <button class="dropdown-item" type="button" @click="Logout()">Logout</button>
                 </ul>
             </div>
         </nav>
@@ -104,10 +114,10 @@ const mudarStatus = () => {
                                 <i class="fi fi-rr-chart-histogram"></i>
                                 <router-link to="/Faturamento" class="nav-link">Faturamento</router-link>
                             </a>
-                            <a class="nav-link">
+                            <!-- <a class="nav-link">
                                 <i class="fi fi-rr-hand-holding-usd"></i>
                                 <router-link to="/GastosFrota" class="nav-link">Gastos da Frota</router-link>
-                            </a>
+                            </a> -->
                             <a class="nav-link">
                                 <i class="fi fi-rr-add"></i>
                                 <router-link to="/DespesasAtendimento" class="nav-link">Despesas de
@@ -161,3 +171,57 @@ a:not([href]):not([tabindex]):hover {
     color: white !important;
 }
 </style>
+
+<script>
+import axios from 'axios';
+import { RouterView, RouterLink } from 'vue-router';
+
+export default {
+    components: {
+        axios,
+        RouterView,
+        RouterLink
+    },
+  data() {
+    return {
+        formLogin: {
+            email: 'asdrubal@teste.com',
+            senha: '123',
+        },
+        visivel: false
+    };
+  },
+  methods: {
+    Login () {
+        axios.post('https://localhost:7255/api/Usuario/Login', this.formLogin, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            // console.log('Resposta da API:', response.data);
+
+            // this.authToken = response.data;
+            // console.log(this.authToken);
+            localStorage.setItem('token', response.data)
+
+            // Limpar o formulário
+            this.formLogin.email = '';
+            this.formLogin.senha = '';
+            this.visivel = !this.visivel;
+        })
+        .catch(error => {
+            console.error('Erro ao enviar formulário:', error);
+            // Exibir o modal de erro
+            const erroModal = new bootstrap.Modal(document.getElementById('erroModal'));
+            erroModal.show();
+        });
+    },
+    Logout (){
+        this.visivel = !this.visivel;
+    }
+  },
+  mounted() {
+  },
+};
+</script>

@@ -16,6 +16,8 @@ See [Vite Configuration Reference](https://vitejs.dev/config/).
 npm install
 npm i bootstrap-icons
 npm i @flaticon/flaticon-uicons
+npm install axios
+npm install vuex --save
 ```
 
 ### Compile and Hot-Reload for Development
