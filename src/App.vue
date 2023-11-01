@@ -201,8 +201,6 @@ export default {
         .then(response => {
             // console.log('Resposta da API:', response.data);
 
-            // this.authToken = response.data;
-            // console.log(this.authToken);
             localStorage.setItem('token', response.data)
 
             // Limpar o formulário
