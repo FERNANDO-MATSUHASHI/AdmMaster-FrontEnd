@@ -228,7 +228,6 @@ export default {
       try {
         const responseCargo = await axios.get('https://localhost:7255/api/Cargo');
         cargos.value = responseCargo.data;
-        // console.log('Dados retornados da API Cargo', responseCargo.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -281,7 +280,6 @@ export default {
           // Exibir o modal de sucesso
           this.showModal = false;
           this.successModal = true;
-          // this.$router.push('/Colaborador');
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
