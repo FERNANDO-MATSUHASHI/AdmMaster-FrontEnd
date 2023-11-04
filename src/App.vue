@@ -185,7 +185,7 @@ export default {
   data() {
     return {
         formLogin: {
-            email: 'asdrubal@teste.com',
+            email: 'alfredinho32@gmail.com',
             senha: '123',
         },
         visivel: false
