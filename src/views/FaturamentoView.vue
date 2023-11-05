@@ -1,5 +1,3 @@
-<script setup>
-</script>
 
 <template>
   <main class="faturamento">
@@ -22,18 +20,18 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">Mês</th>
-          <th scope="col">Valor</th>
-          <th scope="col"></th>
+          <th scope="col">Valor bruto</th>
+          <th scope="col">Despesa</th>
+          <th scope="col">Valor líquido</th>
+
         </tr>
-        <tr v-for="(atendimento,index) in atendimentos" v-bind:key="index">
-          <th scope="col">#</th>
-          <th scope="col">{{ this.parseData(atendimento.data) }}</th>
-          <th scope="col">R$ {{ atendimento.valor_total }}</th>
-        </tr>
+          <tr v-for="(faturamento,index) in faturamentoMensal" v-bind:key="index">
+            <th scope="col">#</th>
+            <th scope="col">{{ faturamento.mes }}</th>
+          <th scope="col">R$ {{ faturamento.total }}</th>
+           </tr>
       </thead>
-      <!-- <li v-for="(atendimento,index) in atendimentos" v-bind:key="index">
-      {{ atendimento.data }}
-      </li> -->
+      
       </table>
 
 </template>
@@ -49,7 +47,8 @@ export default {
   },
   setup() {
     const atendimentos = ref([]);
-
+    const despesas = ref([]);
+    const faturamentoMensal = ref([]);
     const parseData = (dataString) => {
       const data = new Date(dataString);
       const dataFormatada = new Date(data.getFullYear(), data.getMonth(), data.getDate());
@@ -59,6 +58,26 @@ export default {
     
       return `${mes}`;
     };
+        
+    const calcularFaturamentoMensal = () => {
+  const faturamentoMensalObj = {};
+
+  for (const atendimento of atendimentos.value) {
+    const mes = parseData(atendimento.data);
+
+    if (faturamentoMensalObj[mes]) {
+      faturamentoMensalObj[mes] += atendimento.valor_total;
+    } else {
+      faturamentoMensalObj[mes] = atendimento.valor_total;
+    }
+  }
+
+  // Converter o objeto faturamentoMensalObj em um array de objetos
+  const faturamentoMensalArray = Object.entries(faturamentoMensalObj).map(([mes, total]) => ({ mes, total }));
+
+  faturamentoMensal.value = faturamentoMensalArray;
+};
+
     const MesesEnum = {
   JANEIRO: 1,
   FEVEREIRO: 2,
@@ -73,21 +92,6 @@ export default {
   NOVEMBRO: 11,
   DEZEMBRO: 12,
 };
-const calcularFaturamentoMensal = () => {
-      const faturamentoMensal = {};
-      for (const atendimento of atendimentos.value) {
-        const mes = parseData(atendimento.data);
-        if (faturamentoMensal[mes]) {
-          faturamentoMensal[mes].total += atendimento.valor_total;
-        } else {
-          faturamentoMensal[mes] = { mes, total: atendimento.valor_total };
-        }
-      }
-      return Object.values(faturamentoMensal);
-    };
-
-
-
 
 // Exemplo de função para traduzir o número do mês em uma string
 function traduzirMes(numeroMes) {
@@ -98,13 +102,6 @@ function traduzirMes(numeroMes) {
   }
   return 'Mês inválido';
 }
-
-
-    const faturamentoMensal = ref([]);
-    onMounted(() => {
-      faturamentoMensal.value = calcularFaturamentoMensal();
-      console.log('Faturamento mensal',faturamentoMensal)
-    });
     onMounted(async () => {
       try {
         const response = await axios.get('https://localhost:7255/api/Atendimento', {
@@ -112,16 +109,33 @@ function traduzirMes(numeroMes) {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
+        
         atendimentos.value = response.data;
         console.log('Dados retornados da API Atendimentos', response.data);
         console.log('Atendimento - ', atendimentos.value);
+        calcularFaturamentoMensal();
+        console.log('Faturamento mensal', faturamentoMensal.value)
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
+      try {
+        const response = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        despesas.value = response.data;
+        console.log('Dados retornados da API Despesas atendimentos', response.data);
+        console.log('Despesas atendimentos', despesas.value)
+      }catch(error){
+
+      }
     });
+    
 
     return {
       atendimentos,
+      faturamentoMensal,
       parseData
     };
     
