@@ -15,9 +15,9 @@ const props = defineProps(["id", "nome", "cpf", "email", "data_nascimento_brasil
       <td>{{ cargo_descricao }}</td>
       <td>
         <!-- Ícone de editar -->
-        <i class="fi-rr-edit" @click="editarColaborador()" style="margin-right: 15px;"></i>
+        <i class="fi-rr-edit"  @click="editarColaborador()" style="margin-right: 15px; font-size: 20px; cursor: pointer;"></i>
         <!-- Ícone de excluir -->
-        <i class="fi-rr-trash" @click="excluirColaborador()"></i>
+        <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirColaborador()"></i>
       </td>
     </tr>
   </tbody>
@@ -232,6 +232,7 @@ const props = defineProps(["id", "nome", "cpf", "email", "data_nascimento_brasil
       </div>
       </div>
     </div>    
+    
     <div class="modal" v-if="successExcluirModal">
       <div class="modal-dialog">
         <div class="msg">

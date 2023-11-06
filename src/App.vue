@@ -37,8 +37,7 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="successModalLabel">Erro</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Fechar"></button>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         e-mail e/ou senha incorretos!
@@ -107,6 +106,10 @@
                                 <router-link to="/Colaborador" class="nav-link">Colaboradores</router-link>
                             </a>
                             <a class="nav-link">
+                                <i class="fi fi-rr-hand-holding-medical"></i>
+                                <router-link to="/AdicionarAtendimento" class="nav-link">Adicionar Atendimento</router-link>
+                            </a>
+                            <a class="nav-link">
                                 <i class="fi fi-rr-usd-circle"></i>
                                 <router-link to="/GerarComissoes" class="nav-link">Gerar Comissões</router-link>
                             </a>
@@ -127,10 +130,6 @@
                                 <i class="fi fi-rr-search-dollar"></i>
                                 <router-link to="/RecebimentoComissao" class="nav-link">Recebimento de
                                     Comissão</router-link>
-                            </a>
-                            <a class="nav-link">
-                                <i class="fi fi-rr-hand-holding-medical"></i>
-                                <router-link to="/AdicionarAtendimento" class="nav-link">Adicionar Atendimento</router-link>
                             </a>
                         </div>
                     </div>
@@ -175,6 +174,7 @@ a:not([href]):not([tabindex]):hover {
 <script>
 import axios from 'axios';
 import { RouterView, RouterLink } from 'vue-router';
+$('#erroModal').modal('hide');
 
 export default {
     components: {
@@ -185,10 +185,10 @@ export default {
   data() {
     return {
         formLogin: {
-            email: 'asdrubal@teste.com',
-            senha: '123',
+            email: 'matsu_zf@hotmail.com',
+            senha: '1736',
         },
-        visivel: false
+        visivel: false,
     };
   },
   methods: {

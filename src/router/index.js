@@ -44,11 +44,6 @@ const router = createRouter({
       name: 'AdicionarAtendimento',
       component: () => import('../views/AdicionarAtendimentoView.vue')
     },
-    {
-      path: '/postColaborador',
-      name: 'postColaborador',
-      component: () => import('../components/colaborador/postColaborador.vue')
-    },
   ]
 })
 
