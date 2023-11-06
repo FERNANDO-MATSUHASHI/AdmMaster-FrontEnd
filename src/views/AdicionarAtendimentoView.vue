@@ -16,7 +16,7 @@
       <div class="modal-content">
         <span class="close" @click="fecharModal()">&times;</span>
 
-        <form id="modalForm" class="row" @submit.prevent="enviarFormulario()">
+        <form id="modalForm" class="row" @submit.prevent="confirmarSimNaoFormulario()">
           <h1>Novo Atendimento</h1>
 
           <div class="col-md-3">
@@ -63,32 +63,32 @@
 
           <div class="col-md-3">
             <label for="km" class="form-label">Km:</label>
-            <input type="text" class="form-control" id="km" name="km" required v-model="formData.km"><br>
+            <input type="text" class="form-control" id="km" name="km" v-model="formData.km"><br>
           </div>
 
           <div class="col-md-3">
             <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" required v-model="formData.qtd_hora_parada">
+            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formData.qtd_hora_parada">
           </div>
 
           <div class="col-md-3">
             <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" required v-model="formData.obs_hora_parada">
+            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formData.obs_hora_parada">
           </div>
 
           <div class="col-md-3">
             <label for="pedagio" class="col-form-label">Pedágio:</label>
-            <input type="text" class="form-control" id="pedagio" name="pedagio" required v-model="formData.pedagio">
+            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio">
           </div>
 
           <div class="col-md-3">
             <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" required v-model="formData.qtd_pedagio"><br>
+            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio"><br>
           </div>
 
           <div class="col-md-3">
             <label for="hospedagem" class="col-form-label">Hospedagem:</label>
-            <input type="text" class="form-control" id="hospedagem" name="hospedagem" required v-model="formData.hospedagem">
+            <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem">
           </div>
 
           <div class="col-md-3">
@@ -106,13 +106,13 @@
 
           <div class="col-md-3">
             <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
-            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" required v-model="formData.valor_total">
+            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formData.valor_total"><br>
           </div>          
 
-          <div class="col-12">
-            <br>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
+          <div class="col-12 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Calcular</button>
           </div>
+
         </form>
       </div>
     </div>
@@ -133,6 +133,24 @@
         </div>
       </div>
     </div>
+
+    <div class="modal" v-if="confirmarSimNaoModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Confirmar?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="fecharModal()"></button>
+          </div>
+          <div class="modal-body">
+            <h5>Valor Total R$ {{ formData.valor_total }}</h5>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="enviarFormulario()">Cadastrar</button>
+            <button type="button" class="btn btn-secondary" @click="voltarModal()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div> 
 
     <div class="input-group input-group-sm mb-3">
       <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
@@ -200,7 +218,7 @@ import getAtendimento from '../components/atendimento/getAtendimento.vue';
 import ColaboradorViewVue from './ColaboradorView.vue';
 
 axios.interceptors.request.use((config) => {
-    console.log('Dados a serem enviados:', config.data);
+    // console.log('Dados a serem enviados:', config.data);
     return config;
 });
 
@@ -232,7 +250,10 @@ export default {
       },
       showModal: false,
       successModal: false,
+      confirmarSimNaoModal: false,
       formData_data: '',
+      kmTotal: '',
+      horaTotal: '',
     };
   },
   setup() {
@@ -242,6 +263,10 @@ export default {
     const viaturas = ref([]);
     const usuarios = ref([]);
     const tipoVeiculos = ref([]);
+    const veiculos = ref([]);   
+    const tipoServicoLoc = ref([]);
+    const kmTotal = ref('');
+    const horaTotal = ref('');
 
     // Filtro
     const filteredAtendimentos = computed(() => {
@@ -263,7 +288,7 @@ export default {
           // }
         });
         atendimentos.value = response.data;
-        console.log('Dados retornados da API Atemdimento', response.data);
+        // console.log('Dados retornados da API Atemdimento', response.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -289,9 +314,18 @@ export default {
 
     onMounted(async () => {
       try {
+        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo');
+        veiculos.value = responseVeiculos.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
         const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo');
         tipoVeiculos.value = responseVeiculo.data;
-        console.log('Veiculos: ', responseVeiculo.data)
+        // console.log('Veiculos: ', responseVeiculo.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -317,7 +351,9 @@ export default {
       usuarios,
       tipoVeiculos,
       searchTerm,
-      filteredAtendimentos
+      veiculos,
+      filteredAtendimentos,
+      tipoServicoLoc
     };
   },
   methods: {
@@ -326,10 +362,30 @@ export default {
     },
     fecharModal() {
       this.showModal = false;
+      this.confirmarSimNaoModal = false;
       this.successModal = false;
+    },
+    voltarModal() {
+      this.confirmarSimNaoModal = false;
+      this.showModal = true;
     },
     enviarFormulario() {
       this.formData.data = new Date(this.formData_data);
+      if (this.formData.km == ""){
+        this.formData.km = "0";
+      }
+      if (this.formData.qtd_hora_parada == ""){
+        this.formData.qtd_hora_parada = "0";
+      }
+      if (this.formData.pedagio == ""){
+        this.formData.pedagio = "0";
+      }
+      if (this.formData.qtd_pedagio == ""){
+        this.formData.qtd_pedagio = "0";
+      }
+      if (this.formData.hospedagem == ""){
+        this.formData.hospedagem = "0";
+      }
 
       axios.post('https://localhost:7255/api/Atendimento', this.formData, {
         // headers: {
@@ -338,7 +394,7 @@ export default {
         // },
       })
         .then(response => {
-          console.log('Resposta da API:', response.data);
+          // console.log('Resposta da API:', response.data);
 
           // Limpar o formulário
           this.formData.data = '';
@@ -361,11 +417,58 @@ export default {
 
           // Exibir o modal de sucesso
           this.showModal = false;
+          this.confirmarSimNaoModal = false;
           this.successModal = true;
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
+    },
+    confirmarSimNaoFormulario() {
+      const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formData.viaturaId);
+      // console.log('Viaturas-> ', tipoViatura);
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId);
+      // console.log('Viaturas-Serviço-> ', tipoViatura);
+      const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formData.tipoVeiculoId);
+      // console.log('Filtrado-> ', tipoVeiculoLoc[0]);
+      // console.log('Valor Saída-> ', tipoVeiculoLoc[0].valor_saida);
+      // console.log('Valor Km-> ', tipoVeiculoLoc[0].valor_km);
+      // console.log('Valor Noturno-> ', tipoVeiculoLoc[0].adicional_noturno);
+      // console.log('Valor Hora Parada-> ', tipoVeiculoLoc[0].hora_parada);
+
+      // Efetuando a Soma
+      
+      if (this.formData.km == ""){
+        this.kmTotal = "0";
+      } else {
+        this.kmTotal = (Number(this.formData.km) * Number(tipoVeiculoLoc[0].valor_km));
+        // console.log('Km Total-> ', this.kmTotal);
+      }
+      if (this.formData.qtd_hora_parada == ""){
+        this.horaTotal = "0";
+      } else {
+        this.horaTotal = (Number(this.formData.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
+        // console.log('Km Total-> ', this.horaTotal);
+      }
+      if (this.formData.pedagio == ""){
+        this.formData.pedagio = "0";
+      }
+      if (this.formData.qtd_pedagio == ""){
+        this.formData.qtd_pedagio = "0";
+      }
+      if (this.formData.hospedagem == ""){
+        this.formData.hospedagem = "0";
+      }      
+      
+      if (this.formData.noturno == true){
+        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
+      } else {
+        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem)).toFixed(2);
+      }
+      // console.log('Valor total-> ', this.formData.valor_total);
+
+      this.showModal = false;
+      this.confirmarSimNaoModal = true;
     },
     parseData(dataString) {
       const data = new Date(dataString);
@@ -395,7 +498,7 @@ export default {
     obterUsuario(usuarioId) {
       const usuario = this.usuarios.find(c => c.id === usuarioId);
       return usuario ? usuario.nome : 'Usuário Desconhecido';
-    }
+    },
   }
 };
 </script>
@@ -411,6 +514,7 @@ export default {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
@@ -419,6 +523,7 @@ export default {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
+  z-index: 1;
 }
 
 .close {
@@ -433,5 +538,9 @@ export default {
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.modal-dialog {
+  width: 80%;
 }
 </style>

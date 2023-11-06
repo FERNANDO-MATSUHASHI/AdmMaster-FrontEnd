@@ -422,7 +422,7 @@ export default {
 
 <style>
 .msg {
-  background-color: #fefefe;
+  background-color: #050101;
 }
 
 .modal {

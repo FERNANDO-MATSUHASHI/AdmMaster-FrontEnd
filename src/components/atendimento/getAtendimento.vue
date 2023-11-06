@@ -85,35 +85,35 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
 
         <div class="col-md-3">
           <label for="km" class="form-label">Km:</label>
-          <input type="text" class="form-control" id="km" name="km" required v-model="formDataPut.km"><br>
+          <input type="text" class="form-control" id="km" name="km" v-model="formDataPut.km"><br>
         </div>
 
         <div class="col-md-3">
           <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" required
+          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" 
             v-model="formDataPut.qtd_hora_parada">
         </div>
 
         <div class="col-md-3">
           <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" required
+          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" 
             v-model="formDataPut.obs_hora_parada">
         </div>
 
         <div class="col-md-3">
           <label for="pedagio" class="col-form-label">Pedágio:</label>
-          <input type="text" class="form-control" id="pedagio" name="pedagio" required v-model="formDataPut.pedagio">
+          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio">
         </div>
 
         <div class="col-md-3">
           <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" required
+          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" 
             v-model="formDataPut.qtd_pedagio"><br>
         </div>
 
         <div class="col-md-3">
           <label for="hospedagem" class="col-form-label">Hospedagem:</label>
-          <input type="text" class="form-control" id="hospedagem" name="hospedagem" required
+          <input type="text" class="form-control" id="hospedagem" name="hospedagem" 
             v-model="formDataPut.hospedagem">
         </div>
 
@@ -133,17 +133,19 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
 
         <div class="col-md-3">
           <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
-          <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" required
-            v-model="formDataPut.valor_total">
+          <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked"
+            v-model="formDataPut.valor_total"><br>
         </div>
 
-        <div class="col-12">
-          <br>
+        <div class="col-12 d-flex justify-content-between">
           <button type="submit" class="btn btn-primary">Cadastrar</button>
+          <button class="btn btn-secondary" @click="calcularSomaEditar()">Calcular</button>
         </div>
+
       </form>
     </div>
   </div>
+
   <div class="modal" v-if="successModal">
     <div class="modal-dialog">
       <div class="msg">
@@ -360,6 +362,10 @@ export default {
           console.error('Erro ao enviar formulário:', error);
         });
     },
+    calcularSomaEditar() {
+      // Calcula a soma dos valores dos campos de entrada
+      this.formDataPut.valor_total = this.formDataPut.km * 2.70;
+    }
   }
 }
 </script>
