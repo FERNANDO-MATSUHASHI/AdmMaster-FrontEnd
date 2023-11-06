@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId", "qth", "qti", "km", "noturno", "qtd_hora_parada", "obs_hora_parada", "hospedagem", "qtd_pedagio", "pedagio", "valor_total", "em_analise", "viaturaId", "usuarioId", "data_original", "viaturaId_original", "tipoServicoId_original", "tipoVeiculoId_original", "usuarioId_original", "listTipoServicos", "listViaturas", "listUsuarios", "listTipoVeiculos"]);
+const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId", "qth", "qti", "km", "noturno", "qtd_hora_parada", "obs_hora_parada", "hospedagem", "qtd_pedagio", "pedagio", "valor_total", "em_analise", "viaturaId", "usuarioId", "data_original", "viaturaId_original", "tipoServicoId_original", "tipoVeiculoId_original", "usuarioId_original", "listTipoServicos", "listViaturas", "listUsuarios", "listTipoVeiculos", "listVeiculos"]);
 
 </script>
 
@@ -36,7 +36,7 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
     <div class="modal-content">
       <span class="close" @click="fecharModal()">&times;</span>
 
-      <form id="modalForm" class="row" @submit.prevent="editarFormulario()">
+      <form id="modalForm" class="row" @submit.prevent="confirmarSimNaoFormulario()">
         <h1>Editar Atendimento</h1>
 
         <div class="col-md-3">
@@ -101,18 +101,18 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
         </div>
 
         <div class="col-md-3">
-          <label for="pedagio" class="col-form-label">Pedágio:</label>
-          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio">
-        </div>
-
-        <div class="col-md-3">
           <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
           <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" 
             v-model="formDataPut.qtd_pedagio"><br>
         </div>
 
         <div class="col-md-3">
-          <label for="hospedagem" class="col-form-label">Hospedagem:</label>
+          <label for="pedagio" class="col-form-label">Pedágio R$:</label>
+          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio">
+        </div>
+
+        <div class="col-md-3">
+          <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
           <input type="text" class="form-control" id="hospedagem" name="hospedagem" 
             v-model="formDataPut.hospedagem">
         </div>
@@ -138,8 +138,7 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
         </div>
 
         <div class="col-12 d-flex justify-content-between">
-          <button type="submit" class="btn btn-primary">Cadastrar</button>
-          <button class="btn btn-secondary" @click="calcularSomaEditar()">Calcular</button>
+          <button type="submit" class="btn btn-primary">Calcular</button>
         </div>
 
       </form>
@@ -186,6 +185,28 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
       </div>
     </div>
   </div>
+
+  <div class="modal" v-if="confirmarSimNaoModal">
+      <div class="modal-dialog">
+        <div class="msg">
+        <div class="modal-content">
+          
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Confirmar?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="voltarModal()"></button>
+          </div>
+          <div class="modal-body">
+            <h5>Valor Total R$ {{ formDataPut.valor_total }}</h5>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @click="editarFormulario()">Cadastrar</button>
+            <button type="button" class="btn btn-secondary" @click="voltarModal()">Fechar</button>
+          </div>
+          
+        </div>
+        </div>
+      </div>
+    </div>
 </template>
 
 <script>
@@ -233,6 +254,10 @@ export default {
       this.excluirSimNaoModal = false;
       this.successExcluirModal = false;
       this.emAnaliseModal = false;
+    },
+    voltarModal() {
+      this.confirmarSimNaoModal = false;
+      this.editarModal = true;
     },
     editarAtendimento() {
       this.formDataPut.data = this.parseData(this.data_original);
@@ -286,11 +311,48 @@ export default {
 
           // Exibir o modal de sucesso
           this.editarModal = false;
+          this.confirmarSimNaoModal = false;
           this.successModal = true;
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
+    },
+    confirmarSimNaoFormulario() {
+      const tipoViatura = this.listVeiculos.filter(viatura => viatura.viaturaId === this.formDataPut.viaturaId);
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId)
+      const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
+
+      // Efetuando a Soma
+      
+      if (this.formDataPut.km == ""){
+        this.kmTotal = "0";
+      } else {
+        this.kmTotal = (Number(this.formDataPut.km) * Number(tipoVeiculoLoc[0].valor_km));
+      }
+      if (this.formDataPut.qtd_hora_parada == ""){
+        this.horaTotal = "0";
+      } else {
+        this.horaTotal = (Number(this.formDataPut.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
+      }
+      if (this.formDataPut.pedagio == ""){
+        this.formDataPut.pedagio = "0";
+      }
+      if (this.formDataPut.qtd_pedagio == ""){
+        this.formDataPut.qtd_pedagio = "0";
+      }
+      if (this.formDataPut.hospedagem == ""){
+        this.formDataPut.hospedagem = "0";
+      }      
+      
+      if (this.formDataPut.noturno == true){
+        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
+      } else {
+        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem)).toFixed(2);
+      }
+
+      this.editarModal = false;
+      this.confirmarSimNaoModal = true;
     },
     parseData(dataString) {
       const data = new Date(dataString);
@@ -413,4 +475,5 @@ export default {
 
 .modal-dialog {
   width: 80%;
-}</style>
+}
+</style>
