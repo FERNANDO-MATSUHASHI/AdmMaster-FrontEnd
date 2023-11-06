@@ -77,17 +77,17 @@
           </div>
 
           <div class="col-md-3">
-            <label for="pedagio" class="col-form-label">Pedágio:</label>
-            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio">
-          </div>
-
-          <div class="col-md-3">
             <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
             <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio"><br>
           </div>
 
           <div class="col-md-3">
-            <label for="hospedagem" class="col-form-label">Hospedagem:</label>
+            <label for="pedagio" class="col-form-label">Pedágio R$:</label>
+            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio">
+          </div>
+
+          <div class="col-md-3">
+            <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
             <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem">
           </div>
 
@@ -159,7 +159,7 @@
       <thead>
         <tr>
           <th scope="col">Data</th>
-          <th scope="col">Vtr</th>
+          <th scope="col">Sigla</th>
           <th scope="col">QRU</th>
           <th scope="col">Tipo Serviço</th>
           <th scope="col">Tipo Veículo</th>
@@ -206,6 +206,7 @@
         :listTipoVeiculos="tipoVeiculos"
         :listViaturas="viaturas"
         :listUsuarios="usuarios"
+        :listVeiculos="veiculos"
         :em_analise="atendimento.em_analise"/>
     </table>
 </main>
@@ -426,15 +427,8 @@ export default {
     },
     confirmarSimNaoFormulario() {
       const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formData.viaturaId);
-      // console.log('Viaturas-> ', tipoViatura);
-      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId);
-      // console.log('Viaturas-Serviço-> ', tipoViatura);
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId)
       const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formData.tipoVeiculoId);
-      // console.log('Filtrado-> ', tipoVeiculoLoc[0]);
-      // console.log('Valor Saída-> ', tipoVeiculoLoc[0].valor_saida);
-      // console.log('Valor Km-> ', tipoVeiculoLoc[0].valor_km);
-      // console.log('Valor Noturno-> ', tipoVeiculoLoc[0].adicional_noturno);
-      // console.log('Valor Hora Parada-> ', tipoVeiculoLoc[0].hora_parada);
 
       // Efetuando a Soma
       
@@ -442,13 +436,11 @@ export default {
         this.kmTotal = "0";
       } else {
         this.kmTotal = (Number(this.formData.km) * Number(tipoVeiculoLoc[0].valor_km));
-        // console.log('Km Total-> ', this.kmTotal);
       }
       if (this.formData.qtd_hora_parada == ""){
         this.horaTotal = "0";
       } else {
         this.horaTotal = (Number(this.formData.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
-        // console.log('Km Total-> ', this.horaTotal);
       }
       if (this.formData.pedagio == ""){
         this.formData.pedagio = "0";
@@ -465,7 +457,6 @@ export default {
       } else {
         this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem)).toFixed(2);
       }
-      // console.log('Valor total-> ', this.formData.valor_total);
 
       this.showModal = false;
       this.confirmarSimNaoModal = true;
