@@ -111,7 +111,7 @@
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-usd-circle"></i>
-                                <router-link to="/GerarComissoes" class="nav-link">Gerar Comissões</router-link>
+                                <router-link to="/Comissoes" class="nav-link">Comissões</router-link>
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-chart-histogram"></i>
