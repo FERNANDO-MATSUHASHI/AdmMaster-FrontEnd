@@ -1,8 +1,8 @@
 <template>
-  <main class="faturamento">
+  <main class="adicionarAtendimento">
   <div class="row">
     <div class="d-flex justify-content">
-      <i style="font-size: 40px; margin-left: 30px;" class="fi fi-rr-hand-holding-medical" ></i>
+      <i style="font-size: 40px; margin-left: 35px;" class="fi fi-rr-hand-holding-medical" ></i>
       <div style="margin-left: 20px;" class="col">
         <h1>Adicionar Atendimento</h1>
       </div>
@@ -92,19 +92,32 @@
           </div>
 
           <div class="col-md-3">
-            <label for="usuarioId" class="form-label">Usuário:</label>
+            <label for="usuarioId" class="form-label">Colaborador:</label>
             <select id="inputState2" class="form-select" required v-model="formData.usuarioId">
               <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nome }}</option>
             </select>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-2">
             <br>
-            <label for="noturno" class="form-check-label">Adicional Noturno</label>
-            <input style="font-size: 20px; margin-left: 20px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formData.noturno">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formData.noturno">
+            <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris" v-model="formData.ris">
+            <label style="margin-left: 35px;" for="ris" class="form-check-label">RIS</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formData.patins">
+            <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formData.rodaExtra">
+            <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
           </div>
 
-          <div class="col-md-3">
+          <div class="col-md-4">
+            <label for="adicionais" class="col-form-label">Adicionais R$:</label>
+            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais">
+            <label for="obs_adicionais" class="col-form-label">Obs:</label>
+            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formData.obs_adicionais">
             <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
             <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formData.valor_total"><br>
           </div>          
@@ -161,6 +174,9 @@
           <th scope="col">Data</th>
           <th scope="col">Sigla</th>
           <th scope="col">QRU</th>
+          <th scope="col">RIS</th>
+          <th scope="col">Patins</th>
+          <th scope="col">Roa Extra</th>
           <th scope="col">Tipo Serviço</th>
           <th scope="col">Tipo Veículo</th>
           <th scope="col">QTH</th>
@@ -172,8 +188,10 @@
           <th scope="col">Hospedagem</th>
           <th scope="col">Qtd. Pedágio</th>
           <th scope="col">Pedágio</th>
+          <th scope="col">Adicionais</th>
+          <th scope="col">Obs. Adicionais</th>
           <th scope="col">Valor R$</th>
-          <th scope="col">Usuário</th>
+          <th scope="col">Colaborador</th>
           <th scope="col"></th>
           <th scope="col">Em Análise</th>
         </tr>
@@ -184,6 +202,9 @@
         :data="this.parseData(atendimento.data)"
         :viaturaId="obterViatura(atendimento.viaturaId)"
         :qru="atendimento.qru"
+        :ris="atendimento.ris"
+        :patins="atendimento.patins"
+        :rodaExtra="atendimento.rodaExtra"
         :tipoServicoId="obterDescricaoTipo(atendimento.tipoServicoId)" 
         :tipoVeiculoId="obterDescricaoTipoVeiculo(atendimento.tipoVeiculoId)" 
         :qth="atendimento.qth"
@@ -195,6 +216,8 @@
         :hospedagem="atendimento.hospedagem.toFixed(2)"
         :qtd_pedagio="atendimento.qtd_pedagio"
         :pedagio="atendimento.pedagio.toFixed(2)"
+        :adicionais="atendimento.adicionais"
+        :obs_adicionais="atendimento.obs_adicionais"
         :valor_total="atendimento.valor_total.toFixed(2)"        
         :usuarioId="obterUsuario(atendimento.usuarioId)"
         :data_original="atendimento.data"
@@ -216,7 +239,6 @@
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import getAtendimento from '../components/atendimento/getAtendimento.vue';
-import ColaboradorViewVue from './ColaboradorView.vue';
 
 axios.interceptors.request.use((config) => {
     // console.log('Dados a serem enviados:', config.data);
@@ -234,6 +256,9 @@ export default {
         data: '',
         viaturaId: '',
         qru: '',
+        ris: false,
+        patins: false,
+        rodaExtra: false,
         tipoVeiculoId: '',
         qth: '',
         qti: '',
@@ -244,6 +269,8 @@ export default {
         hospedagem: '',
         qtd_pedagio: '',
         pedagio: '',
+        adicionais: '',
+        obs_adicionais: '',
         valor_total: '',
         em_analise: false,
         usuarioId: '',
@@ -387,6 +414,9 @@ export default {
       if (this.formData.hospedagem == ""){
         this.formData.hospedagem = "0";
       }
+      if (this.formData.adicionais == ""){
+        this.formData.adicionais = "0";
+      }
 
       axios.post('https://localhost:7255/api/Atendimento', this.formData, {
         // headers: {
@@ -401,6 +431,9 @@ export default {
           this.formData.data = '';
           this.formData.viaturaId = '';
           this.formData.qru = '';
+          this.formData.ris = false;
+          this.formData.patins = false;
+          this.formData.rodaExtra = false;
           this.formData.tipoVeiculoId = '',
           this.formData.qth = '';
           this.formData.qti = '';
@@ -411,6 +444,8 @@ export default {
           this.formData.hospedagem = '';
           this.formData.qtd_pedagio = '';
           this.formData.pedagio = '';
+          this.formData.adicionais = '';
+          this.formData.obs_adicionais = '';
           this.formData.valor_total = '';
           this.formData.em_analise = false;
           this.formData.usuarioId = '';
@@ -450,13 +485,26 @@ export default {
       }
       if (this.formData.hospedagem == ""){
         this.formData.hospedagem = "0";
+      } 
+      if (this.formData.adicionais == ""){
+        this.formData.adicionais = "0";
       }      
       
       if (this.formData.noturno == true){
-        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
+        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
       } else {
-        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem)).toFixed(2);
+        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais)).toFixed(2);
       }
+
+      if (this.formData.ris == true){
+        this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
+      }
+      if (this.formData.patins == true){
+        this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].patins))).toFixed(2)
+      }
+      if (this.formData.rodaExtra == true){
+        this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].rodaExtra))).toFixed(2)
+      }      
 
       this.showModal = false;
       this.confirmarSimNaoModal = true;
@@ -485,16 +533,26 @@ export default {
       const viatura = this.viaturas.find(c => c.id === viaturaId);
       return viatura ? viatura.sigla : 'Viatura Desconhecida';
     },
-    // Método para obter o Usuário com base no usuarioId
+    // Método para obter o Colaborador com base no usuarioId
     obterUsuario(usuarioId) {
       const usuario = this.usuarios.find(c => c.id === usuarioId);
-      return usuario ? usuario.nome : 'Usuário Desconhecido';
+      return usuario ? usuario.nome : 'Colaborador Desconhecido';
     },
   }
 };
 </script>
 
 <style>
+.table {
+  text-align: center;
+}
+.main {
+      display: flex;
+      justify-content: center;
+      height: 80vh;
+      margin-left: auto;
+}
+
 .modal {
   position: fixed;
   top: 0;

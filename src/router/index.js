@@ -15,9 +15,9 @@ const router = createRouter({
       component: () => import('../views/ColaboradorView.vue')
     },
     {
-      path: '/GerarComissoes',
-      name: 'GerarComissoes',
-      component: () => import('../views/GerarComissoesView.vue')
+      path: '/Comissoes',
+      name: 'Comissoes',
+      component: () => import('../views/ComissoesView.vue')
     },
     {
       path: '/Faturamento',

@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId", "qth", "qti", "km", "noturno", "qtd_hora_parada", "obs_hora_parada", "hospedagem", "qtd_pedagio", "pedagio", "valor_total", "em_analise", "viaturaId", "usuarioId", "data_original", "viaturaId_original", "tipoServicoId_original", "tipoVeiculoId_original", "usuarioId_original", "listTipoServicos", "listViaturas", "listUsuarios", "listTipoVeiculos", "listVeiculos"]);
+const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "tipoServicoId", "tipoVeiculoId", "qth", "qti", "km", "noturno", "qtd_hora_parada", "obs_hora_parada", "hospedagem", "qtd_pedagio", "pedagio", "adicionais", "obs_adicionais", "valor_total", "em_analise", "viaturaId", "usuarioId", "data_original", "viaturaId_original", "tipoServicoId_original", "tipoVeiculoId_original", "usuarioId_original", "listTipoServicos", "listViaturas", "listUsuarios", "listTipoVeiculos", "listVeiculos"]);
 
 </script>
 
@@ -9,6 +9,9 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
       <th scope="row">{{ data }}</th>
       <td>{{ viaturaId }}</td>
       <td>{{ qru }}</td>
+      <td>{{ ris ? 'Sim' : 'Não' }}</td>
+      <td>{{ patins ? 'Sim' : 'Não' }}</td>
+      <td>{{ rodaExtra ? 'Sim' : 'Não' }}</td>
       <td>{{ tipoServicoId }}</td>
       <td>{{ tipoVeiculoId }}</td>
       <td>{{ qth }}</td>
@@ -20,6 +23,8 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
       <td>{{ hospedagem }}</td>
       <td>{{ qtd_pedagio }}</td>
       <td>{{ pedagio }}</td>
+      <td>{{ adicionais }}</td>
+      <td>{{ obs_adicionais }}</td>
       <td>{{ valor_total }}</td>
       <td>{{ usuarioId }}</td>
       <td>
@@ -118,24 +123,35 @@ const props = defineProps(["id", "data", "qru", "tipoServicoId", "tipoVeiculoId"
         </div>
 
         <div class="col-md-3">
-          <label for="usuarioId" class="form-label">Usuário:</label>
+          <label for="usuarioId" class="form-label">Colaborador:</label>
           <select id="inputState2" class="form-select" required v-model="formDataPut.usuarioId">
             <option v-for="usuario in listUsuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nome }}</option>
           </select>
         </div>
 
-        <div class="col-md-3">
-          <br>
-          <label for="noturno" class="form-check-label">Adicional Noturno</label>
-          <input style="font-size: 20px; margin-left: 20px;" type="checkbox" class="form-check-input" id="noturno"
-            name="noturno" v-model="formDataPut.noturno">
-        </div>
+        <div class="col-md-2">
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formDataPut.noturno">
+            <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris" v-model="formDataPut.ris">
+            <label style="margin-left: 35px;" for="ris" class="form-check-label">RIS</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formDataPut.patins">
+            <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formDataPut.rodaExtra">
+            <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
+          </div>
 
-        <div class="col-md-3">
-          <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
-          <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked"
-            v-model="formDataPut.valor_total"><br>
-        </div>
+          <div class="col-md-4">
+            <label for="adicionais" class="col-form-label">Adicionais R$:</label>
+            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais">
+            <label for="obs_adicionais" class="col-form-label">Obs:</label>
+            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formDataPut.obs_adicionais">
+            <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
+            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formDataPut.valor_total"><br>
+          </div> 
 
         <div class="col-12 d-flex justify-content-between">
           <button type="submit" class="btn btn-primary">Calcular</button>
@@ -222,6 +238,9 @@ export default {
         data: '',
         viaturaId: '',
         qru: '',
+        ris: false,
+        patins: false,
+        rodaExtra: false,
         tipoServicoId: '',
         tipoVeiculoId: '',
         qth: '',
@@ -233,6 +252,8 @@ export default {
         hospedagem: '',
         qtd_pedagio: '',
         pedagio: '',
+        adicionais: '',
+        obs_adicionais: '',
         valor_total: '',
         usuarioId: '',
         em_analise: false
@@ -263,6 +284,9 @@ export default {
       this.formDataPut.data = this.parseData(this.data_original);
       this.formDataPut.viaturaId = this.viaturaId_original;
       this.formDataPut.qru = this.qru.toString();
+      this.formDataPut.ris = this.ris;
+      this.formDataPut.patins = this.patins;
+      this.formDataPut.rodaExtra = this.rodaExtra;
       this.formDataPut.tipoServicoId = this.tipoServicoId_original;
       this.formDataPut.tipoVeiculoId = this.tipoVeiculoId_original;
       this.formDataPut.qth = this.qth.toString();
@@ -271,10 +295,12 @@ export default {
       this.formDataPut.noturno = this.noturno;
       this.formDataPut.qtd_hora_parada = this.qtd_hora_parada.toString();
       this.formDataPut.obs_hora_parada = this.obs_hora_parada.toString();
-      this.formDataPut.hospedagem = this.hospedagem.toString();
+      this.formDataPut.hospedagem = this.hospedagem;
       this.formDataPut.qtd_pedagio = this.qtd_pedagio.toString();
-      this.formDataPut.pedagio = this.pedagio.toString();
-      this.formDataPut.valor_total = this.valor_total.toString();
+      this.formDataPut.pedagio = this.pedagio;
+      this.formDataPut.adicionais = this.adicionais;
+      this.formDataPut.obs_adicionais = this.obs_adicionais.toString();
+      this.formDataPut.valor_total = this.valor_total;
       this.formDataPut.em_analise = this.em_analise;
       this.formDataPut.usuarioId = this.usuarioId_original;
 
@@ -294,6 +320,9 @@ export default {
           this.formDataPut.data = '';
           this.formDataPut.viaturaId = '';
           this.formDataPut.qru = '';
+          this.formDataPut.ris = false;
+          this.formDataPut.patins = false;
+          this.formDataPut.rodaExtra = false;
           this.formDataPut.tipoServicoId = '';
           this.formDataPut.tipoVeiculoId = '';
           this.formDataPut.qth = '';
@@ -305,6 +334,8 @@ export default {
           this.formDataPut.hospedagem = '';
           this.formDataPut.qtd_pedagio = '';
           this.formDataPut.pedagio = '';
+          this.formDataPut.adicionais = '';
+          this.formDataPut.obs_adicionais = '';
           this.formDataPut.valor_total = '';
           this.formDataPut.usuarioId = '';
           this.formDataPut.em_analise = false;
@@ -344,12 +375,25 @@ export default {
       if (this.formDataPut.hospedagem == ""){
         this.formDataPut.hospedagem = "0";
       }      
+      if (this.formDataPut.adicionais == ""){
+        this.formDataPut.adicionais = "0";
+      }
       
       if (this.formDataPut.noturno == true){
-        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
+        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
       } else {
-        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem)).toFixed(2);
+        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais)).toFixed(2);
       }
+
+      if (this.formDataPut.ris == true){
+        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
+      }
+      if (this.formDataPut.patins == true){
+        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].patins))).toFixed(2)
+      }
+      if (this.formDataPut.rodaExtra == true){
+        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].rodaExtra))).toFixed(2)
+      } 
 
       this.editarModal = false;
       this.confirmarSimNaoModal = true;
@@ -369,6 +413,9 @@ export default {
       this.formDataPut.data = this.parseData(this.data_original);
       this.formDataPut.viaturaId = this.viaturaId_original;
       this.formDataPut.qru = this.qru.toString();
+      this.formDataPut.ris = this.ris;
+      this.formDataPut.patins = this.patins;
+      this.formDataPut.rodaExtra = this.rodaExtra;
       this.formDataPut.tipoServicoId = this.tipoServicoId_original;
       this.formDataPut.tipoVeiculoId = this.tipoVeiculoId_original;
       this.formDataPut.qth = this.qth.toString();
@@ -377,10 +424,12 @@ export default {
       this.formDataPut.noturno = this.noturno;
       this.formDataPut.qtd_hora_parada = this.qtd_hora_parada.toString();
       this.formDataPut.obs_hora_parada = this.obs_hora_parada.toString();
-      this.formDataPut.hospedagem = this.hospedagem.toString();
+      this.formDataPut.hospedagem = this.hospedagem;
       this.formDataPut.qtd_pedagio = this.qtd_pedagio.toString();
-      this.formDataPut.pedagio = this.pedagio.toString();
-      this.formDataPut.valor_total = this.valor_total.toString();
+      this.formDataPut.pedagio = this.pedagio;
+      this.formDataPut.adicionais = this.adicionais;
+      this.formDataPut.obs_adicionais = this.obs_adicionais.toString();
+      this.formDataPut.valor_total = this.valor_total;
       this.formDataPut.usuarioId = this.usuarioId_original;
 
       // Condição para mudança do Status da Análise
@@ -403,6 +452,9 @@ export default {
           this.formDataPut.data = '';
           this.formDataPut.viaturaId = '';
           this.formDataPut.qru = '';
+          this.formDataPut.ris = false;
+          this.formDataPut.patins = false;
+          this.formDataPut.rodaExtra = false;
           this.formDataPut.tipoServicoId = '';
           this.formDataPut.tipoVeiculoId = '';
           this.formDataPut.qth = '';
@@ -414,6 +466,8 @@ export default {
           this.formDataPut.hospedagem = '';
           this.formDataPut.qtd_pedagio = '';
           this.formDataPut.pedagio = '';
+          this.formDataPut.adicionais = '';
+          this.formDataPut.obs_adicionais = '';
           this.formDataPut.valor_total = '';
           this.formDataPut.usuarioId = '';
           this.formDataPut.em_analise = false;
@@ -435,6 +489,14 @@ export default {
 <style>
 .msg {
   background-color: #fefefe;
+}
+
+.close {
+  margin-right: auto;
+}
+
+.row {
+  text-align: left;
 }
 
 .modal {
