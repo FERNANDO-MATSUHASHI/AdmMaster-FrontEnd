@@ -126,11 +126,11 @@
                                 <router-link to="/DespesasAtendimento" class="nav-link">Despesas de
                                     Atendimento</router-link>
                             </a>
-                            <a class="nav-link">
+                            <!-- <a class="nav-link">
                                 <i class="fi fi-rr-search-dollar"></i>
                                 <router-link to="/RecebimentoComissao" class="nav-link">Recebimento de
                                     Comissão</router-link>
-                            </a>
+                            </a> -->
                         </div>
                     </div>
                 </nav>
@@ -150,26 +150,6 @@
         </div>
     </div>
 </template>
-
-<style>
-.visivel {
-    display: block;
-}
-
-.invisivel {
-    display: none;
-}
-
-.dropdown-menu {
-    transform: translateX(-70%);
-}
-
-a:not([href]):not([tabindex]),
-a:not([href]):not([tabindex]):focus,
-a:not([href]):not([tabindex]):hover {
-    color: white !important;
-}
-</style>
 
 <script>
 import axios from 'axios';
@@ -223,3 +203,33 @@ export default {
   },
 };
 </script>
+
+<style>
+footer{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+}
+
+.visivel {
+    display: block;
+}
+
+.invisivel {
+    display: none;
+}
+
+.dropdown-menu {
+    transform: translateX(-70%);
+}
+
+a:not([href]):not([tabindex]),
+a:not([href]):not([tabindex]):focus,
+a:not([href]):not([tabindex]):hover {
+    color: white !important;
+}
+</style>

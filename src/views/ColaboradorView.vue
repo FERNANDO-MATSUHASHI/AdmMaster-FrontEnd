@@ -22,12 +22,12 @@
           
           <div class="col-md-6">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" name="nome" required v-model="formData.nome"><br>
+            <input type="text" class="form-control" id="nome" name="nome" required v-model="formData.nome" placeholder="Ex... João Silva"><br>
           </div>
 
           <div class="col-md-6">
             <label for="cpf" class="form-label">CPF:</label>
-            <input type="text" class="form-control" id="cpf" name="cpf" required v-model="formData.cpf"><br>
+            <input type="text" class="form-control" id="cpf" name="cpf" required v-model="formData.cpf" placeholder="Ex... 12345678900"><br>
           </div>
 
           <div class="col-md-6">
@@ -37,32 +37,32 @@
 
           <div class="col-md-6">
             <label for="cep" class="form-label">CEP:</label>
-            <input type="text" class="form-control" id="cep" name="cep" required v-model="formData.cep"><br>
+            <input type="text" class="form-control" id="cep" name="cep" required v-model="formData.cep" placeholder="Ex... 17506000"><br>
           </div>
 
           <div class="col-md-6">
             <label for="rua" class="form-label">Rua:</label>
-            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua"><br>
+            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua" placeholder="Ex... Tiradentes"><br>
           </div>
 
           <div class="col-md-6">
             <label for="numero" class="form-label">Número:</label>
-            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero"><br>
+            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero" placeholder="Ex... 100"><br>
           </div>
 
           <div class="col-md-6">
             <label for="cidade" class="form-label">Cidade:</label>
-            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade"><br>
+            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade"  placeholder="Ex... São Paulo"><br>
           </div>
 
           <div class="col-md-6">
             <label for="estado" class="form-label">Estado:</label>
-            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado"><br>
+            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado"  placeholder="Ex... SP"><br>
           </div>
 
           <div class="col-md-6">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required v-model="formData.email"><br>
+            <input type="email" class="form-control" id="email" name="email" required v-model="formData.email"  placeholder="Ex... teste@teste.com"><br>
           </div>
 
           <div class="col-md-6">
@@ -79,8 +79,8 @@
           </div>
 
           <div class="col-md-6">
-            <label for="comissao" class="form-label">Comissão:</label>
-            <input type="text" class="form-control" id="comissao" name="comissao" required v-model="formData.comissao"><br>
+            <label for="comissao" class="form-label">Comissão %:</label>
+            <input type="text" class="form-control" id="comissao" name="comissao" required v-model="formData.comissao" placeholder="Ex... 20"><br>
           </div>
 
           <div class="col-md-6">
@@ -152,6 +152,10 @@
         :cargo_descricao="obterNomeDoCargo(colabolador.cargoId)"
         :listCargos="cargos" />
     </table>
+    <br>
+    <br>
+    <br>
+    <br>
   </main>
 </template>
 
@@ -246,6 +250,7 @@ export default {
       this.showModal = true;
     },
     fecharModal() {
+      this.$forceUpdate();
       this.showModal = false;
       this.successModal = false;
     },
