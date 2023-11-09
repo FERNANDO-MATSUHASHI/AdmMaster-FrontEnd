@@ -11,7 +11,7 @@ const props = defineProps(["id", "nome", "cpf", "email", "data_nascimento_brasil
       <td>{{ email }}</td>
       <td>{{ data_nascimento_brasil }}</td>
       <td>{{ ativo ? 'Sim' : 'Não' }}</td>
-      <td>{{ comissao }}</td>
+      <td>{{ comissao }} %</td>
       <td>{{ cargo_descricao }}</td>
       <td>
         <!-- Ícone de editar -->
@@ -89,7 +89,7 @@ const props = defineProps(["id", "nome", "cpf", "email", "data_nascimento_brasil
         </div>
 
         <div class="col-md-6">
-          <label for="comissao" class="form-label">Comissão:</label>
+          <label for="comissao" class="form-label">Comissão %:</label>
           <input type="text" class="form-control" id="comissao" name="comissao" required
             v-model="formDataPut.comissao"><br>
         </div>

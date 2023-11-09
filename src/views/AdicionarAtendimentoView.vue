@@ -1,5 +1,5 @@
 <template>
-  <main class="adicionarAtendimento">
+  <main class="atendimento">
   <div class="row">
     <div class="d-flex justify-content">
       <i style="font-size: 40px; margin-left: 35px;" class="fi fi-rr-hand-holding-medical" ></i>
@@ -33,7 +33,7 @@
 
           <div class="col-md-3">
             <label for="rua" class="form-label">QRU:</label>
-            <input type="text" class="form-control" id="qru" name="qru" required v-model="formData.qru"><br>
+            <input type="text" class="form-control" id="qru" name="qru" required v-model="formData.qru"  placeholder="Ex... 01/1001223-23"><br>
           </div>
 
           <div class="col-md-3">
@@ -53,42 +53,42 @@
           
           <div class="col-md-3">
             <label for="qth" class="form-label">QTH:</label>
-            <input type="text" class="form-control" id="qth" name="qth" required v-model="formData.qth"><br>
+            <input type="text" class="form-control" id="qth" name="qth" required v-model="formData.qth" placeholder="Ex... Marília"><br>
           </div>
 
           <div class="col-md-3">
             <label for="qti" class="form-label">QTI:</label>
-            <input type="text" class="form-control" id="qti" name="qti" v-model="formData.qti"><br>
+            <input type="text" class="form-control" id="qti" name="qti" v-model="formData.qti" placeholder="Ex... São Paulo"><br>
           </div>
 
           <div class="col-md-3">
             <label for="km" class="form-label">Km:</label>
-            <input type="text" class="form-control" id="km" name="km" v-model="formData.km"><br>
+            <input type="text" class="form-control" id="km" name="km" v-model="formData.km"  placeholder="Ex... 1000"><br>
           </div>
 
           <div class="col-md-3">
             <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formData.qtd_hora_parada">
+            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formData.qtd_hora_parada" placeholder="Ex... 1">
           </div>
 
           <div class="col-md-3">
             <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formData.obs_hora_parada">
+            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formData.obs_hora_parada" placeholder="Ex... das 19:00 às 20:00 esperando o táxi">
           </div>
 
           <div class="col-md-3">
             <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio"><br>
+            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio" placeholder="Ex... 12"><br>
           </div>
 
           <div class="col-md-3">
             <label for="pedagio" class="col-form-label">Pedágio R$:</label>
-            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio">
+            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio" placeholder="Ex... 120.00">
           </div>
 
           <div class="col-md-3">
             <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
-            <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem">
+            <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem" placeholder="Ex... 180.50">
           </div>
 
           <div class="col-md-3">
@@ -115,9 +115,9 @@
 
           <div class="col-md-4">
             <label for="adicionais" class="col-form-label">Adicionais R$:</label>
-            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais">
+            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais" placeholder="Ex... 39.50">
             <label for="obs_adicionais" class="col-form-label">Obs:</label>
-            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formData.obs_adicionais">
+            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formData.obs_adicionais" placeholder="Ex... Almoço">
             <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
             <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formData.valor_total"><br>
           </div>          
@@ -168,7 +168,7 @@
     <div class="input-group input-group-sm mb-3">
       <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
     </div>
-    <table class="table table-hover">
+    <table class="tabela table table-hover">
       <thead>
         <tr>
           <th scope="col">Data</th>
@@ -232,6 +232,10 @@
         :listVeiculos="veiculos"
         :em_analise="atendimento.em_analise"/>
     </table>
+    <br>
+    <br>
+    <br>
+    <br>
 </main>
 </template>
 
@@ -391,7 +395,7 @@ export default {
     fecharModal() {
       this.showModal = false;
       this.confirmarSimNaoModal = false;
-      this.successModal = false;
+      this.successModal = false; 
     },
     voltarModal() {
       this.confirmarSimNaoModal = false;
@@ -543,14 +547,8 @@ export default {
 </script>
 
 <style>
-.table {
-  text-align: center;
-}
-.main {
-      display: flex;
-      justify-content: center;
-      height: 80vh;
-      margin-left: auto;
+.tabela {
+  margin-left: -10vw;
 }
 
 .modal {
