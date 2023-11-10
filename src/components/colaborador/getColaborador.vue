@@ -415,7 +415,7 @@ export default {
       const ano = data.getUTCFullYear();
 
       return `${ano}-${mes}-${dia}`;
-    }
+      }
   }
 }
 </script>

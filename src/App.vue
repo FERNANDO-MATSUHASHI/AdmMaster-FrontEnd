@@ -165,8 +165,13 @@ export default {
   data() {
     return {
         formLogin: {
+<<<<<<< HEAD
             email: 'matsu_zf@hotmail.com',
             senha: '1736',
+=======
+            email: 'alfredinho32@gmail.com',
+            senha: '123',
+>>>>>>> cb72bbad4cf6d17bfa76f78886d3927f4e978863
         },
         visivel: false,
     };

@@ -11,6 +11,7 @@
       </div>
     </div>
   </div>
+<<<<<<< HEAD
   <hr>
 
   <div class="input-group input-group-sm mb-3">
@@ -375,3 +376,7 @@ export default {
   width: 80%;
 }
 </style>
+=======
+</main> 
+</template>
+>>>>>>> cb72bbad4cf6d17bfa76f78886d3927f4e978863
