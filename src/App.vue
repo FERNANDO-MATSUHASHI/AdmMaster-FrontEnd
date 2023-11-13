@@ -37,7 +37,8 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="successModalLabel">Erro</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Fechar"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         e-mail e/ou senha incorretos!
@@ -89,8 +90,8 @@
 
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
-                    <button class="dropdown-item" type="button">Perfil</button>
-                    <button class="dropdown-item" type="button">Configurações</button>
+                    <button class="dropdown-item" type="button" @click="Perfil()">Perfil</button>
+                    <!-- <button class="dropdown-item" type="button">Configurações</button> -->
                     <button class="dropdown-item" type="button" @click="Logout()">Logout</button>
                 </ul>
             </div>
@@ -149,6 +150,19 @@
             </div>
         </div>
     </div>
+
+    <div class="modal1 overlay" v-if="showModal">
+        <div class="modal-content1">
+            <span class="close" @click="fecharModal()">&times;</span>
+            <h1>Perfil</h1>
+            <hr class="perfil-line">
+            <br>
+            <br>
+            <h4><strong>Nome:</strong> {{ this.formLogado.nome }}</h4>
+            <h4><strong>E-mail:</strong> {{ this.formLogado.email }}</h4>
+            <h4><strong>Data de Nascimento:</strong> {{ parseData(this.formLogado.data_nascimento) }}</h4>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -162,57 +176,100 @@ export default {
         RouterView,
         RouterLink
     },
-  data() {
-    return {
-        formLogin: {
-            email: 'matsu_zf@hotmail.com',
-            senha: '1736',
-        },
-        visivel: false,
-    };
-  },
-  methods: {
-    Login () {
-        axios.post('https://localhost:7255/api/Usuario/Login', this.formLogin, {
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(response => {
-            // console.log('Resposta da API:', response.data);
-
-            localStorage.setItem('token', response.data)
-
-            // Limpar o formulário
-            this.formLogin.email = '';
-            this.formLogin.senha = '';
-            this.visivel = !this.visivel;
-        })
-        .catch(error => {
-            console.error('Erro ao enviar formulário:', error);
-            // Exibir o modal de erro
-            const erroModal = new bootstrap.Modal(document.getElementById('erroModal'));
-            erroModal.show();
-        });
+    data() {
+        return {
+            formLogin: {
+                email: 'matsu_zf@hotmail.com',
+                senha: '1736',
+            },
+            formLogado: {
+                nome: '',
+                email: '',
+                comissao: '',
+            },
+            visivel: false,
+            showModal: false,
+        };
     },
-    Logout (){
-        this.visivel = !this.visivel;
-    }
-  },
-  mounted() {
-  },
+    methods: {
+        Login() {
+            axios.post('https://localhost:7255/api/Usuario/Login', this.formLogin, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+                .then(response => {
+                    // console.log('Resposta da API:', response.data);
+
+                    localStorage.setItem('token', response.data);
+
+                    const emailModificado = this.formLogin.email.replace('@', '%40');
+                    const url = 'https://localhost:7255/api/Usuario/Email?email=' + emailModificado;
+
+                    axios.get(url, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                    })
+                        .then(response => {
+                            // console.log('Resposta da API email: ', response.data);
+                            this.formLogado.nome = response.data.nome;
+                            this.formLogado.email = response.data.email;
+                            this.formLogado.data_nascimento = response.data.data_nascimento;
+                        })
+                        .catch(error => {
+                            console.error('Erro ao enviar formulário:', error);
+                            // Exibir o modal de erro
+                            const erroModal = new bootstrap.Modal(document.getElementById('erroModal'));
+                            erroModal.show();
+                        });
+
+                    // Limpar o formulário
+                    this.formLogin.email = '';
+                    this.formLogin.senha = '';
+                    this.visivel = !this.visivel;
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar formulário:', error);
+                    // Exibir o modal de erro
+                    const erroModal = new bootstrap.Modal(document.getElementById('erroModal'));
+                    erroModal.show();
+                });
+        },
+        Logout() {
+            this.visivel = !this.visivel;
+        },
+        fecharModal() {
+            this.showModal = false;
+        },
+        Perfil() {
+            this.showModal = true;
+        },
+        parseData(dataString) {
+            const data = new Date(dataString);
+            const dia = data.getUTCDate();
+            const mes = data.getUTCMonth() + 1; // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
+            const ano = data.getUTCFullYear();
+
+            // Formatar a data como "DD/MM/YYYY"
+            return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
+        },
+    },
+    mounted() {
+    },
 };
 </script>
 
 <style>
-footer{
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
 }
 
 .visivel {
@@ -231,5 +288,52 @@ a:not([href]):not([tabindex]),
 a:not([href]):not([tabindex]):focus,
 a:not([href]):not([tabindex]):hover {
     color: white !important;
+}
+
+.perfil-line {
+  margin: 20px 0; /* Adapte conforme necessário */
+  border: 0;
+  border-top: 1px solid #ccc; /* Cor da linha */
+}
+
+.modal1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Cor escura com transparência */
+}
+
+.modal-content1 {
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 30%;
+    height: 40vh;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 </style>
