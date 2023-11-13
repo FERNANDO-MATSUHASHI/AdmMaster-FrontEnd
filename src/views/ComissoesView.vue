@@ -40,7 +40,6 @@
 <script>
 import axios from 'axios';
 import { ref, onMounted } from 'vue';
-import { DateTime } from 'luxon';
 import getComissao from '../components/comissao/getComissao.vue';
 
 export default {
@@ -85,9 +84,6 @@ export default {
   methods: {
     pesquisar() {
       // Converter Date em DateTime
-      // this.formData.dataInicial = new Date(this.original_dataInicial);
-      // this.formData.dataFinal = new Date(this.original_dataFinal);
-
       const dataInicial = new Date(this.original_dataInicial);
       dataInicial.setDate(dataInicial.getDate());
       this.formData.dataInicial = dataInicial;
@@ -96,17 +92,8 @@ export default {
       dataFinal.setDate(dataFinal.getDate());
       this.formData.dataFinal = dataFinal;
 
-
-      // const dataInicial = DateTime.fromFormat(this.original_dataInicial, 'yyyy-MM-dd', { zone: 'America/Sao_Paulo' })
-      // this.formData.dataInicial = dataInicial.toFormat('EEE MMM dd yyyy HH:mm:ss \'GMT-0300\' (\'Horário Padrão de Brasília\')');
-
-      // const dataFinal = DateTime.fromFormat(this.original_dataFinal, 'yyyy-MM-dd', { zone: 'America/Sao_Paulo' })
-      // this.formData.dataFinal = dataFinal.toFormat('EEE MMM dd yyyy HH:mm:ss \'GMT-0300\' (\'Horário Padrão de Brasília\')');
-
-
-
-      console.log('Pesquisar-> Data Inicial ', this.formData.dataInicial);
-      console.log('Pesquisar-> Data Final ', this.formData.dataFinal);
+      // console.log('Pesquisar-> Data Inicial ', this.formData.dataInicial);
+      // console.log('Pesquisar-> Data Final ', this.formData.dataFinal);
       // console.log('Pesquisar-> Data Usuário ', this.formData.usuarioId);
 
       axios.post('https://localhost:7255/api/Comissao', this.formData, {
@@ -131,7 +118,7 @@ export default {
 <style>
 .linha-horizontal {
   border-top: 2px solid #8a888881;
-  width: 73vw;
+  width: 67vw;
   margin-top: 10px;
   margin-bottom: 10px;
   margin-left: -9%;

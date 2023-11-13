@@ -244,10 +244,10 @@ import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import getAtendimento from '../components/atendimento/getAtendimento.vue';
 
-axios.interceptors.request.use((config) => {
-    // console.log('Dados a serem enviados:', config.data);
-    return config;
-});
+// axios.interceptors.request.use((config) => {
+//     console.log('Dados a serem enviados:', config.data);
+//     return config;
+// });
 
 export default {
   components: {

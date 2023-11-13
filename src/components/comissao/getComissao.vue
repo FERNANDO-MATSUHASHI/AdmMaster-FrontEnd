@@ -7,18 +7,19 @@ const { comissoes, formData } = defineProps(['comissoes', 'formData']);
   <div class="input-group input-group-sm mb-3" style="margin-top: 2%;">
     <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
   </div>
-  <table class="tabela table table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Data</th>
-        <th scope="col">QRU</th>
-        <th scope="col">Colaborador</th>
-        <th scope="col">Valor Bruto</th>
-        <th scope="col">Valor Comissão</th>
-      </tr>
-    </thead>
+  <table class="tabela1 table table-hover">
+
+    <tr>
+      <th scope="col">Data</th>
+      <th scope="col">QRU</th>
+      <th scope="col">Colaborador</th>
+      <th scope="col">Valor Bruto</th>
+      <th scope="col">Valor Comissão</th>
+    </tr>
+
     <tr v-for="comissao in comissoes.listaAuxiliar">
-      <th>{{ parseData(comissao.data) }}</th>
+    <!-- <tr v-for="comissao in filteredComissao"> -->
+      <td>{{ parseData(comissao.data) }}</td>
       <td>{{ comissao.atendimentoNome }}</td>
       <td>{{ comissao.usuarioNome }}</td>
       <td>R$ {{ comissao.valorAtendimento.toFixed(2) }}</td>
@@ -38,7 +39,7 @@ const { comissoes, formData } = defineProps(['comissoes', 'formData']);
 
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 
 export default {
   components: {
@@ -54,17 +55,17 @@ export default {
     // Filtro
     const filteredComissao = computed(() => {
       if (!searchTerm.value) {
+        console.log('Filtro-> ', comissoes.listaAuxiliar.value)
         return comissoes.listaAuxiliar.value;
       }
       const searchTermLowerCase = searchTerm.value;
-      return comissoes.listaAuxiliar.value.filter(comissao => {
+      return comissoes.listaAuxiliar.filter(comissao => {
         const nomeLowerCase = comissao.atendimentoNome;
         return nomeLowerCase.includes(searchTermLowerCase);
       });
     });
 
     return {
-      usuarios,
       searchTerm,
       filteredComissao,
     }
@@ -82,3 +83,9 @@ export default {
   }
 }
 </script>
+
+<!-- <style>
+.tabela {
+  margin-left: 0%;
+}
+</style> -->
