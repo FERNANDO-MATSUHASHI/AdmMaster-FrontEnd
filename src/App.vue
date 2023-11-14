@@ -293,7 +293,7 @@ a:not([href]):not([tabindex]):hover {
 .perfil-line {
   margin: 20px 0; /* Adapte conforme necessário */
   border: 0;
-  border-top: 1px solid #ccc; /* Cor da linha */
+  border-top: 1px solid #4b4b4b; /* Cor da linha */
 }
 
 .modal1 {
@@ -309,8 +309,13 @@ a:not([href]):not([tabindex]):hover {
 }
 
 .overlay {
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Cor escura com transparência */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fundo escurecido */
+    z-index: 1000;
 }
 
 .modal-content1 {
@@ -321,6 +326,8 @@ a:not([href]):not([tabindex]):hover {
     width: 80%;
     max-width: 30%;
     height: 40vh;
+    border-radius: 20px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
 }
 
 .close {
