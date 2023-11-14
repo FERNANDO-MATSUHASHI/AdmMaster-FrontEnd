@@ -13,7 +13,8 @@
     <div class="col-11 d-flex justify-content-end align-items-center">
       <div class="col-md-3">
         <label for="data_inicial" class="form-label">Data Inicial:</label>
-        <input type="date" class="form-control" id="data_inicial" name="data_inicial" required v-model="original_dataInicial">
+        <input type="date" class="form-control" id="data_inicial" name="data_inicial" required
+          v-model="original_dataInicial">
       </div>
       <div class="col-md-3">
         <label for="data_final" class="form-label">Data Final:</label>
@@ -27,19 +28,48 @@
       </div>
       <div class="col-md-3">
         <br>
-        <button class="btn btn-primary" @click="pesquisar()">Pesquisar</button>        
+        <button class="btn btn-primary" @click="pesquisar()">Pesquisar</button>
       </div>
-
     </div>
-    <div>
-        <getComissao :comissoes="comissoes" :formData="formData" v-if="showComissao"/>
-      </div>
+
+    <div class="input-group input-group-sm mb-3" style="margin-top: 2%;">
+      <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
+    </div>
+
+    <table class="tabela1 table table-hover">
+      <tr>
+        <th scope="col">Data</th>
+        <th scope="col">QRU</th>
+        <th scope="col">Colaborador</th>
+        <th scope="col">Valor Bruto</th>
+        <th scope="col">Valor Comissão</th>
+      </tr>
+      <getComissao v-for="comissao in filteredComissao" v-if="showComissao"
+        :key="comissao.id"
+        :id="comissao.id"
+        :data="comissao.data"
+        :atendimentoNome="comissao.atendimentoNome"
+        :usuarioNome="comissao.usuarioNome"
+        :valorAtendimento="comissao.valorAtendimento"
+        :valorComissao="comissao.valorComissao"
+        :comissoes="comissoes"/>
+        <tr>
+      <th></th>
+      <th></th>
+      <th>Porcentagem da Comissão: {{ comissoes.porcentagem }} %</th>
+      <th>Valor Total Bruto: R$ {{ comissoes.total.toFixed(2) }}</th>
+      <th>Valor Comissão: R$ {{ comissoes.totalComissao.toFixed(2) }}</th>
+      </tr>
+      <br>
+      <br>
+    </table>
+
   </main>
 </template>
 
 <script>
 import axios from 'axios';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import getComissao from '../components/comissao/getComissao.vue';
 
 export default {
@@ -62,6 +92,20 @@ export default {
   setup() {
     const usuarios = ref([]);
     const comissoes = ref([]);
+    const searchTerm = ref(null);
+
+    // Filtro
+    const filteredComissao = computed(() => {
+      if (!searchTerm.value) {
+        console.log('Filtro-> ', comissoes.value.listaAuxiliar)
+        return comissoes.value.listaAuxiliar;
+      }
+      const searchTermLowerCase = searchTerm.value;
+      return comissoes.value.listaAuxiliar.filter(comissao => {
+        const nomeLowerCase = comissao.atendimentoNome;
+        return nomeLowerCase.includes(searchTermLowerCase);
+      });
+    });
 
     onMounted(async () => {
       try {
@@ -79,6 +123,8 @@ export default {
     return {
       usuarios,
       comissoes,
+      searchTerm,
+      filteredComissao,
     }
   },
   methods: {
@@ -87,7 +133,7 @@ export default {
       const dataInicial = new Date(this.original_dataInicial);
       dataInicial.setDate(dataInicial.getDate());
       this.formData.dataInicial = dataInicial;
-      
+
       const dataFinal = new Date(this.original_dataFinal);
       dataFinal.setDate(dataFinal.getDate());
       this.formData.dataFinal = dataFinal;
@@ -104,7 +150,7 @@ export default {
       })
         .then(response => {
           this.comissoes = response.data;
-          // console.log('Comissões ComissoesView-> ', this.comissoes.listaAuxiliar);
+          console.log('Comissões ComissoesView-> ', this.comissoes.listaAuxiliar);
           this.showComissao = true;
         })
         .catch(error => {
