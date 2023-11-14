@@ -57,8 +57,8 @@
       <th></th>
       <th></th>
       <th>Porcentagem da Comissão: {{ comissoes.porcentagem }} %</th>
-      <th>Valor Total Bruto: R$ {{ comissoes.total.toFixed(2) }}</th>
-      <th>Valor Comissão: R$ {{ comissoes.totalComissao.toFixed(2) }}</th>
+      <th>Valor Total Bruto: R$ {{ comissoes.total }}</th>
+      <th>Valor Comissão: R$ {{ comissoes.totalComissao }}</th>
       </tr>
       <br>
       <br>
@@ -137,10 +137,6 @@ export default {
       const dataFinal = new Date(this.original_dataFinal);
       dataFinal.setDate(dataFinal.getDate());
       this.formData.dataFinal = dataFinal;
-
-      // console.log('Pesquisar-> Data Inicial ', this.formData.dataInicial);
-      // console.log('Pesquisar-> Data Final ', this.formData.dataFinal);
-      // console.log('Pesquisar-> Data Usuário ', this.formData.usuarioId);
 
       axios.post('https://localhost:7255/api/Comissao', this.formData, {
         headers: {
