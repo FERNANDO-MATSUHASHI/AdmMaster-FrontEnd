@@ -171,28 +171,22 @@ export default {
         });
 
         atendimentos.value = response.data;
-        console.log('Dados retornados da API Atendimentos', response.data);
-        console.log('Atendimento - ', atendimentos.value);
+        // console.log('Dados retornados da API Atendimentos', response.data);
+        // console.log('Atendimeknto - ', atendimentos.value);
         calcularFaturamentoMensal();
-        console.log('Faturamento mensal', faturamentoMensal.value)
-
-      } catch (error) {
-        console.error('Erro na solicitação:', error);
-      }
-      try {
-        const response = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
+        // console.log('Faturamento mensal', faturamentoMensal.value)
+        const responseDespesas = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        despesas.value = response.data;
-        console.log('Dados retornados da API Despesas atendimentos', response.data);
-        console.log('Despesas atendimentos', despesas.value);
+        despesas.value = responseDespesas.data;
+        // console.log('Dados retornados da API Despesas atendimentos', response.data);
+        // console.log('Despesas atendimentos', despesas.value);
         calcularDespesaMensal();
         dadosCombinados.value = combinarFaturamentoDespesa();
-        console.log('Dados combuinador', dadosCombinados.value);
-        console.log('Despesa mensal', despesaMensal.value);
-
+        // console.log('Dados combuinador', dadosCombinados.value);
+        // console.log('Despesa mensal', despesaMensal.value);
       } catch (error) {
         console.error('Erro na solicitação:', error);
 
