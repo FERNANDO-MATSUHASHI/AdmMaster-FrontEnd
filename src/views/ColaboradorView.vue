@@ -130,7 +130,7 @@
           <th scope="col">Cargo</th>
         </tr>
       </thead>
-      <getColaborador ref="colaboradorComponent" v-for="colabolador in filteredColaboradores" 
+      <getColaborador v-for="colabolador in filteredColaboradores" 
         :key="colabolador.id" 
         :id="colabolador.id"
         :nome="colabolador.nome"
