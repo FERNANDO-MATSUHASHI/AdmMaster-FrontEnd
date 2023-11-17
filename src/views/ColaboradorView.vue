@@ -130,7 +130,7 @@
           <th scope="col">Cargo</th>
         </tr>
       </thead>
-      <getColaborador v-for="colabolador in filteredColaboradores" 
+      <getColaborador ref="colaboradorComponent" v-for="colabolador in filteredColaboradores" 
         :key="colabolador.id" 
         :id="colabolador.id"
         :nome="colabolador.nome"
@@ -304,7 +304,7 @@ export default {
     obterNomeDoCargo(idcargo) {
       const cargo = this.cargos.find(c => c.id === idcargo);
       return cargo ? cargo.descricao : 'Cargo Desconhecido';
-  }
+    }
   }
 };
 </script>

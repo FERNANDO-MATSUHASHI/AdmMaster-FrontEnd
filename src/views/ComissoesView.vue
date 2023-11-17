@@ -32,6 +32,7 @@
       </div>
     </div>
 
+    <div v-if="showComissao">
     <div class="input-group input-group-sm mb-3" style="margin-top: 2%;">
       <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
     </div>
@@ -44,7 +45,7 @@
         <th scope="col">Valor Bruto</th>
         <th scope="col">Valor Comissão</th>
       </tr>
-      <getComissao v-for="comissao in filteredComissao" v-if="showComissao"
+      <getComissao v-for="comissao in filteredComissao" 
         :key="comissao.id"
         :id="comissao.id"
         :data="comissao.data"
@@ -63,6 +64,7 @@
       <br>
       <br>
     </table>
+    </div>
 
   </main>
 </template>

@@ -11,43 +11,30 @@
     <div class="input-group input-group-sm mb-3">
       <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Mês" />
     </div>
+    <faturamento-table :filteredFaturamento="filteredFaturamento" />
   </main>
-  <table class="table table-hover">
-    <thead>
-      <!-- Faturamento :
-        Mês do faturamento
-        Valor do faturamento mensal
-        Data inicial e data final do faturamento
-      -->
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Mês</th>
-        <th scope="col">Valor bruto</th>
-        <th scope="col">Despesa</th>
-        <th scope="col">Valor líquido</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="(dados, index) in filteredFaturamento" :key="index">
+  
+      <!-- <tr v-for="(dados, index) in filteredFaturamento" :key="index">
         <td scope="col">{{ index + 1 }}</td>
         <td scope="col">{{ dados.mes }}</td>
         <td scope="col">R$ {{ dados.valorFaturamento.toFixed(2) }}</td>
         <td scope="col">R$ {{ dados.valorDespesa.toFixed(2) }}</td>
         <td scope="col">R$ {{ dados.valorLiquido.toFixed(2) }}</td>
-      </tr>
-    </tbody>
+      </tr> -->
 
-  </table>
 </template>
 <script>
 import axios from 'axios';
 import { ref, onMounted, computed } from 'vue';
+import FaturamentoTable from '../components/faturamento/faturamentoTable.vue';
 
 export default {
   name: "Faturamento",
   components: {
+    FaturamentoTable,
     axios
-  },
+    
+},
   setup() {
     const searchTerm = ref(null);
     const atendimentos = ref([]);
@@ -162,6 +149,14 @@ export default {
       }
       return 'Mês inválido';
     }
+     const ordenarDadosPorMes = () => {
+      // Ordene o array dadosCombinados com base no mês
+      dadosCombinados.value.sort((a, b) => {
+        const mesA = MesesEnum[a.mes.toUpperCase()];
+        const mesB = MesesEnum[b.mes.toUpperCase()];
+        return mesA - mesB;
+      });
+    };
     onMounted(async () => {
       try {
         const response = await axios.get('https://localhost:7255/api/Atendimento', {
@@ -171,28 +166,25 @@ export default {
         });
 
         atendimentos.value = response.data;
-        console.log('Dados retornados da API Atendimentos', response.data);
-        console.log('Atendimento - ', atendimentos.value);
+        // console.log('Dados retornados da API Atendimentos', response.data);
+        // console.log('Atendimeknto - ', atendimentos.value);
         calcularFaturamentoMensal();
-        console.log('Faturamento mensal', faturamentoMensal.value)
-
-      } catch (error) {
-        console.error('Erro na solicitação:', error);
-      }
-      try {
-        const response = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
+        // console.log('Faturamento mensal', faturamentoMensal.value)
+        const responseDespesas = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        despesas.value = response.data;
-        console.log('Dados retornados da API Despesas atendimentos', response.data);
-        console.log('Despesas atendimentos', despesas.value);
+        despesas.value = responseDespesas.data;
+        // console.log('Dados retornados da API Despesas atendimentos', response.data);
+        // console.log('Despesas atendimentos', despesas.value);
         calcularDespesaMensal();
         dadosCombinados.value = combinarFaturamentoDespesa();
-        console.log('Dados combuinador', dadosCombinados.value);
-        console.log('Despesa mensal', despesaMensal.value);
-
+        // console.log('Dados combuinador', dadosCombinados.value);
+        // console.log('Despesa mensal', despesaMensal.value);
+         dadosCombinados.value = combinarFaturamentoDespesa();
+      // Ordenar os dados por mês após combinar faturamento e despesa
+      ordenarDadosPorMes();
       } catch (error) {
         console.error('Erro na solicitação:', error);
 
