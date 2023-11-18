@@ -4,8 +4,8 @@ Projeto em Vue.js para controle de atendimento para Prestadore de Serviços Port
 
 ## Descrição
 
-Curso: SUPERIOR DE TECNOLOGIA EM ANALISE E DESENVOLVIMENTO DE SISTEMAS.
-Alunos: Denis Honório dos Santos RA 193095-9
+Curso: SUPERIOR DE TECNOLOGIA EM ANALISE E DESENVOLVIMENTO DE SISTEMAS.<br>
+Alunos: Denis Honório dos Santos RA 193095-9<br>
         Fernando Matsuhashi RA 194902-0
         Gabriel Ricardo Miranda Lima RA 193169-0
         Kaue Correia da Silva RA 193381-2
