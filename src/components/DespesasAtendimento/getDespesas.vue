@@ -2,8 +2,9 @@
     <div class="row" style="padding: 10px 0; display: flex; align-items: center;">
 
         <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
-            <span>QRU: </span>
-            <input type="text" v-model="qru">
+            <!-- <span>QRU: </span>
+            <input type="text" v-model="qru"> -->
+            <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
         </div>
 
         <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
@@ -36,26 +37,35 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-if="dataSourceDespesas.length == 0">
+            <!-- <tr v-if="this.dataSourceDespesas.data.length == 0">
                 <td colspan="8" class="text-center">Nenhum dado encontrado.</td>
-            </tr>
-            <tr v-else v-for="despesa in dataSourceDespesas">
+            </tr> -->
+            {{this.valorTotal = 0}}
+            <tr v-for="despesa in filteredDespesas">
                 <th scope="row">{{ despesa.atendimento.qru }}</th>
                 <td>{{ despesa.atendimento.usuario.nome }}</td>
                 <td>{{ parseData(despesa.atendimento.data) }}</td>
-                <td class="d-flex justify-content-around"><div style="width: 60%;"> {{ despesa.atendimento.viaturaId }}</div> <div style="width: 40%;"><i style="color: red; cursor: pointer;" @click="abrirViaturaModal(despesa.atendimento.viaturaId)" class="fi fi-rr-light-emergency-on"></i></div></td>
+                <td class="d-flex justify-content-around"><div style="width: 60%;"> {{ obterViatura(despesa.atendimento.viaturaId) }}</div> <div style="width: 40%;"><i style="color: red; cursor: pointer;" @click="abrirViaturaModal(despesa.atendimento.viaturaId)" class="fi fi-rr-light-emergency-on"></i></div></td>
                 <td>{{ despesa.tipo}}</td>
                 <td>{{ despesa.descricao}}</td>
+                {{ somaValor(despesa.valor) }}
                 <td>{{ despesa.valor.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
                 <td>
                     <div class="d-flex justify-content-around">
                         <!-- Ícone de editar -->
-                        <i style="cursor: pointer;" class="fi-rr-edit" @click="abrirModal(despesa)"></i>
+                        <i style="margin-right: 15px; font-size: 20px; cursor: pointer;" class="fi-rr-edit" @click="abrirModal(despesa)"></i>
                         <!-- Ícone de excluir -->
-                        <i style="cursor: pointer;" class="fi-rr-trash" @click="excluirDespesa(despesa)"></i>
+                        <i style="font-size: 21px; cursor: pointer;" class="fi-rr-trash" @click="excluirDespesa(despesa)"></i>
                     </div>
                 </td>
             </tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Total de Despesas:</th>
+            <th> {{ this.valorTotal.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
         </tbody>
     </table>
 
@@ -147,6 +157,7 @@
 <script>
 import axios from 'axios';
 import {addNotification, dialogConfirm, dialogAlert} from '../../assets/common.js';
+import { ref, computed, onMounted } from 'vue';
 
 export default {
     components: {
@@ -169,8 +180,59 @@ export default {
             atendimentoId: null,
             valor: null,
             tipo: null,
-            descricao: null
+            descricao: null,
+            valorTotal: 0,
         }
+    },
+    setup() {
+    const searchTerm = ref(null);
+    const dataSourceDespesas = ref([]);
+    const viaturas = ref([]);
+    const valorTotal = 0;
+
+    // Filtro
+    const filteredDespesas = computed(() => {
+      if (!searchTerm.value) {
+        return dataSourceDespesas.value;
+      }
+      const searchTermLowerCase = searchTerm.value;
+      return dataSourceDespesas.value.filter(despesas => {
+        const nomeLowerCase = despesas.atendimento.qru;
+        return nomeLowerCase.includes(searchTermLowerCase);
+      });
+    });
+
+    onMounted(async () => {
+      try {
+        const responseDespesas = axios.get('https://localhost:7255/api/DespesasAtendimento/', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        dataSourceDespesas.value = responseDespesas.data;
+        this.valorTotal = 0;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura');
+        viaturas.value = responseViaturas.data;
+        this.valorTotal = 0;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    return {
+        filteredDespesas,
+        searchTerm,
+        dataSourceDespesas,
+        viaturas,
+        valorTotal,
+    }
     },
     methods: {
         getDespesas () {
@@ -182,10 +244,12 @@ export default {
             })
             .then(res => {
                 if (res.status == 200) {
+                    this.filteredDespesas = res.data;
                     this.dataSourceDespesas = res.data;
+                    this.valorTotal = 0;
                     return;
                 }
-                    this.dataSourceDespesas = [];
+                    this.filteredDespesas = [];
                 return;
             });
         },
@@ -200,6 +264,7 @@ export default {
                 })
                 .then(res => {
                     resolve(res)
+                    this.valorTotal = 0;
                 })
                 .catch(error => {
                     reject(error)
@@ -217,7 +282,8 @@ export default {
                 })
                 .then(res => {
                     resolve(res);
-                    // console.log('Sigla VTR-> ', res.data.sigla);
+                    this.valorTotal = 0;
+                    // console.log('Sigla VTR-> ', res.data.sigla, id);
                 })
                 .catch(error => {
                     reject(error);
@@ -239,6 +305,7 @@ export default {
                 alert("Data Inicial não pode ser maior que a Data Final.");
                 return;
             }
+            this.qru = '0'
 
             let url = 'https://localhost:7255/api/DespesasAtendimento/GetDespesasByFilter?';
             url += this.qru && this.dataInicial && this.dataFinal ? `${url}qru=${this.qru}&dataInicial=${this.dataInicial}&dataFinal=${this.dataFinal}` : '';
@@ -256,6 +323,7 @@ export default {
             .then(res => {
                 console.log(res);
                 this.dataSourceDespesas = res.data;
+                this.valorTotal = 0;
                 return;
             })
             .catch(error => {
@@ -377,6 +445,7 @@ export default {
         fecharModal () {
             this.showModal = false;
         },
+
         parseData(dataString) {
             const data = new Date(dataString);
             const dia = data.getUTCDate();
@@ -385,6 +454,15 @@ export default {
 
             // Formatar a data como "DD/MM/YYYY"
             return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
+        },
+
+        obterViatura(viaturaId) {
+            const viatura = this.viaturas.find(c => c.id === viaturaId);
+            return viatura ? viatura.sigla : 'Viatura Desconhecida';
+        },
+
+        somaValor (valor) {
+            this.valorTotal += parseInt(valor);
         },
     },
     mounted() {

@@ -429,7 +429,7 @@ export default {
         // },
       })
         .then(response => {
-          // console.log('Resposta da API:', response.data);
+          console.log('Resposta da API:', response.data);
 
           // Limpar o formulário
           this.formData.data = '';

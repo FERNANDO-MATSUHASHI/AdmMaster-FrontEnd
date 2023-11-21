@@ -13,6 +13,8 @@
     </div>
     <hr>
 
+    <getColaborador ref="componentGetColaborador"></getColaborador>
+
     <div class="modal" v-if="showModal">
       <div class="modal-content">
         <span class="close" @click="fecharModal()">&times;</span>
@@ -114,48 +116,6 @@
         </div>
       </div>
     </div>
-
-    <div class="input-group input-group-sm mb-3">
-      <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Nome " />
-    </div>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Nome</th>
-          <th scope="col">E-Mail</th>
-          <th scope="col">Data Nascimento</th>
-          <th scope="col">Ativo</th>
-          <th scope="col">Comissão</th>
-          <th scope="col">Cargo</th>
-        </tr>
-      </thead>
-      <getColaborador v-for="colabolador in filteredColaboradores" 
-        :key="colabolador.id" 
-        :id="colabolador.id"
-        :nome="colabolador.nome"
-        :cpf="colabolador.cpf"
-        :email="colabolador.email" 
-        :data_nascimento_brasil="this.parseData(colabolador.data_nascimento)"
-        :data_nascimento_original="colabolador.data_nascimento"
-        :cep="colabolador.cep"
-        :rua="colabolador.rua"
-        :numero="colabolador.numero"
-        :cidade="colabolador.cidade"
-        :estado="colabolador.estado"
-        :user_name="colabolador.user_name"
-        :senha="colabolador.senha"
-        :ativo="colabolador.ativo" 
-        :comissao="colabolador.comissao" 
-        :gerente-id="colabolador.gerenteId"
-        :cargoId="colabolador.cargoId"
-        :cargo_descricao="obterNomeDoCargo(colabolador.cargoId)"
-        :listCargos="cargos" />
-    </table>
-    <br>
-    <br>
-    <br>
-    <br>
   </main>
 </template>
 
@@ -163,6 +123,7 @@
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import getColaborador from '../components/colaborador/getColaborador.vue';
+import {addNotification, dialogConfirm, dialogAlert} from '../assets/common.js';
 
 axios.interceptors.request.use((config) => {
     console.log('Dados a serem enviados:', config.data);
@@ -223,7 +184,7 @@ export default {
           }
         });
         colaboradores.value = response.data;
-        console.log('Dados retornados da API Colaborador', response.data);
+        // console.log('Dados retornados da API Colaborador', response.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -250,7 +211,7 @@ export default {
       this.showModal = true;
     },
     fecharModal() {
-      this.$forceUpdate();
+      // this.$forceUpdate();
       this.showModal = false;
       this.successModal = false;
     },
@@ -284,26 +245,13 @@ export default {
           this.formData.cargoId = '';
 
           // Exibir o modal de sucesso
-          this.showModal = false;
+          this.$refs.componentGetColaborador.getColaborador();
           this.successModal = true;
+          return;
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
-    },
-    parseData(dataString) {
-      const data = new Date(dataString);
-      const dia = data.getUTCDate();
-      const mes = data.getUTCMonth() + 1; // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
-      const ano = data.getUTCFullYear();
-
-      // Formatar a data como "DD/MM/YYYY"
-      return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
-    },
-    // Método para obter o nome do cargo com base no cargoId
-    obterNomeDoCargo(idcargo) {
-      const cargo = this.cargos.find(c => c.id === idcargo);
-      return cargo ? cargo.descricao : 'Cargo Desconhecido';
     }
   }
 };
