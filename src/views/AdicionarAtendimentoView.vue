@@ -12,6 +12,8 @@
     </div>
   </div>
 
+  <getAtendimento ref="componentGetAtendimento"></getAtendimento>
+
   <div class="modal" v-if="showModal">
       <div class="modal-content">
         <span class="close" @click="fecharModal()">&times;</span>
@@ -164,78 +166,6 @@
         </div>
       </div>
     </div> 
-
-    <div class="input-group input-group-sm mb-3">
-      <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
-    </div>
-    <table class="tabela table table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Data</th>
-          <th scope="col">Sigla</th>
-          <th scope="col">QRU</th>
-          <th scope="col">RIS</th>
-          <th scope="col">Patins</th>
-          <th scope="col">Roa Extra</th>
-          <th scope="col">Tipo Serviço</th>
-          <th scope="col">Tipo Veículo</th>
-          <th scope="col">QTH</th>
-          <th scope="col">QTI</th>
-          <th scope="col">Km</th>
-          <th scope="col">Adic. Noturno</th>
-          <th scope="col">Hora Parada</th>
-          <th scope="col">Obs.</th>
-          <th scope="col">Hospedagem</th>
-          <th scope="col">Qtd. Pedágio</th>
-          <th scope="col">Pedágio</th>
-          <th scope="col">Adicionais</th>
-          <th scope="col">Obs. Adicionais</th>
-          <th scope="col">Valor R$</th>
-          <th scope="col">Colaborador</th>
-          <th scope="col"></th>
-          <th scope="col">Em Análise</th>
-        </tr>
-      </thead>
-      <getAtendimento v-for="atendimento in filteredAtendimentos" 
-        :key="atendimento.id" 
-        :id="atendimento.id"
-        :data="this.parseData(atendimento.data)"
-        :viaturaId="obterViatura(atendimento.viaturaId)"
-        :qru="atendimento.qru"
-        :ris="atendimento.ris"
-        :patins="atendimento.patins"
-        :rodaExtra="atendimento.rodaExtra"
-        :tipoServicoId="obterDescricaoTipo(atendimento.tipoServicoId)" 
-        :tipoVeiculoId="obterDescricaoTipoVeiculo(atendimento.tipoVeiculoId)" 
-        :qth="atendimento.qth"
-        :qti="atendimento.qti"
-        :km="atendimento.km"
-        :noturno="atendimento.noturno"
-        :qtd_hora_parada="atendimento.qtd_hora_parada"
-        :obs_hora_parada="atendimento.obs_hora_parada"
-        :hospedagem="atendimento.hospedagem.toFixed(2)"
-        :qtd_pedagio="atendimento.qtd_pedagio"
-        :pedagio="atendimento.pedagio.toFixed(2)"
-        :adicionais="atendimento.adicionais"
-        :obs_adicionais="atendimento.obs_adicionais"
-        :valor_total="atendimento.valor_total.toFixed(2)"        
-        :usuarioId="obterUsuario(atendimento.usuarioId)"
-        :data_original="atendimento.data"
-        :viaturaId_original="atendimento.viaturaId"
-        :tipoServicoId_original="atendimento.tipoServicoId"
-        :tipoVeiculoId_original="atendimento.tipoVeiculoId"
-        :usuarioId_original="atendimento.usuarioId"
-        :listTipoServicos="tipoServicos"
-        :listTipoVeiculos="tipoVeiculos"
-        :listViaturas="viaturas"
-        :listUsuarios="usuarios"
-        :listVeiculos="veiculos"
-        :em_analise="atendimento.em_analise"/>
-    </table>
-    <br>
-    <br>
-    <br>
-    <br>
 </main>
 </template>
 
@@ -243,11 +173,6 @@
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import getAtendimento from '../components/atendimento/getAtendimento.vue';
-
-// axios.interceptors.request.use((config) => {
-//     console.log('Dados a serem enviados:', config.data);
-//     return config;
-// });
 
 export default {
   components: {
@@ -297,8 +222,6 @@ export default {
     const tipoVeiculos = ref([]);
     const veiculos = ref([]);   
     const tipoServicoLoc = ref([]);
-    const kmTotal = ref('');
-    const horaTotal = ref('');
 
     // Filtro
     const filteredAtendimentos = computed(() => {
@@ -315,12 +238,11 @@ export default {
     onMounted(async () => {
       try {
         const response = await axios.get('https://localhost:7255/api/Atendimento', {
-          // headers: {
-          //   'Authorization': `Bearer ${localStorage.getItem('token')}`
-          // }
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         });
         atendimentos.value = response.data;
-        // console.log('Dados retornados da API Atemdimento', response.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -456,6 +378,7 @@ export default {
           this.formData.tipoServicoId = '';
 
           // Exibir o modal de sucesso
+          this.$refs.componentGetAtendimento.getAtendimentos();
           this.showModal = false;
           this.confirmarSimNaoModal = false;
           this.successModal = true;
@@ -521,34 +444,14 @@ export default {
 
       // Formatar a data como "DD/MM/YYYY"
       return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
-    },
-    // Método para obter a descrição do Tipo de Serviço com base no tipoServicoId
-    obterDescricaoTipo(tipoServicoId) {
-      const tipoServico = this.tipoServicos.find(c => c.id === tipoServicoId);
-      return tipoServico ? tipoServico.descricao : 'Tipo de Serviço Desconhecido';
-    },
-    // Método para obter a descrição do Tipo de Veículo com base no tipoVeiculoId
-    obterDescricaoTipoVeiculo(tipoVeiculoId) {
-      const tipoVeiculo = this.tipoVeiculos.find(c => c.id === tipoVeiculoId);
-      return tipoVeiculo ? tipoVeiculo.modelo : 'Tipo de Veículo Desconhecido';
-    },
-    // Método para obter a viatura com base no viaturaId
-    obterViatura(viaturaId) {
-      const viatura = this.viaturas.find(c => c.id === viaturaId);
-      return viatura ? viatura.sigla : 'Viatura Desconhecida';
-    },
-    // Método para obter o Colaborador com base no usuarioId
-    obterUsuario(usuarioId) {
-      const usuario = this.usuarios.find(c => c.id === usuarioId);
-      return usuario ? usuario.nome : 'Colaborador Desconhecido';
-    },
+    }
   }
 };
 </script>
 
 <style>
 .tabela {
-  margin-left: -10vw;
+  margin-left: -12vw;
 }
 
 .modal {

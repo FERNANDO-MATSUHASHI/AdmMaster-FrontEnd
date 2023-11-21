@@ -287,7 +287,6 @@
 
 <script>
 import axios from 'axios';
-import { addNotification, dialogConfirm, dialogAlert } from '../../assets/common.js';
 import { ref, computed, onMounted } from 'vue';
 
 export default {
@@ -451,7 +450,7 @@ export default {
           this.formDataPut.cpfPut = '';
           this.formDataPut.emailPut = '';
           this.formDataPut.data_nascimento = '',
-            this.formDataPut.cepPut = '';
+          this.formDataPut.cepPut = '';
           this.formDataPut.ruaPut = '';
           this.formDataPut.numeroPut = '';
           this.formDataPut.cidadePut = '';

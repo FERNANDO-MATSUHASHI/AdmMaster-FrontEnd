@@ -1,40 +1,72 @@
-<script setup>
-const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "tipoServicoId", "tipoVeiculoId", "qth", "qti", "km", "noturno", "qtd_hora_parada", "obs_hora_parada", "hospedagem", "qtd_pedagio", "pedagio", "adicionais", "obs_adicionais", "valor_total", "em_analise", "viaturaId", "usuarioId", "data_original", "viaturaId_original", "tipoServicoId_original", "tipoVeiculoId_original", "usuarioId_original", "listTipoServicos", "listViaturas", "listUsuarios", "listTipoVeiculos", "listVeiculos"]);
-
-</script>
-
 <template>
-  <tbody>
-    <tr>
-      <th scope="row">{{ data }}</th>
-      <td>{{ viaturaId }}</td>
-      <td>{{ qru }}</td>
-      <td>{{ ris ? 'Sim' : 'Não' }}</td>
-      <td>{{ patins ? 'Sim' : 'Não' }}</td>
-      <td>{{ rodaExtra ? 'Sim' : 'Não' }}</td>
-      <td>{{ tipoServicoId }}</td>
-      <td>{{ tipoVeiculoId }}</td>
-      <td>{{ qth }}</td>
-      <td>{{ qti }}</td>
-      <td>{{ km }}</td>
-      <td>{{ noturno ? 'Sim' : 'Não' }}</td>
-      <td>{{ qtd_hora_parada }}</td>
-      <td>{{ obs_hora_parada }}</td>
-      <td>{{ hospedagem }}</td>
-      <td>{{ qtd_pedagio }}</td>
-      <td>{{ pedagio }}</td>
-      <td>{{ adicionais }}</td>
-      <td>{{ obs_adicionais }}</td>
-      <td>{{ valor_total }}</td>
-      <td>{{ usuarioId }}</td>
-      <td>
-        <!-- Ícone de editar -->
-        <i class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento()"></i>
-      </td>
-      <td><i style="cursor: pointer;" @click="emAnalise()">{{ em_analise ? 'Sim' : 'Não' }}</i></td>
+  <div class="input-group input-group-sm mb-3">
+    <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
+  </div>
 
-    </tr>
-  </tbody>
+  <table class="tabela table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Data</th>
+        <th scope="col">Sigla</th>
+        <th scope="col">QRU</th>
+        <th scope="col">RIS</th>
+        <th scope="col">Patins</th>
+        <th scope="col">Roa Extra</th>
+        <th scope="col">Tipo Serviço</th>
+        <th scope="col">Tipo Veículo</th>
+        <th scope="col">QTH</th>
+        <th scope="col">QTI</th>
+        <th scope="col">Km</th>
+        <th scope="col">Adic. Noturno</th>
+        <th scope="col">Hora Parada</th>
+        <th scope="col">Obs.</th>
+        <th scope="col">Hospedagem</th>
+        <th scope="col">Qtd. Pedágio</th>
+        <th scope="col">Pedágio</th>
+        <th scope="col">Adicionais</th>
+        <th scope="col">Obs. Adicionais</th>
+        <th scope="col">Valor</th>
+        <th scope="col">Colaborador</th>
+        <th scope="col">Opções</th>
+        <th scope="col">Em Análise</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr v-for="atendimento in filteredAtendimentos">
+        <th class="largura" scope="row">{{ parseData(atendimento.data) }}</th>
+        <td>{{ obterViatura(atendimento.viaturaId) }}</td>
+        <td class="largura">{{ atendimento.qru }}</td>
+        <td>{{ atendimento.ris ? 'Sim' : 'Não' }}</td>
+        <td>{{ atendimento.patins ? 'Sim' : 'Não' }}</td>
+        <td>{{ atendimento.rodaExtra ? 'Sim' : 'Não' }}</td>
+        <td>{{ obterDescricaoTipo(atendimento.tipoServicoId) }}</td>
+        <td>{{ obterDescricaoTipoVeiculo(atendimento.tipoVeiculoId) }}</td>
+        <td>{{ atendimento.qth }}</td>
+        <td>{{ atendimento.qti }}</td>
+        <td>{{ atendimento.km }}</td>
+        <td>{{ atendimento.noturno ? 'Sim' : 'Não' }}</td>
+        <td>{{ atendimento.qtd_hora_parada }}</td>
+        <td>{{ atendimento.obs_hora_parada }}</td>
+        <td>{{ atendimento.hospedagem.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
+        <td>{{ atendimento.qtd_pedagio }}</td>
+        <td>{{ atendimento.pedagio.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
+        <td>{{ atendimento.adicionais.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
+        <td>{{ atendimento.obs_adicionais }}</td>
+        <td>{{ atendimento.valor_total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
+        <td>{{ obterUsuario(atendimento.usuarioId) }}</td>
+        <td>
+          <!-- Ícone de editar -->
+          <i class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)"></i>
+        </td>
+        <td><i style="cursor: pointer;" @click="emAnalise(atendimento)">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i></td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+  <br>
+  <br>
+  <br>
 
   <!-- Formulário Editar -->
   <div class="modal" v-if="editarModal">
@@ -52,7 +84,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
         <div class="col-md-3">
           <label for="viaturaId" class="form-label">Viatura:</label>
           <select id="inputState2" class="form-select" required v-model="formDataPut.viaturaId">
-            <option v-for="viatura in listViaturas" :key="viatura.id" :value="viatura.id">{{ viatura.sigla }}</option>
+            <option v-for="viatura in this.viaturas" :key="viatura.id" :value="viatura.id">{{ viatura.sigla }}</option>
           </select>
         </div>
 
@@ -64,7 +96,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
         <div class="col-md-3">
           <label for="tipoServicoId" class="form-label">Tipo Serviço:</label>
           <select id="inputState2" class="form-select" required v-model="formDataPut.tipoServicoId">
-            <option v-for="tipoServico in listTipoServicos" :key="tipoServico.id" :value="tipoServico.id">{{
+            <option v-for="tipoServico in this.tipoServicos" :key="tipoServico.id" :value="tipoServico.id">{{
               tipoServico.descricao }}</option>
           </select>
         </div>
@@ -72,7 +104,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
         <div class="col-md-3">
           <label for="tipoVeiculoId" class="form-label">Tipo Veículo:</label>
           <select id="inputState2" class="form-select" required v-model="formDataPut.tipoVeiculoId">
-            <option v-for="tipoVeiculo in listTipoVeiculos" :key="tipoVeiculo.id" :value="tipoVeiculo.id">{{
+            <option v-for="tipoVeiculo in this.tipoVeiculos" :key="tipoVeiculo.id" :value="tipoVeiculo.id">{{
               tipoVeiculo.modelo }}</option>
           </select>
           <br>
@@ -95,19 +127,19 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
 
         <div class="col-md-3">
           <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" 
+          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada"
             v-model="formDataPut.qtd_hora_parada">
         </div>
 
         <div class="col-md-3">
           <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" 
+          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada"
             v-model="formDataPut.obs_hora_parada">
         </div>
 
         <div class="col-md-3">
           <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" 
+          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio"
             v-model="formDataPut.qtd_pedagio"><br>
         </div>
 
@@ -118,40 +150,45 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
 
         <div class="col-md-3">
           <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
-          <input type="text" class="form-control" id="hospedagem" name="hospedagem" 
-            v-model="formDataPut.hospedagem">
+          <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formDataPut.hospedagem">
         </div>
 
         <div class="col-md-3">
           <label for="usuarioId" class="form-label">Colaborador:</label>
           <select id="inputState2" class="form-select" required v-model="formDataPut.usuarioId">
-            <option v-for="usuario in listUsuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nome }}</option>
+            <option v-for="usuario in this.usuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nome }}</option>
           </select>
         </div>
 
         <div class="col-md-2">
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formDataPut.noturno">
-            <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris" v-model="formDataPut.ris">
-            <label style="margin-left: 35px;" for="ris" class="form-check-label">RIS</label>
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formDataPut.patins">
-            <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formDataPut.rodaExtra">
-            <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
-          </div>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno"
+            name="noturno" v-model="formDataPut.noturno">
+          <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris"
+            v-model="formDataPut.ris">
+          <label style="margin-left: 35px;" for="ris" class="form-check-label">RIS</label>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins"
+            name="patins" v-model="formDataPut.patins">
+          <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra"
+            name="rodaExtra" v-model="formDataPut.rodaExtra">
+          <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
+        </div>
 
-          <div class="col-md-4">
-            <label for="adicionais" class="col-form-label">Adicionais R$:</label>
-            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais">
-            <label for="obs_adicionais" class="col-form-label">Obs:</label>
-            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formDataPut.obs_adicionais">
-            <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
-            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formDataPut.valor_total"><br>
-          </div> 
+        <div class="col-md-4">
+          <label for="adicionais" class="col-form-label">Adicionais R$:</label>
+          <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais">
+          <label for="obs_adicionais" class="col-form-label">Obs:</label>
+          <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais"
+            v-model="formDataPut.obs_adicionais">
+          <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
+          <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;"
+            disabled="isInputLocked" required v-model="formDataPut.valor_total"><br>
+        </div>
 
         <div class="col-12 d-flex justify-content-between">
           <button type="submit" class="btn btn-primary">Calcular</button>
@@ -163,7 +200,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
 
   <div class="modal" v-if="successModal">
     <div class="modal-dialog">
-      <div class="msg">
+      <div class="msg1">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Sucesso</h5>
@@ -183,7 +220,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
 
   <div class="modal" v-if="emAnaliseModal">
     <div class="modal-dialog">
-      <div class="msg">
+      <div class="msg1">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Mudança de Status</h5>
@@ -194,7 +231,7 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
             Mudar o Status de Em Análise?
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" @click="alterarEmAnalise()">Sim</button>
+            <button type="button" class="btn btn-danger" @click="alterarEmAnalise(this.atendimentoID)">Sim</button>
             <button type="button" class="btn btn-secondary" @click="fecharModal()">Não</button>
           </div>
         </div>
@@ -203,30 +240,32 @@ const props = defineProps(["id", "data", "qru", "ris", "patins", "rodaExtra", "t
   </div>
 
   <div class="modal" v-if="confirmarSimNaoModal">
-      <div class="modal-dialog">
-        <div class="msg">
+    <div class="modal-dialog">
+      <div class="msg1">
         <div class="modal-content">
-          
+
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Confirmar?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="voltarModal()"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="voltarModal()"></button>
           </div>
           <div class="modal-body">
             <h5>Valor Total R$ {{ formDataPut.valor_total }}</h5>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click="editarFormulario()">Cadastrar</button>
+            <button type="button" class="btn btn-primary" @click="editarFormulario(this.atendimentoID)">Cadastrar</button>
             <button type="button" class="btn btn-secondary" @click="voltarModal()">Fechar</button>
           </div>
-          
-        </div>
+
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { ref, computed, onMounted } from 'vue';
 
 export default {
   components: {
@@ -265,9 +304,124 @@ export default {
       successExcluirModal: false,
       emAnaliseModal: false,
       formData_nascimentoPut: '',
+      atendimentoID: 0,
     }
   },
+  setup() {
+    const atendimentos = ref([]);
+    const searchTerm = ref(null);
+    const tipoServicos = ref([]);
+    const viaturas = ref([]);
+    const usuarios = ref([]);
+    const tipoVeiculos = ref([]);
+    const veiculos = ref([]);
+    const tipoServicoLoc = ref([]);
+
+    // Filtro
+    const filteredAtendimentos = computed(() => {
+      if (!searchTerm.value) {
+        return atendimentos.value;
+      }
+      const searchTermLowerCase = searchTerm.value;
+      return atendimentos.value.filter(atendimento => {
+        const nomeLowerCase = atendimento.qru;
+        return nomeLowerCase.includes(searchTermLowerCase);
+      });
+    });
+
+    onMounted(async () => {
+      try {
+        const response = await axios.get('https://localhost:7255/api/Atendimento', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        atendimentos.value = response.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseTipoServicos = await axios.get('https://localhost:7255/api/TipoServico');
+        tipoServicos.value = responseTipoServicos.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura');
+        viaturas.value = responseViaturas.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo');
+        veiculos.value = responseVeiculos.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo');
+        tipoVeiculos.value = responseVeiculo.data;
+        // console.log('Veiculos: ', responseVeiculo.data);
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    onMounted(async () => {
+      try {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        usuarios.value = responseUsuarios.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    return {
+      atendimentos,
+      tipoServicos,
+      viaturas,
+      usuarios,
+      tipoVeiculos,
+      searchTerm,
+      veiculos,
+      filteredAtendimentos,
+      tipoServicoLoc
+    };
+  },
   methods: {
+    getAtendimentos() {
+      axios.get('https://localhost:7255/api/Atendimento', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+        .then(res => {
+          if (res.status == 200) {
+            this.filteredAtendimentos = res.data;
+            this.atendimentos = res.data;
+            return;
+          }
+          this.filteredAtendimentos = [];
+          return;
+        });
+    },
     fecharModal() {
       this.editarModal = false;
       this.successModal = false;
@@ -280,36 +434,37 @@ export default {
       this.confirmarSimNaoModal = false;
       this.editarModal = true;
     },
-    editarAtendimento() {
-      this.formDataPut.data = this.parseData(this.data_original);
-      this.formDataPut.viaturaId = this.viaturaId_original;
-      this.formDataPut.qru = this.qru.toString();
-      this.formDataPut.ris = this.ris;
-      this.formDataPut.patins = this.patins;
-      this.formDataPut.rodaExtra = this.rodaExtra;
-      this.formDataPut.tipoServicoId = this.tipoServicoId_original;
-      this.formDataPut.tipoVeiculoId = this.tipoVeiculoId_original;
-      this.formDataPut.qth = this.qth.toString();
-      this.formDataPut.qti = this.qti.toString();
-      this.formDataPut.km = this.km.toString();
-      this.formDataPut.noturno = this.noturno;
-      this.formDataPut.qtd_hora_parada = this.qtd_hora_parada.toString();
-      this.formDataPut.obs_hora_parada = this.obs_hora_parada.toString();
-      this.formDataPut.hospedagem = this.hospedagem;
-      this.formDataPut.qtd_pedagio = this.qtd_pedagio.toString();
-      this.formDataPut.pedagio = this.pedagio;
-      this.formDataPut.adicionais = this.adicionais;
-      this.formDataPut.obs_adicionais = this.obs_adicionais.toString();
-      this.formDataPut.valor_total = this.valor_total;
-      this.formDataPut.em_analise = this.em_analise;
-      this.formDataPut.usuarioId = this.usuarioId_original;
+    editarAtendimento(atendimento) {
+      this.formDataPut.data = this.parseData(atendimento.data);
+      this.formDataPut.viaturaId = atendimento.viaturaId;
+      this.formDataPut.qru = atendimento.qru.toString();
+      this.formDataPut.ris = atendimento.ris;
+      this.formDataPut.patins = atendimento.patins;
+      this.formDataPut.rodaExtra = atendimento.rodaExtra;
+      this.formDataPut.tipoServicoId = atendimento.tipoServicoId;
+      this.formDataPut.tipoVeiculoId = atendimento.tipoVeiculoId;
+      this.formDataPut.qth = atendimento.qth.toString();
+      this.formDataPut.qti = atendimento.qti.toString();
+      this.formDataPut.km = atendimento.km.toString();
+      this.formDataPut.noturno = atendimento.noturno;
+      this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
+      this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toString();
+      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
+      this.formDataPut.valor_total = atendimento.valor_total.toString();
+      this.formDataPut.em_analise = atendimento.em_analise;
+      this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.atendimentoID = atendimento.id;
 
       this.editarModal = true;
     },
-    editarFormulario() {
+    editarFormulario(id) {
       this.formDataPut.data = new Date(this.formDataPut.data);
 
-      axios.put('https://localhost:7255/api/Atendimento/' + this.id, this.formDataPut, {
+      axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
           'Content-Type': 'application/json',
           // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -344,56 +499,57 @@ export default {
           this.editarModal = false;
           this.confirmarSimNaoModal = false;
           this.successModal = true;
+          this.getAtendimentos();
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
     },
     confirmarSimNaoFormulario() {
-      const tipoViatura = this.listVeiculos.filter(viatura => viatura.viaturaId === this.formDataPut.viaturaId);
+      const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formDataPut.viaturaId);
       const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId)
       const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
 
       // Efetuando a Soma
-      
-      if (this.formDataPut.km == ""){
+
+      if (this.formDataPut.km == "") {
         this.kmTotal = "0";
       } else {
         this.kmTotal = (Number(this.formDataPut.km) * Number(tipoVeiculoLoc[0].valor_km));
       }
-      if (this.formDataPut.qtd_hora_parada == ""){
+      if (this.formDataPut.qtd_hora_parada == "") {
         this.horaTotal = "0";
       } else {
         this.horaTotal = (Number(this.formDataPut.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
       }
-      if (this.formDataPut.pedagio == ""){
+      if (this.formDataPut.pedagio == "") {
         this.formDataPut.pedagio = "0";
       }
-      if (this.formDataPut.qtd_pedagio == ""){
+      if (this.formDataPut.qtd_pedagio == "") {
         this.formDataPut.qtd_pedagio = "0";
       }
-      if (this.formDataPut.hospedagem == ""){
+      if (this.formDataPut.hospedagem == "") {
         this.formDataPut.hospedagem = "0";
-      }      
-      if (this.formDataPut.adicionais == ""){
+      }
+      if (this.formDataPut.adicionais == "") {
         this.formDataPut.adicionais = "0";
       }
-      
-      if (this.formDataPut.noturno == true){
+
+      if (this.formDataPut.noturno == true) {
         this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
       } else {
         this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais)).toFixed(2);
       }
 
-      if (this.formDataPut.ris == true){
+      if (this.formDataPut.ris == true) {
         this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
       }
-      if (this.formDataPut.patins == true){
+      if (this.formDataPut.patins == true) {
         this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].patins))).toFixed(2)
       }
-      if (this.formDataPut.rodaExtra == true){
+      if (this.formDataPut.rodaExtra == true) {
         this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].rodaExtra))).toFixed(2)
-      } 
+      }
 
       this.editarModal = false;
       this.confirmarSimNaoModal = true;
@@ -406,45 +562,49 @@ export default {
 
       return `${ano}-${mes}-${dia}`;
     },
-    emAnalise() {
+    emAnalise(atendimento) {
+      this.formDataPut.data = this.parseData(atendimento.data);
+      this.formDataPut.viaturaId = atendimento.viaturaId;
+      this.formDataPut.qru = atendimento.qru.toString();
+      this.formDataPut.ris = atendimento.ris;
+      this.formDataPut.patins = atendimento.patins;
+      this.formDataPut.rodaExtra = atendimento.rodaExtra;
+      this.formDataPut.tipoServicoId = atendimento.tipoServicoId;
+      this.formDataPut.tipoVeiculoId = atendimento.tipoVeiculoId;
+      this.formDataPut.qth = atendimento.qth.toString();
+      this.formDataPut.qti = atendimento.qti.toString();
+      this.formDataPut.km = atendimento.km.toString();
+      this.formDataPut.noturno = atendimento.noturno;
+      this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
+      this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toString();
+      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
+      this.formDataPut.valor_total = atendimento.valor_total.toString();
+      this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.formDataPut.em_analise = atendimento.em_analise;
+      this.atendimentoID = atendimento.id;
+
       this.emAnaliseModal = true;
     },
-    alterarEmAnalise() {
-      this.formDataPut.data = this.parseData(this.data_original);
-      this.formDataPut.viaturaId = this.viaturaId_original;
-      this.formDataPut.qru = this.qru.toString();
-      this.formDataPut.ris = this.ris;
-      this.formDataPut.patins = this.patins;
-      this.formDataPut.rodaExtra = this.rodaExtra;
-      this.formDataPut.tipoServicoId = this.tipoServicoId_original;
-      this.formDataPut.tipoVeiculoId = this.tipoVeiculoId_original;
-      this.formDataPut.qth = this.qth.toString();
-      this.formDataPut.qti = this.qti.toString();
-      this.formDataPut.km = this.km.toString();
-      this.formDataPut.noturno = this.noturno;
-      this.formDataPut.qtd_hora_parada = this.qtd_hora_parada.toString();
-      this.formDataPut.obs_hora_parada = this.obs_hora_parada.toString();
-      this.formDataPut.hospedagem = this.hospedagem;
-      this.formDataPut.qtd_pedagio = this.qtd_pedagio.toString();
-      this.formDataPut.pedagio = this.pedagio;
-      this.formDataPut.adicionais = this.adicionais;
-      this.formDataPut.obs_adicionais = this.obs_adicionais.toString();
-      this.formDataPut.valor_total = this.valor_total;
-      this.formDataPut.usuarioId = this.usuarioId_original;
-
+    alterarEmAnalise(id) {
       // Condição para mudança do Status da Análise
-      if (this.em_analise == true){
+      if (this.formDataPut.em_analise == true) {
         this.formDataPut.em_analise = false;
-      }else{
+      } else {
         this.formDataPut.em_analise = true;
       };
 
       this.formDataPut.data = new Date(this.formDataPut.data);
 
-      axios.put('https://localhost:7255/api/Atendimento/' + this.id, this.formDataPut, {
+      console.log('Dados Atendimento-> ', this.formDataPut);
+
+      axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       })
         .then(response => {
@@ -473,6 +633,7 @@ export default {
           this.formDataPut.em_analise = false;
 
           this.emAnaliseModal = false;
+          this.getAtendimentos();
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
@@ -481,7 +642,27 @@ export default {
     calcularSomaEditar() {
       // Calcula a soma dos valores dos campos de entrada
       this.formDataPut.valor_total = this.formDataPut.km * 2.70;
-    }
+    },
+    // Método para obter a viatura com base no viaturaId
+    obterViatura(viaturaId) {
+      const viatura = this.viaturas.find(c => c.id === viaturaId);
+      return viatura ? viatura.sigla : 'Viatura Desconhecida';
+    },
+    // Método para obter a descrição do Tipo de Serviço com base no tipoServicoId
+    obterDescricaoTipo(tipoServicoId) {
+      const tipoServico = this.tipoServicos.find(c => c.id === tipoServicoId);
+      return tipoServico ? tipoServico.descricao : 'Tipo de Serviço Desconhecido';
+    },
+    // Método para obter a descrição do Tipo de Veículo com base no tipoVeiculoId
+    obterDescricaoTipoVeiculo(tipoVeiculoId) {
+      const tipoVeiculo = this.tipoVeiculos.find(c => c.id === tipoVeiculoId);
+      return tipoVeiculo ? tipoVeiculo.modelo : 'Tipo de Veículo Desconhecido';
+    },
+    // Método para obter o Colaborador com base no usuarioId
+    obterUsuario(usuarioId) {
+      const usuario = this.usuarios.find(c => c.id === usuarioId);
+      return usuario ? usuario.nome : 'Colaborador Desconhecido';
+    },
   }
 }
 </script>
@@ -538,4 +719,8 @@ export default {
 .modal-dialog {
   width: 80%;
 }
+
+.largura {
+    white-space: nowrap;
+  }
 </style>

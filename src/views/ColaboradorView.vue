@@ -121,14 +121,8 @@
 
 <script>
 import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import getColaborador from '../components/colaborador/getColaborador.vue';
-import {addNotification, dialogConfirm, dialogAlert} from '../assets/common.js';
-
-axios.interceptors.request.use((config) => {
-    console.log('Dados a serem enviados:', config.data);
-    return config;
-});
 
 export default {
   components: {
@@ -161,20 +155,7 @@ export default {
   },
   setup() {
     const colaboradores = ref([]);
-    const searchTerm = ref(null);
     const cargos = ref([]);
-
-    // Filtro
-    const filteredColaboradores = computed(() => {
-      if (!searchTerm.value) {
-        return colaboradores.value;
-      }
-      const searchTermLowerCase = searchTerm.value.toLowerCase();
-      return colaboradores.value.filter(colaborador => {
-        const nomeLowerCase = colaborador.nome.toLowerCase();
-        return nomeLowerCase.includes(searchTermLowerCase);
-      });
-    });
 
     onMounted(async () => {
       try {
@@ -202,8 +183,6 @@ export default {
     return {
       colaboradores,
       cargos,
-      searchTerm,
-      filteredColaboradores
     };
   },
   methods: {
