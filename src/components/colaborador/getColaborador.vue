@@ -1,22 +1,23 @@
 <template>
-  <tbody>
-    <div class="input-group input-group-sm mb-3">
-      <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Nome " />
-    </div>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Nome</th>
-          <th scope="col">E-Mail</th>
-          <th scope="col">Data Nascimento</th>
-          <th scope="col">Ativo</th>
-          <th scope="col">Comissão</th>
-          <th scope="col">Cargo</th>
-          <th scope="col">Opções</th>
-        </tr>
-      </thead>
+  <div class="input-group input-group-sm mb-3">
+    <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Nome " />
+  </div>
 
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nome</th>
+        <th scope="col">E-Mail</th>
+        <th scope="col">Data Nascimento</th>
+        <th scope="col">Ativo</th>
+        <th scope="col">Comissão</th>
+        <th scope="col">Cargo</th>
+        <th scope="col">Opções</th>
+      </tr>
+    </thead>
+
+    <tbody>
       <tr v-for="colaborador in filteredColaboradores">
         <th scope="row">{{ colaborador.id }}</th>
         <td>{{ colaborador.nome }}</td>
@@ -33,12 +34,13 @@
           <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirColaborador(colaborador)"></i>
         </td>
       </tr>
-    </table>
-    <br>
-    <br>
-    <br>
-    <br>
-  </tbody>
+    </tbody>
+  </table>
+  <br>
+  <br>
+  <br>
+  <br>
+
 
   <!-- Formulário Editar -->
   <div class="modal" v-if="editarModal">
@@ -449,7 +451,7 @@ export default {
           this.formDataPut.cpfPut = '';
           this.formDataPut.emailPut = '';
           this.formDataPut.data_nascimento = '',
-          this.formDataPut.cepPut = '';
+            this.formDataPut.cepPut = '';
           this.formDataPut.ruaPut = '';
           this.formDataPut.numeroPut = '';
           this.formDataPut.cidadePut = '';
@@ -489,7 +491,7 @@ export default {
           this.formDataPut.cpfPut = '';
           this.formDataPut.emailPut = '';
           this.formDataPut.data_nascimento = '',
-          this.formDataPut.cepPut = '';
+            this.formDataPut.cepPut = '';
           this.formDataPut.ruaPut = '';
           this.formDataPut.numeroPut = '';
           this.formDataPut.cidadePut = '';
@@ -534,7 +536,7 @@ export default {
       return cargo ? cargo.descricao : 'Cargo Desconhecido';
     },
     mounted() {
-        this.getColaboradores()
+      this.getColaboradores()
     }
   }
 }
