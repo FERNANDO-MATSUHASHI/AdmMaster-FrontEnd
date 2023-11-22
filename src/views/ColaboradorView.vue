@@ -145,7 +145,7 @@ export default {
         senha: '',
         ativo: true,
         comissao: '',
-        gerenteId: '1',
+        gerenteId: '',
         cargoId: '',
       },
       showModal: false,
@@ -159,7 +159,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Usuario', {
+        const response = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -196,6 +196,7 @@ export default {
     },
     enviarFormulario() {
       this.formData.data_nascimento = new Date(this.formData_nascimento);
+      this.formData.gerenteId = localStorage.getItem('gerenteId');
 
       axios.post('https://localhost:7255/api/Usuario', this.formData, {
         headers: {

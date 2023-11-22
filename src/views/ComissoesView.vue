@@ -58,8 +58,8 @@
       <th></th>
       <th></th>
       <th>Porcentagem da Comissão: {{ comissoes.porcentagem }} %</th>
-      <th>Valor Total Bruto: R$ {{ comissoes.total }}</th>
-      <th>Valor Comissão: R$ {{ comissoes.totalComissao }}</th>
+      <th>Valor Total Bruto: R$ {{ comissoes.total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
+      <th>Valor Comissão: R$ {{ comissoes.totalComissao.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
       </tr>
       <br>
       <br>
@@ -111,7 +111,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario', {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -139,6 +139,7 @@ export default {
       const dataFinal = new Date(this.original_dataFinal);
       dataFinal.setDate(dataFinal.getDate());
       this.formData.dataFinal = dataFinal;
+      // this.formData.usuarioId = localStorage.getItem('gerenteId');
 
       axios.post('https://localhost:7255/api/Comissao', this.formData, {
         headers: {

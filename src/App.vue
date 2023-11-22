@@ -71,7 +71,6 @@
         </div>
     </div>
 
-
     <div :style="{ display: visivel ? 'block' : 'none' }">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
@@ -161,6 +160,7 @@
             <h4><strong>Nome:</strong> {{ this.formLogado.nome }}</h4>
             <h4><strong>E-mail:</strong> {{ this.formLogado.email }}</h4>
             <h4><strong>Data de Nascimento:</strong> {{ parseData(this.formLogado.data_nascimento) }}</h4>
+            <h4><strong>Gerente Id:</strong> {{ this.formLogado.gerenteId }}</h4>
         </div>
     </div>
 </template>
@@ -185,7 +185,8 @@ export default {
             formLogado: {
                 nome: '',
                 email: '',
-                comissao: '',
+                data_nascimento: '',
+                gerenteId: '',
             },
             visivel: false,
             showModal: false,
@@ -217,6 +218,8 @@ export default {
                             this.formLogado.nome = response.data.nome;
                             this.formLogado.email = response.data.email;
                             this.formLogado.data_nascimento = response.data.data_nascimento;
+                            this.formLogado.gerenteId = response.data.gerenteId;
+                            localStorage.setItem('gerenteId', response.data.gerenteId);
                         })
                         .catch(error => {
                             console.error('Erro ao enviar formulário:', error);
@@ -238,7 +241,9 @@ export default {
                 });
         },
         Logout() {
-            this.visivel = !this.visivel;
+            this.$router.push('/').then(() => {
+                window.location.reload();
+            });
         },
         fecharModal() {
             this.showModal = false;

@@ -203,6 +203,7 @@ export default {
         valor_total: '',
         em_analise: false,
         usuarioId: '',
+        gerenteId: '',
         tipoServicoId: '',
       },
       showModal: false,
@@ -237,12 +238,14 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Atendimento', {
+        // console.log('GerenteId-> ', localStorage.getItem('gerenteId'));
+        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         atendimentos.value = response.data;
+        
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -287,7 +290,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario', {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -343,12 +346,13 @@ export default {
       if (this.formData.adicionais == ""){
         this.formData.adicionais = "0";
       }
+      this.formData.gerenteId = localStorage.getItem('gerenteId');
 
       axios.post('https://localhost:7255/api/Atendimento', this.formData, {
-        // headers: {
-        //   'Content-Type': 'application/json',
-        //   'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        // },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
       })
         .then(response => {
           console.log('Resposta da API:', response.data);

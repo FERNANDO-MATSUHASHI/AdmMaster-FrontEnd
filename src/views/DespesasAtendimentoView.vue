@@ -72,6 +72,7 @@ export default {
       showModal: false,
       dados: {
         atendimentoId: null,
+        gerenteId: null,
         tipo: null,
         descricao: null,
         valor: null
@@ -81,7 +82,7 @@ export default {
   methods: {
     getAtendimentos () {
       return new Promise ( (resolve, reject) => {
-        axios.get('https://localhost:7255/api/Atendimento/', {
+        axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -95,7 +96,6 @@ export default {
         })
       })
     },
-
     abrirModal () {
       this.showModal = true;
 
@@ -110,7 +110,6 @@ export default {
       })
 
     },
-
     incluirDespesa () {
       if (!this.dados.atendimentoId) {
           addNotification({backgroundColor: '#FFC000', mensagem: 'Por Favor, Selecione um Atendimento.'});
@@ -132,6 +131,8 @@ export default {
           return;
       }
 
+      this.dados.gerenteId = localStorage.getItem('gerenteId');
+
       axios.post('https://localhost:7255/api/DespesasAtendimento/', this.dados, {
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +149,6 @@ export default {
         console.log(error)
       })
     },
-
     fecharModal () {
       this.showModal = false;
 

@@ -42,7 +42,7 @@ export async function dialogConfirm(args={}) {
 
     modalContainer.innerHTML = `
         <div class="modal-dialog modal-dialog-centered" role="document" style="color: black;">
-            <div class="modal-content">
+            <div class="modal-content" style="width: 500px;">
                 <div class="modal-header">
                     <h5 class="modal-title">${(args.header ?? '')}</h5>
                     <button type="button" class="btn-close btn-remover-modal-custom" data-bs-dismiss="modal" aria-label="Close"></button>

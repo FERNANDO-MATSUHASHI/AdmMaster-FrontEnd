@@ -13,14 +13,6 @@
     </div>
     <faturamento-table :filteredFaturamento="filteredFaturamento" />
   </main>
-  
-      <!-- <tr v-for="(dados, index) in filteredFaturamento" :key="index">
-        <td scope="col">{{ index + 1 }}</td>
-        <td scope="col">{{ dados.mes }}</td>
-        <td scope="col">R$ {{ dados.valorFaturamento.toFixed(2) }}</td>
-        <td scope="col">R$ {{ dados.valorDespesa.toFixed(2) }}</td>
-        <td scope="col">R$ {{ dados.valorLiquido.toFixed(2) }}</td>
-      </tr> -->
 
 </template>
 <script>
@@ -46,10 +38,7 @@ export default {
     const parseData = (dataString) => {
       const data = new Date(dataString);
       const dataFormatada = new Date(data.getFullYear(), data.getMonth(), data.getDate());
-      // const dia = dataFormatada.getUTCDate().toString().padStart(2, '0');
       const mes = traduzirMes(dataFormatada.getUTCMonth() + 1).toString().padStart(2, '0');
-      // const ano = dataFormatada.getUTCFullYear();
-
       return `${mes}`;
     };
     // Filtro por mês
@@ -84,7 +73,6 @@ export default {
       for (const despesa of despesas.value) {
         const atendimentoId = despesa.atendimentoId;
         const atendimentoCorrespondente = atendimentos.value.find(atendimento => atendimento.id === atendimentoId);
-
         if (atendimentoCorrespondente) {
           const mes = parseData(atendimentoCorrespondente.data);
           if (despesaMensalObj[mes]) {
@@ -113,6 +101,16 @@ export default {
         const despesaCorrespondente = despesaMensal.value.find(despesa => despesa.mes === mes);
         if (despesaCorrespondente) {
           const valorDespesa = despesaCorrespondente.total;
+          const valorLiquido = valorFaturamento - valorDespesa;
+          // Adicione os dados combinados ao objeto
+          dadosCombinados.push({
+            mes,
+            valorFaturamento,
+            valorDespesa,
+            valorLiquido
+          });
+        } else {
+          const valorDespesa = 0;
           const valorLiquido = valorFaturamento - valorDespesa;
           // Adicione os dados combinados ao objeto
           dadosCombinados.push({
@@ -159,7 +157,7 @@ export default {
     };
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Atendimento', {
+        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }

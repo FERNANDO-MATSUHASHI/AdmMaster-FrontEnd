@@ -331,7 +331,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Atendimento', {
+        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -381,12 +381,13 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario', {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         usuarios.value = responseUsuarios.data;
+        console.log('Colaboradores-> ', responseUsuarios.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -406,7 +407,7 @@ export default {
   },
   methods: {
     getAtendimentos() {
-      axios.get('https://localhost:7255/api/Atendimento', {
+      axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -457,6 +458,7 @@ export default {
       this.formDataPut.valor_total = atendimento.valor_total.toString();
       this.formDataPut.em_analise = atendimento.em_analise;
       this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.formDataPut.gerenteId = atendimento.gerenteId;
       this.atendimentoID = atendimento.id;
 
       this.editarModal = true;
@@ -493,6 +495,7 @@ export default {
           this.formDataPut.obs_adicionais = '';
           this.formDataPut.valor_total = '';
           this.formDataPut.usuarioId = '';
+          this.formDataPut.gerenteId = '';
           this.formDataPut.em_analise = false;
 
           // Exibir o modal de sucesso
@@ -560,7 +563,7 @@ export default {
       const mes = (data.getUTCMonth() + 1).toString().padStart(2, '0'); // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
       const ano = data.getUTCFullYear();
 
-      return `${ano}-${mes}-${dia}`;
+      return `${dia}/${mes}/${ano}`;
     },
     emAnalise(atendimento) {
       this.formDataPut.data = this.parseData(atendimento.data);
@@ -584,6 +587,7 @@ export default {
       this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
       this.formDataPut.valor_total = atendimento.valor_total.toString();
       this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.formDataPut.gerenteId = atendimento.gerenteId;
       this.formDataPut.em_analise = atendimento.em_analise;
       this.atendimentoID = atendimento.id;
 
@@ -599,7 +603,7 @@ export default {
 
       this.formDataPut.data = new Date(this.formDataPut.data);
 
-      console.log('Dados Atendimento-> ', this.formDataPut);
+      // console.log('Dados Atendimento-> ', this.formDataPut);
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -629,6 +633,7 @@ export default {
           this.formDataPut.adicionais = '';
           this.formDataPut.obs_adicionais = '';
           this.formDataPut.valor_total = '';
+          this.formDataPut.usuarioId = '';
           this.formDataPut.usuarioId = '';
           this.formDataPut.em_analise = false;
 

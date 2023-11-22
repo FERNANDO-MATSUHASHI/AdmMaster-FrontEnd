@@ -341,7 +341,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseColaboradores = await axios.get('https://localhost:7255/api/Usuario', {
+        const responseColaboradores = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -372,7 +372,7 @@ export default {
   },
   methods: {
     getColaborador() {
-      axios.get('https://localhost:7255/api/Usuario', {
+      axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
