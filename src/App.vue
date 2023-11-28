@@ -184,6 +184,7 @@ export default {
     },
   data() {
     return {
+        refCount: 0,
         formLogin: {
             email: 'asdrubal@teste.com',
             senha: '123',
@@ -191,7 +192,69 @@ export default {
         visivel: false
     };
   },
+
+    created: function () {
+
+        /*Escuta as requests do axios para setar o spinner*/
+        axios.interceptors.request.use((config) => {
+            this.setLoading(true);
+            return config;
+        }, (error) => {
+            this.setLoading(false);
+            return Promise.reject(error);
+        });
+
+        /*Escuta as responses do axios para setar o spinner*/
+        axios.interceptors.response.use((response) => {
+            this.setLoading(false);
+            return response;
+        }, (error) => {
+            this.setLoading(false);
+            return Promise.reject(error);
+        });
+    },
+
   methods: {
+    setLoading(isLoading) {
+        if (isLoading) {
+            this.refCount++;
+            console.log(this.refCount)
+            this.sLoad();
+        } else if (this.refCount > 0) {
+            this.refCount--;
+            if (this.refCount > 0) {
+                this.sLoad();
+            } else {
+                console.log(this.refCount)
+                this.hLoad();
+            }
+        }
+    },
+
+    sLoad () {
+        if (document.querySelector('#custom-element-spinner')) {
+            return;
+        } 
+        
+        const divSpinner = document.createElement('div');
+        divSpinner.id = 'custom-element-spinner';
+        divSpinner.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style='backdrop-filter: blur(0)'>
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+        `;
+        document.body.appendChild(divSpinner);
+    },
+
+    hLoad () {
+        const divSpinner = document.querySelector('#custom-element-spinner');
+        if (divSpinner) {
+            document.body.removeChild(divSpinner);
+        }
+    },
+
     Login () {
         axios.post('https://localhost:7255/api/Usuario/Login', this.formLogin, {
         headers: {
