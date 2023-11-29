@@ -25,6 +25,8 @@ npm i bootstrap-icons
 npm i @flaticon/flaticon-uicons
 npm install axios
 npm install vuex --save
+npm install vue-tooltip
+
 ```
 
 ### Compile and Hot-Reload for Development
