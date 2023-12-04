@@ -7,14 +7,14 @@
     <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">CNPJ</th>
+        <th scope="col" style="width: 200px;">CNPJ</th>
         <th scope="col">Razão Social</th>
         <th scope="col">Nome Fantasia</th>
-        <th scope="col">Telefone</th>
+        <th scope="col" style="width: 150px;">Telefone</th>
         <th scope="col">e-mail</th>
         <th scope="col">Cidade</th>
         <th scope="col">Estado</th>
-        <th scope="col">Opções</th>
+        <th scope="col" style="width: 150px;">Opções</th>
       </tr>
     </thead>
 
@@ -34,6 +34,8 @@
             style="margin-right: 15px; font-size: 20px; cursor: pointer;"></i>
           <!-- Ícone de excluir -->
           <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirFornecedor(fornecedor)" data-toggle="tooltip" data-placement="top" title="Excluir"></i>
+          <!-- Ícone de mais informação -->
+          <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"  @click="maisInfoFornecedor(fornecedor)"  data-toggle="tooltip" data-placement="top" title="Mais Informações"></i>
         </td>
       </tr>
     </tbody>
@@ -237,6 +239,63 @@
     </div>
   </div>
 
+      <!-- Formulário Mais Informações -->
+      <div class="modal" v-if="maisInfoModal">
+    <div class="modal-content">
+      <span class="close" @click="fecharModal()">&times;</span>
+
+      <form id="modalForm" class="row">
+        <h1>Informações do Fornecedor</h1>
+
+        <div class="col-md-2">
+          <label for="cnpj" class="col-form-label">CNPJ:</label>
+          <input type="text" class="form-control" id="cnpj" name="cnpj" v-model="formDataPut.cnpj" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="razao_social" class="col-form-label">Razão Social:</label>
+          <input type="text" class="form-control" id="razao_social" name="razao_social" v-model="formDataPut.razao_social" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="nome_fantasia" class="col-form-label">Nome Fantasia:</label>
+          <input type="text" class="form-control" id="nome_fantasia" name="nome_fantasia" v-model="formDataPut.nome_fantasia" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="telefone" class="col-form-label">Telefone:</label>
+          <input type="text" class="form-control" id="telefone" name="telefone" v-model="formDataPut.telefone" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="cep" class="col-form-label">CEP:</label>
+          <input type="text" class="form-control" id="cep" name="cep" v-model="formDataPut.cep" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="rua" class="col-form-label">Rua:</label>
+          <input type="text" class="form-control" id="rua" name="rua" v-model="formDataPut.rua" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="numero" class="col-form-label">Número:</label>
+          <input type="text" class="form-control" id="numero" name="numero" v-model="formDataPut.numero" disabled="isInputLocked"><br>
+        </div>
+
+        <div class="col-md-3">
+          <label for="cidade" class="col-form-label">Cidade:</label>
+          <input type="text" class="form-control" id="cidade" name="cidade" v-model="formDataPut.cidade" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="estado" class="col-form-label">Estado:</label>
+          <input type="text" class="form-control" id="estado" name="estado" v-model="formDataPut.estado" disabled="isInputLocked">
+        </div>
+
+      </form>
+    </div>
+  </div>
+
   <div class="modal" v-if="erroModal">
     <div class="modal-dialog">
       <div class="msg1">
@@ -287,6 +346,7 @@ export default {
       excluirSimNaoModal: false,
       successExcluirModal: false,
       erroModal: false,
+      maisInfoModal: false,
       fornecedorID: 0,
     }
   },
@@ -351,6 +411,7 @@ export default {
       this.successModal = false;
       this.excluirModal = false;
       this.excluirSimNaoModal = false;
+      this.maisInfoModal = false;
       this.successExcluirModal = false;
     },
     fecharModalErro() {
@@ -478,6 +539,19 @@ export default {
       }
       const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 6)}-${telefoneLimpo.slice(6, 10)}`;
       return retorno;
+    },
+    maisInfoFornecedor(fornecedor) {
+      this.formDataPut.cnpj = this.formatarCNPJ(fornecedor.cnpj);
+      this.formDataPut.razao_social = fornecedor.razao_social.toString();
+      this.formDataPut.nome_fantasia = fornecedor.nome_fantasia.toString();
+      this.formDataPut.telefone = this.formatarTelefone(fornecedor.telefone);
+      this.formDataPut.cep = fornecedor.cep;
+      this.formDataPut.rua = fornecedor.rua;
+      this.formDataPut.numero = fornecedor.numero.toString();
+      this.formDataPut.cidade = fornecedor.cidade.toString();
+      this.formDataPut.estado = fornecedor.estado.toString();
+
+      this.maisInfoModal = true;
     },
     async pesquisarCEP() {
       const cep = this.formDataPut.cep;
