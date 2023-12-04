@@ -29,37 +29,47 @@
 
           <div class="col-md-6">
             <label for="cpf" class="form-label">CPF:</label>
-            <input type="text" class="form-control" id="cpf" name="cpf" required v-model="formData.cpf" placeholder="Ex... 12345678900"><br>
+            <input type="text" class="form-control" id="cpf" name="cpf" required @input="formatarCPF" v-model="formData.cpf" placeholder="Ex... 123.456.789-00"><br>
+          </div>
+          
+          <div class="col-md-2">
+            <label for="telefone" class="form-label">telefone:</label>
+            <input type="text" class="form-control" id="telefone" name="telefone" required @input="formatarTelefone" v-model="formData.telefone" placeholder="Ex... (14)99989-1020"><br>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-2">
             <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
             <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required v-model="formData_nascimento"><br>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-2">
             <label for="cep" class="form-label">CEP:</label>
             <input type="text" class="form-control" id="cep" name="cep" required v-model="formData.cep" placeholder="Ex... 17506000"><br>
           </div>
 
+          <div class="col-2">
+            <br>
+            <button type="button" class="btn btn-primary mr-3" @click="pesquisarCEP">Pesquisar</button>
+          </div>
+
           <div class="col-md-6">
             <label for="rua" class="form-label">Rua:</label>
-            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua" placeholder="Ex... Tiradentes"><br>
+            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua" disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
             <label for="numero" class="form-label">Número:</label>
-            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero" placeholder="Ex... 100"><br>
+            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero" placeholder="Ex... 100" ref="numero"><br>
           </div>
 
           <div class="col-md-6">
             <label for="cidade" class="form-label">Cidade:</label>
-            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade"  placeholder="Ex... São Paulo"><br>
+            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade" disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
             <label for="estado" class="form-label">Estado:</label>
-            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado"  placeholder="Ex... SP"><br>
+            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado" disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
@@ -116,6 +126,26 @@
         </div>
       </div>
     </div>
+
+    <div class="modal" v-if="erroModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Erro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModalErro()"></button>
+          </div>
+          <div class="modal-body">
+            CEP inválido!
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="fecharModalErro()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </main>
 </template>
 
@@ -134,6 +164,7 @@ export default {
       formData: {
         nome: '',
         cpf: '',
+        telefone: '',
         email: '',
         data_nascimento: '',
         cep: '',
@@ -150,6 +181,7 @@ export default {
       },
       showModal: false,
       successModal: false,
+      erroModal: false,
       formData_nascimento: '',
     };
   },
@@ -194,9 +226,14 @@ export default {
       this.showModal = false;
       this.successModal = false;
     },
+    fecharModalErro() {
+      this.erroModal = false;
+    },
     enviarFormulario() {
       this.formData.data_nascimento = new Date(this.formData_nascimento);
       this.formData.gerenteId = localStorage.getItem('gerenteId');
+      this.formData.cpf = this.formData.cpf.replace(/\D/g, '');
+      this.formData.telefone = this.formData.telefone.replace(/\D/g, '');
 
       axios.post('https://localhost:7255/api/Usuario', this.formData, {
         headers: {
@@ -232,7 +269,52 @@ export default {
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
-    }
+    },
+    formatarCPF() {
+      // Remova caracteres não numéricos
+      const cpfLimpo = this.formData.cpf.replace(/\D/g, '');
+
+      // Verifica se o CPF tem pelo menos 11 dígitos
+      if (cpfLimpo.length === 11) {
+        // Aplica a máscara de CPF (XXX.XXX.XXX-XX)
+        this.formData.cpf = cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      }
+    },
+    formatarTelefone() {
+      // Remove todos os caracteres não numéricos
+      const telefoneLimpo = this.formData.telefone.replace(/\D/g, '');
+
+      if (telefone.length == 11){
+        const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 7)}-${telefoneLimpo.slice(7, 11)}`;
+        return retorno;
+      }
+      const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 6)}-${telefoneLimpo.slice(6, 10)}`;
+      return retorno;
+    },
+    async pesquisarCEP() {
+      const cep = this.formData.cep;
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    
+        if (!response.ok) {
+          throw new Error('Erro ao buscar endereço.');
+        }
+
+        const data = await response.json();
+        console.log('CEP-> ', data);
+        this.formData.rua = data.logradouro;
+        this.formData.cidade = data.localidade;
+        this.formData.estado = data.uf;
+
+        this.$refs.numero.focus();
+
+        return;
+      } catch (error) {
+        console.error('Erro na requisição:', error.message);
+        this.erroModal = true;
+        throw error;
+      }
+    },
   }
 };
 </script>

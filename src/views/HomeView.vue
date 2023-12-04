@@ -1,6 +1,4 @@
 <script setup>
-import { reactive, ref } from 'vue';
-let status = reactive(ref(1));
 </script>
 
 <template>

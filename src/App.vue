@@ -73,6 +73,7 @@
 
     <div :style="{ display: visivel ? 'block' : 'none' }">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            
             <!-- Navbar Brand-->
             <router-link to="/" class="navbar-brand ps-3"><img src="/AdmMasterNome.png" alt=""
                     style="width: 80%;"></router-link>
@@ -84,6 +85,8 @@
             </form>
             <!-- Navbar-->
             <div class="btn-group">
+                <a style="margin-right: 20px;">{{ this.formLogado.nome }}</a>
+
                 <a type="button" class="btn-secondary dropdown-toggle bg-dark" data-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false"><i class="fas fa-user fa-fw" style="color: white;"></i>
 
@@ -107,7 +110,7 @@
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-hand-holding-medical"></i>
-                                <router-link to="/AdicionarAtendimento" class="nav-link">Adicionar Atendimento</router-link>
+                                <router-link to="/Atendimento" class="nav-link">Adicionar Atendimento</router-link>
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-usd-circle"></i>
@@ -117,20 +120,70 @@
                                 <i class="fi fi-rr-chart-histogram"></i>
                                 <router-link to="/Faturamento" class="nav-link">Faturamento</router-link>
                             </a>
+                            <a class="nav-link">
+                                <i class="fi fi-rr-add"></i>
+                                <router-link to="/DespesasAtendimento" class="nav-link">Despesas de Atendimento</router-link>
+                            </a>
                             <!-- <a class="nav-link">
                                 <i class="fi fi-rr-hand-holding-usd"></i>
                                 <router-link to="/GastosFrota" class="nav-link">Gastos da Frota</router-link>
                             </a> -->
-                            <a class="nav-link">
-                                <i class="fi fi-rr-add"></i>
-                                <router-link to="/DespesasAtendimento" class="nav-link">Despesas de
-                                    Atendimento</router-link>
-                            </a>
-                            <!-- <a class="nav-link">
-                                <i class="fi fi-rr-search-dollar"></i>
-                                <router-link to="/RecebimentoComissao" class="nav-link">Recebimento de
-                                    Comissão</router-link>
+
+
+
+                            
+                            <!-- <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGastos" aria-expanded="false" aria-controls="collapseGastos">
+                                <div class="sb-nav-link-icon"><i class="fi fi-rr-hand-holding-usd" style="color:white"></i></div>
+                                Gastos da Frota
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a> -->
+                            <!-- <div class="collapse" id="collapseGastos" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <router-link to="/Abastecimentos" class="nav-link">Abastecimentos</router-link>
+                                    <router-link to="/Manutencao" class="nav-link">Manutenção</router-link>
+                                </nav>
+                            </div> -->
+
+
+                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGastos" aria-expanded="false" aria-controls="collapseGastos">
+                                <div class="sb-nav-link-icon"><i class="fi fi-rr-hand-holding-usd" style="color:white"></i></div>
+                                Gastos da Frota
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseGastos" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                    <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                        Fornecedor
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <a class="nav-link" href="#">Cadastrar</a>
+                                            <a class="nav-link" href="#">Consultar</a>
+                                        </nav>
+                                    </div> -->
+
+                                    <a class="nav-link">
+                                        <router-link to="/Fornecedor" class="nav-link">Fornecedor</router-link>
+                                    </a>
+
+                                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                        Adicionar Gastos
+                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                    </a>
+                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                        <nav class="sb-sidenav-menu-nested nav">
+                                            <router-link to="/Abastecimentos" class="nav-link">Abastecimentos</router-link>
+                                            <router-link to="/Manutencao" class="nav-link">Manutenção</router-link>
+                                        </nav>
+                                    </div>
+                                </nav>
+                            </div>
+
+
+
+
+
                         </div>
                     </div>
                 </nav>
@@ -168,7 +221,7 @@
 <script>
 import axios from 'axios';
 import { RouterView, RouterLink } from 'vue-router';
-$('#erroModal').modal('hide');
+// $('#erroModal').modal('hide');
 
 export default {
     components: {
@@ -241,9 +294,10 @@ export default {
                 });
         },
         Logout() {
-            this.$router.push('/').then(() => {
-                window.location.reload();
-            });
+            // this.$router.push('/').then(() => {
+            //     window.location.reload();
+            // });
+            window.location.reload();
         },
         fecharModal() {
             this.showModal = false;

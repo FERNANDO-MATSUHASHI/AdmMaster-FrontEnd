@@ -28,10 +28,12 @@
         <td>{{ obterNomeDoCargo(colaborador.cargoId) }}</td>
         <td>
           <!-- Ícone de editar -->
-          <i class="fi-rr-edit" @click="editarColaborador(colaborador)"
+          <i class="fi-rr-edit" @click="editarColaborador(colaborador)" data-toggle="tooltip" data-placement="top" title="Editar"
             style="margin-right: 15px; font-size: 20px; cursor: pointer;"></i>
           <!-- Ícone de excluir -->
-          <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirColaborador(colaborador)"></i>
+          <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirColaborador(colaborador)" data-toggle="tooltip" data-placement="top" title="Excluir"></i>
+          <!-- Ícone de mais informação -->
+          <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"  @click="maisInfoColaborador(colaborador)"  data-toggle="tooltip" data-placement="top" title="Mais Informações"></i>
         </td>
       </tr>
     </tbody>
@@ -56,18 +58,28 @@
 
         <div class="col-md-6">
           <label for="cpf" class="form-label">CPF:</label>
-          <input type="text" class="form-control" id="cpf" name="cpf" required v-model="formDataPut.cpf"><br>
+          <input type="text" class="form-control" id="cpf" name="cpf" @input="formatarCPF" required v-model="formDataPut.cpf"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
+          <label for="telefone" class="form-label">telefone:</label>
+          <input type="text" class="form-control" id="telefone" name="telefone" required @input="formatarTelefone" v-model="formDataPut.telefone" placeholder="Ex... (14)99989-1020"><br>
+        </div>
+
+        <div class="col-md-2">
           <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
           <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required
             v-model="formDataPut.data_nascimento"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="cep" class="form-label">CEP:</label>
-          <input type="text" class="form-control" id="cep" name="cep" required v-model="formDataPut.cep"><br>
+          <input type="text" class="form-control" id="cep" name="cep" required v-model="formDataPut.cep" placeholder="Ex... 17506000"><br>
+        </div>
+
+        <div class="col-2">
+          <br>
+          <button type="button" class="btn btn-primary mr-3" @click="pesquisarCEP">Pesquisar</button>
         </div>
 
         <div class="col-md-6">
@@ -167,49 +179,54 @@
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
+            <label for="telefone" class="form-label">telefone:</label>
+            <input type="text" class="form-control" id="telefone" name="telefone" required v-model="formDataPut.telefone" disabled="isInputLocked"><br>
+          </div>
+
+        <div class="col-md-2">
           <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
           <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required
             v-model="formDataPut.data_nascimento" disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="cep" class="form-label">CEP:</label>
           <input type="text" class="form-control" id="cep" name="cep" required v-model="formDataPut.cep"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="rua" class="form-label">Rua:</label>
           <input type="text" class="form-control" id="rua" name="rua" required v-model="formDataPut.rua"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="numero" class="form-label">Número:</label>
           <input type="text" class="form-control" id="numero" name="numero" required v-model="formDataPut.numero"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="cidade" class="form-label">Cidade:</label>
           <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formDataPut.cidade"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <label for="estado" class="form-label">Estado:</label>
           <input type="text" class="form-control" id="estado" name="estado" required v-model="formDataPut.estado"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="email" class="form-label">Email</label>
           <input type="email" class="form-control" id="email" name="email" required v-model="formDataPut.email"
             disabled="isInputLocked"><br>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-4">
           <label for="senha" class="col-form-label">Senha</label>
           <input type="password" class="form-control" id="senha" required v-model="formDataPut.senha"
             disabled="isInputLocked">
@@ -283,6 +300,78 @@
       </div>
     </div>
   </div>
+
+    <!-- Formulário Mais Informações -->
+    <div class="modal" v-if="maisInfoModal">
+    <div class="modal-content">
+      <span class="close" @click="fecharModal()">&times;</span>
+
+      <form id="modalForm" class="row">
+        <h1>Informações do Colaborador</h1>
+
+        <div class="col-md-2">
+          <label for="criado_em" class="col-form-label">Criado em:</label>
+          <input type="date" class="form-control" id="criado_em" name="criado_em" v-model="formDataPut.criado_em" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="nome" class="col-form-label">Nome:</label>
+          <input type="text" class="form-control" id="nome" name="nome" v-model="formDataPut.nome" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="telefone" class="col-form-label">Telefone:</label>
+          <input type="text" class="form-control" id="telefone" name="telefone" v-model="formDataPut.telefone" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="cep" class="col-form-label">CEP:</label>
+          <input type="text" class="form-control" id="cep" name="cep" v-model="formDataPut.cep" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="rua" class="col-form-label">Rua:</label>
+          <input type="text" class="form-control" id="rua" name="rua" v-model="formDataPut.rua" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="numero" class="col-form-label">Número:</label>
+          <input type="text" class="form-control" id="numero" name="numero" v-model="formDataPut.numero" disabled="isInputLocked"><br>
+        </div>
+
+        <div class="col-md-3">
+          <label for="cidade" class="col-form-label">Cidade:</label>
+          <input type="text" class="form-control" id="cidade" name="cidade" v-model="formDataPut.cidade" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="estado" class="col-form-label">Estado:</label>
+          <input type="text" class="form-control" id="estado" name="estado" v-model="formDataPut.estado" disabled="isInputLocked">
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" v-if="erroModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Erro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModalErro()"></button>
+          </div>
+          <div class="modal-body">
+            CEP inválido!
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="fecharModalErro()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -298,6 +387,7 @@ export default {
       formDataPut: {
         nome: '',
         cpf: '',
+        telefone: '',
         email: '',
         data_nascimento: '',
         cep: '',
@@ -311,6 +401,7 @@ export default {
         comissao: '',
         gerenteId: '1',
         cargoId: '',
+        criado_em: '',
       },
       editarModal: false,
       successModal: false,
@@ -319,6 +410,8 @@ export default {
       successExcluirModal: false,
       formData_nascimentoPut: '',
       colaboradorID: 0,
+      maisInfoModal: false,
+      erroModal: false,
     }
   },
   setup() {
@@ -382,6 +475,7 @@ export default {
           if (res.status == 200) {
             this.filteredColaboradores = res.data;
             this.dataSourceColaboradores = res.data;
+            console.log('Colaboradores---> ', res.data);
             return;
           }
           this.filteredColaborador = [];
@@ -394,10 +488,17 @@ export default {
       this.excluirModal = false;
       this.excluirSimNaoModal = false;
       this.successExcluirModal = false;
+      this.maisInfoModal = false;
+      this.erroModal = false;
+    },
+    fecharModalErro() {
+      this.erroModal = false;
     },
     editarColaborador(colaborador) {
       this.formDataPut.nome = colaborador.nome.toString();
-      this.formDataPut.cpf = colaborador.cpf.toString();
+      this.formDataPut.cpf = this.formatarCPF(colaborador.cpf);
+      console.log('Telefone-> ', colaborador.telefone);
+      this.formDataPut.telefone = this.formatarTelefone(colaborador.telefone);
       this.formDataPut.email = colaborador.email.toString();
       this.formDataPut.data_nascimento = this.parseData(colaborador.data_nascimento);
       this.formDataPut.cep = colaborador.cep.toString();
@@ -417,7 +518,8 @@ export default {
     },
     excluirColaborador(colaborador) {
       this.formDataPut.nome = colaborador.nome.toString();
-      this.formDataPut.cpf = colaborador.cpf.toString();
+      this.formDataPut.cpf = this.formatarCPF(colaborador.cpf);
+      this.formDataPut.telefone = this.formatarTelefone(colaborador.telefone);
       this.formDataPut.email = colaborador.email.toString();
       this.formDataPut.data_nascimento = this.parseData(colaborador.data_nascimento);
       this.formDataPut.cep = colaborador.cep.toString();
@@ -529,10 +631,75 @@ export default {
       // Formatar a data como "DD/MM/YYYY"
       return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
     },
+    parseDataMais(dataString) {
+      const data = new Date(dataString);
+      const dia = data.getUTCDate().toString().padStart(2, '0');
+      const mes = (data.getUTCMonth() + 1).toString().padStart(2, '0'); // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
+      const ano = data.getUTCFullYear();
+      console.log('Retorno da data-> ', mes);
+
+      return `${ano}-${dia}-${mes}`;
+    },
     // Método para obter o nome do cargo com base no cargoId
     obterNomeDoCargo(idcargo) {
       const cargo = this.cargos.find(c => c.id === idcargo);
       return cargo ? cargo.descricao : 'Cargo Desconhecido';
+    },
+    maisInfoColaborador(colaborador) {
+      this.formDataPut.nome = colaborador.nome.toString();
+      this.formDataPut.telefone = this.formatarTelefone(colaborador.telefone);
+      this.formDataPut.cep = colaborador.cep;
+      this.formDataPut.rua = colaborador.rua;
+      this.formDataPut.numero = colaborador.numero.toString();
+      this.formDataPut.cidade = colaborador.cidade.toString();
+      this.formDataPut.estado = colaborador.estado.toString();
+      this.formDataPut.criado_em = this.parseDataMais(colaborador.criado_em);
+
+      this.maisInfoModal = true;
+    },
+    formatarCPF(cpf) {
+      // Remova caracteres não numéricos
+      const cpfLimpo = cpf.replace(/\D/g, '');
+
+      // Aplica a máscara de CPF (XXX.XXX.XXX-XX)
+      const retorno = cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+
+      return retorno;
+    },
+    formatarTelefone(tel) {
+      // Remove todos os caracteres não numéricos
+      // const telefoneLimpo = telefone.replace(/\D/g, '');
+
+      if (telefone.length == 11){
+        const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 7)}-${telefoneLimpo.slice(7, 11)}`;
+        return retorno;
+      }
+      const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 6)}-${telefoneLimpo.slice(6, 10)}`;
+      return retorno;
+    },
+    async pesquisarCEP() {
+      const cep = this.formDataPut.cep;
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+    
+        if (!response.ok) {
+          throw new Error('Erro ao buscar endereço.');
+        }
+
+        const data = await response.json();
+        console.log('CEP-> ', data);
+        this.formDataPut.rua = data.logradouro;
+        this.formDataPut.cidade = data.localidade;
+        this.formDataPut.estado = data.uf;
+
+        this.$refs.numero.focus();
+
+        return;
+      } catch (error) {
+        console.error('Erro na requisição:', error.message);
+        this.erroModal = true;
+        throw error;
+      }
     },
     mounted() {
       this.getColaboradores()

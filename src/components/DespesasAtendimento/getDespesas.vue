@@ -56,11 +56,9 @@
                 <td>
                     <div class="d-flex justify-content-around">
                         <!-- Ícone de editar -->
-                        <i style="margin-right: 15px; font-size: 20px; cursor: pointer;" class="fi-rr-edit"
-                            @click="abrirModal(despesa)"></i>
+                        <i style="margin-right: 15px; font-size: 20px; cursor: pointer;" class="fi-rr-edit" @click="abrirModal(despesa)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
                         <!-- Ícone de excluir -->
-                        <i style="font-size: 21px; cursor: pointer;" class="fi-rr-trash"
-                            @click="excluirDespesa(despesa)"></i>
+                        <i style="font-size: 21px; cursor: pointer;" class="fi-rr-trash" @click="excluirDespesa(despesa)" data-toggle="tooltip" data-placement="top" title="Excluir"></i>
                     </div>
                 </td>
             </tr>

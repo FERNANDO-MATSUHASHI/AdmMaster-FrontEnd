@@ -10,56 +10,46 @@
         <th scope="col">Sigla</th>
         <th scope="col">QRU</th>
         <th scope="col">RIS</th>
-        <th scope="col">Patins</th>
-        <th scope="col">Roa Extra</th>
         <th scope="col">Tipo Serviço</th>
         <th scope="col">Tipo Veículo</th>
         <th scope="col">QTH</th>
         <th scope="col">QTI</th>
         <th scope="col">Km</th>
         <th scope="col">Adic. Noturno</th>
-        <th scope="col">Hora Parada</th>
-        <th scope="col">Obs.</th>
-        <th scope="col">Hospedagem</th>
-        <th scope="col">Qtd. Pedágio</th>
-        <th scope="col">Pedágio</th>
-        <th scope="col">Adicionais</th>
-        <th scope="col">Obs. Adicionais</th>
         <th scope="col">Valor</th>
         <th scope="col">Colaborador</th>
         <th scope="col">Opções</th>
+        <th scope="col">Cancelado</th>
+        <th scope="col">Ativo</th>
         <th scope="col">Em Análise</th>
       </tr>
     </thead>
 
     <tbody>
       <tr v-for="atendimento in filteredAtendimentos">
-        <th class="largura" scope="row">{{ parseData(atendimento.data) }}</th>
+        <th class="largura" scope="row">{{ parseDataGet(atendimento.data) }}</th>
         <td>{{ obterViatura(atendimento.viaturaId) }}</td>
         <td class="largura">{{ atendimento.qru }}</td>
         <td>{{ atendimento.ris ? 'Sim' : 'Não' }}</td>
-        <td>{{ atendimento.patins ? 'Sim' : 'Não' }}</td>
-        <td>{{ atendimento.rodaExtra ? 'Sim' : 'Não' }}</td>
         <td>{{ obterDescricaoTipo(atendimento.tipoServicoId) }}</td>
         <td>{{ obterDescricaoTipoVeiculo(atendimento.tipoVeiculoId) }}</td>
         <td>{{ atendimento.qth }}</td>
         <td>{{ atendimento.qti }}</td>
         <td>{{ atendimento.km }}</td>
         <td>{{ atendimento.noturno ? 'Sim' : 'Não' }}</td>
-        <td>{{ atendimento.qtd_hora_parada }}</td>
-        <td>{{ atendimento.obs_hora_parada }}</td>
-        <td>{{ atendimento.hospedagem.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
-        <td>{{ atendimento.qtd_pedagio }}</td>
-        <td>{{ atendimento.pedagio.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
-        <td>{{ atendimento.adicionais.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
-        <td>{{ atendimento.obs_adicionais }}</td>
-        <td>{{ atendimento.valor_total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</td>
+        <td>{{ atendimento.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
         <td>{{ obterUsuario(atendimento.usuarioId) }}</td>
+
         <td>
-          <!-- Ícone de editar -->
-          <i class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)"></i>
+          <i class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
+          <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"  @click="maisInfoAtendimento(atendimento)"  data-toggle="tooltip" data-placement="top" title="Mais Informações"></i>
         </td>
-        <td><i style="cursor: pointer;" @click="emAnalise(atendimento)">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i></td>
+
+        <td :style="{ color: atendimento.cancelado ? 'red' : 'black' }"><i style="cursor: pointer;" @click="cancelado(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Cancelado - Alterar Status">{{ atendimento.cancelado ? 'Sim' : 'Não' }}</i></td>
+        <td :style="{ color: atendimento.ativo ? 'black' : 'red' }"><i style="cursor: pointer;" @click="ativo(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Ativo - Alterar Status">{{ atendimento.ativo ? 'Sim' : 'Não' }}</i></td>
+
+        <td :style="{ color: atendimento.em_analise ? 'red' : 'black' }"><i style="cursor: pointer;" @click="emAnalise(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i></td>
+
       </tr>
     </tbody>
   </table>
@@ -179,6 +169,15 @@
           <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
         </div>
 
+        <div class="col-md-2">
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="cancelado" v-model="formDataPut.cancelado">
+            <label style="margin-left: 35px;" for="cancelado" class="form-check-label">Cancelado</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="ativo" v-model="formDataPut.ativo">
+            <label style="margin-left: 35px;" for="ativo" class="form-check-label">Ativo</label>
+          </div>
+
         <div class="col-md-4">
           <label for="adicionais" class="col-form-label">Adicionais R$:</label>
           <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais">
@@ -239,6 +238,48 @@
     </div>
   </div>
 
+  <div class="modal" v-if="canceladoModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Mudança de Status</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModal()"></button>
+          </div>
+          <div class="modal-body">
+            Mudar o Status do Cancelamento?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" @click="alterarCancelado(this.atendimentoID)">Sim</button>
+            <button type="button" class="btn btn-secondary" @click="fecharModal()">Não</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" v-if="ativoModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Mudança de Status</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModal()"></button>
+          </div>
+          <div class="modal-body">
+            Mudar o Status Ativo?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" @click="alterarAtivo(this.atendimentoID)">Sim</button>
+            <button type="button" class="btn btn-secondary" @click="fecharModal()">Não</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal" v-if="confirmarSimNaoModal">
     <div class="modal-dialog">
       <div class="msg1">
@@ -259,6 +300,67 @@
 
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Formulário Mais Informações -->
+  <div class="modal" v-if="maisInfoModal">
+    <div class="modal-content">
+      <span class="close" @click="fecharModal()">&times;</span>
+
+      <form id="modalForm" class="row">
+        <h1>Informações do Atendimento</h1>
+
+        <div class="col-md-2">
+          <label for="rua" class="form-label">QRU:</label>
+          <input type="text" class="form-control" id="qru" name="qru" required v-model="formDataPut.qru" disabled="isInputLocked"><br>
+        </div>
+
+        <div class="col-md-2">
+          <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
+          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formDataPut.qtd_hora_parada" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
+          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formDataPut.obs_hora_parada" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
+          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formDataPut.qtd_pedagio" disabled="isInputLocked"><br>
+        </div>
+
+        <div class="col-md-3">
+          <label for="pedagio" class="col-form-label">Pedágio R$:</label>
+          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
+          <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formDataPut.hospedagem" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-2">
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formDataPut.patins" disabled="isInputLocked">
+          <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formDataPut.rodaExtra" disabled="isInputLocked">
+          <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
+        </div>
+
+        <div class="col-md-4">
+          <label for="adicionais" class="col-form-label">Adicionais R$:</label>
+          <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais" disabled="isInputLocked">
+        </div>
+
+        <div class="col-md-3">
+          <label for="obs_adicionais" class="col-form-label">Obs:</label>
+          <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formDataPut.obs_adicionais" disabled="isInputLocked">
+        </div>
+
+      </form>
     </div>
   </div>
 </template>
@@ -295,7 +397,9 @@ export default {
         obs_adicionais: '',
         valor_total: '',
         usuarioId: '',
-        em_analise: false
+        em_analise: false,
+        cancelado: false,
+        ativo: true
       },
       editarModal: false,
       successModal: false,
@@ -305,6 +409,9 @@ export default {
       emAnaliseModal: false,
       formData_nascimentoPut: '',
       atendimentoID: 0,
+      maisInfoModal: false,
+      canceladoModal: false,
+      ativoModal: false
     }
   },
   setup() {
@@ -331,7 +438,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
+        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -381,7 +488,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -407,7 +514,7 @@ export default {
   },
   methods: {
     getAtendimentos() {
-      axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
+      axios.get('https://localhost:7255/api/Atendimento/Gerente/' + localStorage.getItem('gerenteId'), {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -430,6 +537,9 @@ export default {
       this.excluirSimNaoModal = false;
       this.successExcluirModal = false;
       this.emAnaliseModal = false;
+      this.maisInfoModal = false;
+      this.canceladoModal= false;
+      this.ativoModal= false;
     },
     voltarModal() {
       this.confirmarSimNaoModal = false;
@@ -457,6 +567,8 @@ export default {
       this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
       this.formDataPut.valor_total = atendimento.valor_total.toString();
       this.formDataPut.em_analise = atendimento.em_analise;
+      this.formDataPut.cancelado = atendimento.cancelado;
+      this.formDataPut.ativo = atendimento.ativo;
       this.formDataPut.usuarioId = atendimento.usuarioId;
       this.formDataPut.gerenteId = atendimento.gerenteId;
       this.atendimentoID = atendimento.id;
@@ -464,7 +576,14 @@ export default {
       this.editarModal = true;
     },
     editarFormulario(id) {
-      this.formDataPut.data = new Date(this.formDataPut.data);
+      // this.formDataPut.data = new Date(this.formDataPut.data);
+      // const dateString = this.formDataPut.data;
+      // const parts = dateString.split('/');
+      // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      this.formDataPut.data = this.parseData(this.formDataPut.data);
+      console.log('Data-> ', this.formDataPut.data);
+      console.log('formDataPut-> ', this.formDataPut);
+
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -497,6 +616,8 @@ export default {
           this.formDataPut.usuarioId = '';
           this.formDataPut.gerenteId = '';
           this.formDataPut.em_analise = false;
+          this.formDataPut.cancelado = false;
+          this.formDataPut.ativo = true;
 
           // Exibir o modal de sucesso
           this.editarModal = false;
@@ -563,10 +684,19 @@ export default {
       const mes = (data.getUTCMonth() + 1).toString().padStart(2, '0'); // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
       const ano = data.getUTCFullYear();
 
+      // return `${dia}/${mes}/${ano}`;
+      return `${ano}-${mes}-${dia}`;
+    },
+    parseDataGet(dataString) {
+      const data = new Date(dataString);
+      const dia = data.getUTCDate().toString().padStart(2, '0');
+      const mes = (data.getUTCMonth() + 1).toString().padStart(2, '0'); // O mês é baseado em zero (janeiro = 0, fevereiro = 1, ...)
+      const ano = data.getUTCFullYear();
+
       return `${dia}/${mes}/${ano}`;
     },
     emAnalise(atendimento) {
-      this.formDataPut.data = this.parseData(atendimento.data);
+      this.formDataPut.data = this.parseDataGet(atendimento.data);
       this.formDataPut.viaturaId = atendimento.viaturaId;
       this.formDataPut.qru = atendimento.qru.toString();
       this.formDataPut.ris = atendimento.ris;
@@ -589,6 +719,8 @@ export default {
       this.formDataPut.usuarioId = atendimento.usuarioId;
       this.formDataPut.gerenteId = atendimento.gerenteId;
       this.formDataPut.em_analise = atendimento.em_analise;
+      this.formDataPut.cancelado = atendimento.cancelado;
+      this.formDataPut.ativo = atendimento.ativo;
       this.atendimentoID = atendimento.id;
 
       this.emAnaliseModal = true;
@@ -601,9 +733,18 @@ export default {
         this.formDataPut.em_analise = true;
       };
 
-      this.formDataPut.data = new Date(this.formDataPut.data);
 
-      // console.log('Dados Atendimento-> ', this.formDataPut);
+      // this.formDataPut.data = new Date(this.formDataPut.data);
+      const dateString = this.formDataPut.data;
+      const parts = dateString.split('/');
+      const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      this.formDataPut.data = formattedDate;
+
+      // console.log('Dados Atendimento data-> ', this.formDataPut.data);
+
+      this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -634,10 +775,186 @@ export default {
           this.formDataPut.obs_adicionais = '';
           this.formDataPut.valor_total = '';
           this.formDataPut.usuarioId = '';
-          this.formDataPut.usuarioId = '';
+          this.formDataPut.gerenteId = '';
           this.formDataPut.em_analise = false;
+          this.formDataPut.cancelado = false;
+          this.formDataPut.ativo = true;
 
           this.emAnaliseModal = false;
+          this.getAtendimentos();
+        })
+        .catch(error => {
+          console.error('Erro ao enviar formulário:', error);
+        });
+    },
+    cancelado(atendimento) {
+      this.formDataPut.data = this.parseDataGet(atendimento.data);
+      this.formDataPut.viaturaId = atendimento.viaturaId;
+      this.formDataPut.qru = atendimento.qru.toString();
+      this.formDataPut.ris = atendimento.ris;
+      this.formDataPut.patins = atendimento.patins;
+      this.formDataPut.rodaExtra = atendimento.rodaExtra;
+      this.formDataPut.tipoServicoId = atendimento.tipoServicoId;
+      this.formDataPut.tipoVeiculoId = atendimento.tipoVeiculoId;
+      this.formDataPut.qth = atendimento.qth.toString();
+      this.formDataPut.qti = atendimento.qti.toString();
+      this.formDataPut.km = atendimento.km.toString();
+      this.formDataPut.noturno = atendimento.noturno;
+      this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
+      this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toString();
+      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
+      this.formDataPut.valor_total = atendimento.valor_total.toString();
+      this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.formDataPut.gerenteId = atendimento.gerenteId;
+      this.formDataPut.em_analise = atendimento.em_analise;
+      this.formDataPut.cancelado = atendimento.cancelado;
+      this.formDataPut.ativo = atendimento.ativo;
+      this.atendimentoID = atendimento.id;
+
+      this.canceladoModal = true;
+    },
+    alterarCancelado(id) {
+      // Condição para mudança do Status Cancelado
+      if (this.formDataPut.cancelado == true) {
+        this.formDataPut.cancelado = false;
+      } else {
+        this.formDataPut.cancelado = true;
+      };
+
+      // this.formDataPut.data = new Date(this.formDataPut.data);
+      const dateString = this.formDataPut.data;
+      const parts = dateString.split('/');
+      const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      this.formDataPut.data = formattedDate;
+
+      this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+      axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+        .then(response => {
+          // Limpar o formulário
+          this.formDataPut.data = '';
+          this.formDataPut.viaturaId = '';
+          this.formDataPut.qru = '';
+          this.formDataPut.ris = false;
+          this.formDataPut.patins = false;
+          this.formDataPut.rodaExtra = false;
+          this.formDataPut.tipoServicoId = '';
+          this.formDataPut.tipoVeiculoId = '';
+          this.formDataPut.qth = '';
+          this.formDataPut.qti = '';
+          this.formDataPut.km = '';
+          this.formDataPut.noturno = false;
+          this.formDataPut.qtd_hora_parada = '';
+          this.formDataPut.obs_hora_parada = '';
+          this.formDataPut.hospedagem = '';
+          this.formDataPut.qtd_pedagio = '';
+          this.formDataPut.pedagio = '';
+          this.formDataPut.adicionais = '';
+          this.formDataPut.obs_adicionais = '';
+          this.formDataPut.valor_total = '';
+          this.formDataPut.usuarioId = '';
+          this.formDataPut.gerenteId = '';
+          this.formDataPut.em_analise = false;
+          this.formDataPut.cancelado = false;
+          this.formDataPut.ativo = true;
+
+          this.canceladoModal = false;
+          this.getAtendimentos();
+        })
+        .catch(error => {
+          console.error('Erro ao enviar formulário:', error);
+        });
+    },
+    ativo(atendimento) {
+      this.formDataPut.data = this.parseDataGet(atendimento.data);
+      this.formDataPut.viaturaId = atendimento.viaturaId;
+      this.formDataPut.qru = atendimento.qru.toString();
+      this.formDataPut.ris = atendimento.ris;
+      this.formDataPut.patins = atendimento.patins;
+      this.formDataPut.rodaExtra = atendimento.rodaExtra;
+      this.formDataPut.tipoServicoId = atendimento.tipoServicoId;
+      this.formDataPut.tipoVeiculoId = atendimento.tipoVeiculoId;
+      this.formDataPut.qth = atendimento.qth.toString();
+      this.formDataPut.qti = atendimento.qti.toString();
+      this.formDataPut.km = atendimento.km.toString();
+      this.formDataPut.noturno = atendimento.noturno;
+      this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
+      this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toString();
+      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
+      this.formDataPut.valor_total = atendimento.valor_total.toString();
+      this.formDataPut.usuarioId = atendimento.usuarioId;
+      this.formDataPut.gerenteId = atendimento.gerenteId;
+      this.formDataPut.em_analise = atendimento.em_analise;
+      this.formDataPut.cancelado = atendimento.cancelado;
+      this.formDataPut.ativo = atendimento.ativo;
+      this.atendimentoID = atendimento.id;
+
+      this.ativoModal = true;
+    },
+    alterarAtivo(id) {
+      // Condição para mudança do Status Ativo
+      if (this.formDataPut.ativo == true) {
+        this.formDataPut.ativo = false;
+      } else {
+        this.formDataPut.ativo = true;
+      };
+
+      // this.formDataPut.data = new Date(this.formDataPut.data);
+      const dateString = this.formDataPut.data;
+      const parts = dateString.split('/');
+      const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+      this.formDataPut.data = formattedDate;
+
+      this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+      axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+        .then(response => {
+          // Limpar o formulário
+          this.formDataPut.data = '';
+          this.formDataPut.viaturaId = '';
+          this.formDataPut.qru = '';
+          this.formDataPut.ris = false;
+          this.formDataPut.patins = false;
+          this.formDataPut.rodaExtra = false;
+          this.formDataPut.tipoServicoId = '';
+          this.formDataPut.tipoVeiculoId = '';
+          this.formDataPut.qth = '';
+          this.formDataPut.qti = '';
+          this.formDataPut.km = '';
+          this.formDataPut.noturno = false;
+          this.formDataPut.qtd_hora_parada = '';
+          this.formDataPut.obs_hora_parada = '';
+          this.formDataPut.hospedagem = '';
+          this.formDataPut.qtd_pedagio = '';
+          this.formDataPut.pedagio = '';
+          this.formDataPut.adicionais = '';
+          this.formDataPut.obs_adicionais = '';
+          this.formDataPut.valor_total = '';
+          this.formDataPut.usuarioId = '';
+          this.formDataPut.gerenteId = '';
+          this.formDataPut.em_analise = false;
+          this.formDataPut.cancelado = false;
+          this.formDataPut.ativo = true;
+
+          this.ativoModal = false;
           this.getAtendimentos();
         })
         .catch(error => {
@@ -667,6 +984,20 @@ export default {
     obterUsuario(usuarioId) {
       const usuario = this.usuarios.find(c => c.id === usuarioId);
       return usuario ? usuario.nome : 'Colaborador Desconhecido';
+    },
+    maisInfoAtendimento(atendimento) {
+      this.formDataPut.qru = atendimento.qru.toString();
+      this.formDataPut.patins = atendimento.patins;
+      this.formDataPut.rodaExtra = atendimento.rodaExtra;
+      this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
+      this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toString();
+      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
+
+      this.maisInfoModal = true;
     },
   }
 }
@@ -726,6 +1057,10 @@ export default {
 }
 
 .largura {
-    white-space: nowrap;
-  }
+  white-space: nowrap;
+}
+
+.tooltip-content {
+  cursor: pointer;
+}
 </style>

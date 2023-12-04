@@ -115,6 +115,15 @@
             <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
           </div>
 
+          <div class="col-md-2">
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="cancelado" v-model="formData.cancelado">
+            <label style="margin-left: 35px;" for="cancelado" class="form-check-label">Cancelado</label>
+            <br>
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="ativo" v-model="formData.ativo">
+            <label style="margin-left: 35px;" for="ativo" class="form-check-label">Ativo</label>
+          </div>
+
           <div class="col-md-4">
             <label for="adicionais" class="col-form-label">Adicionais R$:</label>
             <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais" placeholder="Ex... 39.50">
@@ -202,6 +211,8 @@ export default {
         obs_adicionais: '',
         valor_total: '',
         em_analise: false,
+        cancelado: false,
+        ativo: true,
         usuarioId: '',
         gerenteId: '',
         tipoServicoId: '',
@@ -378,6 +389,8 @@ export default {
           this.formData.obs_adicionais = '';
           this.formData.valor_total = '';
           this.formData.em_analise = false;
+          this.formData.cancelado = false;
+          this.formData.ativo = true;
           this.formData.usuarioId = '';
           this.formData.tipoServicoId = '';
 
@@ -395,6 +408,7 @@ export default {
       const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formData.viaturaId);
       const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId)
       const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formData.tipoVeiculoId);
+      console.log('tipoVeiculoLoc-> ', tipoVeiculoLoc);
 
       // Efetuando a Soma
       
@@ -454,9 +468,9 @@ export default {
 </script>
 
 <style>
-.tabela {
+/* .tabela {
   margin-left: -12vw;
-}
+} */
 
 .modal {
   position: fixed;

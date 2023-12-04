@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import('../views/ColaboradorView.vue')
     },
     {
+      path: '/Atendimento',
+      name: 'Atendimento',
+      component: () => import('../views/AtendimentoView.vue')
+    },
+    {
       path: '/Comissoes',
       name: 'Comissoes',
       component: () => import('../views/ComissoesView.vue')
@@ -25,26 +30,34 @@ const router = createRouter({
       component: () => import('../views/FaturamentoView.vue')
     },
     {
-      path: '/GastosFrota',
-      name: 'GastosFrota',
-      component: () => import('../views/GastosFrotaView.vue')
-    },
-    {
       path: '/DespesasAtendimento',
       name: 'DespesasAtendimento',
       component: () => import('../views/DespesasAtendimentoView.vue')
     },
     {
-      path: '/RecebimentoComissao',
-      name: 'RecebimentoComissao',
-      component: () => import('../views/RecebimentoComissaoView.vue')
+      path: '/Abastecimentos',
+      name: 'Abastecimentos',
+      component: () => import('../views/Abastecimentos.vue')
     },
     {
-      path: '/AdicionarAtendimento',
-      name: 'AdicionarAtendimento',
-      component: () => import('../views/AdicionarAtendimentoView.vue')
+      path: '/Manutencao',
+      name: 'Manutencao',
+      component: () => import('../views/Manutencao.vue')
+    },
+    {
+      path: '/Fornecedor',
+      name: 'Fornecedor',
+      component: () => import('../views/Fornecedor.vue')
     },
   ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.fullPath === window.location.pathname) {
+    next('/');
+  } else {
+    next();
+  }
+});
 
 export default router
