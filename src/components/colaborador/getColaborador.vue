@@ -18,6 +18,9 @@
     </thead>
 
     <tbody>
+      <tr v-if="this.filteredColaboradores.length == 0">
+        <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
+      </tr>
       <tr v-for="colaborador in filteredColaboradores">
         <th scope="row">{{ colaborador.id }}</th>
         <td>{{ colaborador.nome }}</td>

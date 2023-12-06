@@ -9,6 +9,14 @@
       <div class="col-6 d-flex justify-content-end align-items-center">
           <button class="btn btn-primary mr-3" @click="incluirAtendimento()">Incluir Atendimento</button>
       </div>
+
+      <div class="d-flex justify-content-end align-items-center">
+          <button class="btn btn-primary mr-3" @click="emAnalisaAtendimento()">Atendimentos em Análise</button>
+      </div>
+
+      <div class="d-flex justify-content-end align-items-center">
+          <button class="btn btn-primary mr-3" @click="limparPesquisa()">Limpar Pesquisa</button>
+      </div>
     </div>
   </div>
 
@@ -182,11 +190,13 @@
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import getAtendimento from '../components/atendimento/getAtendimento.vue';
+import getAtendimentosEmAnalise from '../components/atendimento/getAtendimento.vue';
 
 export default {
   components: {
     axios,
     getAtendimento,
+    getAtendimentosEmAnalise,
   },
   data() {
     return {
@@ -366,7 +376,7 @@ export default {
         },
       })
         .then(response => {
-          console.log('Resposta da API:', response.data);
+          // console.log('Resposta da API:', response.data);
 
           // Limpar o formulário
           this.formData.data = '';
@@ -408,7 +418,7 @@ export default {
       const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formData.viaturaId);
       const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId)
       const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formData.tipoVeiculoId);
-      console.log('tipoVeiculoLoc-> ', tipoVeiculoLoc);
+      // console.log('tipoVeiculoLoc-> ', tipoVeiculoLoc);
 
       // Efetuando a Soma
       
@@ -462,16 +472,18 @@ export default {
 
       // Formatar a data como "DD/MM/YYYY"
       return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
+    },
+    emAnalisaAtendimento() {
+      this.$refs.componentGetAtendimento.getAtendimentosEmAnalise();
+    },
+    limparPesquisa() {
+      this.$refs.componentGetAtendimento.getAtendimentos();
     }
   }
 };
 </script>
 
 <style>
-/* .tabela {
-  margin-left: -12vw;
-} */
-
 .modal {
   position: fixed;
   top: 0;

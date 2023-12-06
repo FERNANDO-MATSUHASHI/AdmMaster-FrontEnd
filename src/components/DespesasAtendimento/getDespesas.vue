@@ -35,9 +35,9 @@
             </tr>
         </thead>
         <tbody>
-            <!-- <tr v-if="this.dataSourceDespesas.data.length == 0">
+            <tr v-if="this.filteredDespesas.length == 0">
                 <td colspan="8" class="text-center">Nenhum dado encontrado.</td>
-            </tr> -->
+            </tr>
             <tr style="color: aliceblue;">{{ this.valorTotal = 0 }}</tr>
             <tr v-for="despesa in filteredDespesas">
                 <th scope="row">{{ despesa.atendimento.qru }}</th>
@@ -462,7 +462,7 @@ export default {
             return viatura ? viatura.sigla : 'Viatura Desconhecida';
         },
         somaValor(valor) {
-            this.valorTotal += parseInt(valor);
+            this.valorTotal += parseFloat(valor);
         },
     },
     mounted() {

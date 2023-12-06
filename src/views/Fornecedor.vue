@@ -7,8 +7,8 @@
         <h1>Fornecedor</h1>
       </div>
       <div class="col-6 d-flex justify-content-end align-items-center">
-          <button class="btn btn-primary mr-3" @click="incluirFornecedor()">Incluir Fornecedor</button>
-        </div>
+        <button class="btn btn-primary mr-3" @click="incluirFornecedor()">Incluir Fornecedor</button>
+      </div>
     </div>
   </div>
   <hr>

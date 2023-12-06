@@ -26,6 +26,9 @@
     </thead>
 
     <tbody>
+      <tr v-if="this.filteredAtendimentos.length == 0">
+        <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
+      </tr>
       <tr v-for="atendimento in filteredAtendimentos">
         <th class="largura" scope="row">{{ parseDataGet(atendimento.data) }}</th>
         <td>{{ obterViatura(atendimento.viaturaId) }}</td>
@@ -494,7 +497,7 @@ export default {
           }
         });
         usuarios.value = responseUsuarios.data;
-        console.log('Colaboradores-> ', responseUsuarios.data);
+        // console.log('Colaboradores-> ', responseUsuarios.data);
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -529,6 +532,24 @@ export default {
           this.filteredAtendimentos = [];
           return;
         });
+    },
+    getAtendimentosEmAnalise() {
+      axios.get('https://localhost:7255/api/Atendimento/Em_Analise/' + localStorage.getItem('gerenteId'), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      })
+        .then(res => {
+          if (res.status == 200) {
+            this.filteredAtendimentos = res.data;
+            this.atendimentos = res.data;
+            return;
+          }
+          this.filteredAtendimentos = [];
+          return;
+        });
+      //https://localhost:7255/api/Atendimento/Em_Analise/2
     },
     fecharModal() {
       this.editarModal = false;
@@ -581,7 +602,7 @@ export default {
       // const parts = dateString.split('/');
       // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
       this.formDataPut.data = this.parseData(this.formDataPut.data);
-      console.log('Data-> ', this.formDataPut.data);
+      // console.log('Data-> ', this.formDataPut.data);
       console.log('formDataPut-> ', this.formDataPut);
 
 

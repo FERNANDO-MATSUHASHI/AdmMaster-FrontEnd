@@ -19,6 +19,9 @@
     </thead>
 
     <tbody>
+      <tr v-if="this.filteredFornecedores.length == 0">
+        <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
+      </tr>
       <tr v-for="fornecedor in filteredFornecedores">
         <th scope="row">{{ fornecedor.id }}</th>
         <td>{{ formatarCNPJ(fornecedor.cnpj) }}</td>
@@ -239,8 +242,8 @@
     </div>
   </div>
 
-      <!-- Formulário Mais Informações -->
-      <div class="modal" v-if="maisInfoModal">
+  <!-- Formulário Mais Informações -->
+  <div class="modal" v-if="maisInfoModal">
     <div class="modal-content">
       <span class="close" @click="fecharModal()">&times;</span>
 
@@ -338,7 +341,7 @@ export default {
         numero: '',
         cidade: '',
         estado: '',
-        gerenteId: '1',
+        gerenteId: '',
       },
       editarModal: false,
       successModal: false,
