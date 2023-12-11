@@ -108,7 +108,14 @@
             </select>
           </div>
 
-          <div class="col-md-2">
+          <div class="col-md-3">
+            <label for="usuarioId" class="form-label">Empresa:</label>
+            <select id="inputState2" class="form-select" required v-model="formData.empresaId">
+              <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}</option>
+            </select>
+          </div>
+
+          <div class="col-md-1">
             <br>
             <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formData.noturno">
             <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
@@ -135,8 +142,10 @@
           <div class="col-md-4">
             <label for="adicionais" class="col-form-label">Adicionais R$:</label>
             <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais" placeholder="Ex... 39.50">
+
             <label for="obs_adicionais" class="col-form-label">Obs:</label>
             <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formData.obs_adicionais" placeholder="Ex... Almoço">
+            
             <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
             <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formData.valor_total"><br>
           </div>          
@@ -226,6 +235,7 @@ export default {
         usuarioId: '',
         gerenteId: '',
         tipoServicoId: '',
+        empresaId: '',
       },
       showModal: false,
       successModal: false,
@@ -245,6 +255,7 @@ export default {
     const tipoVeiculos = ref([]);
     const veiculos = ref([]);   
     const tipoServicoLoc = ref([]);
+    const empresas = ref([]);
 
     const cargoId = localStorage.getItem('cargoId');
 
@@ -331,6 +342,19 @@ export default {
       }
     });
 
+    onMounted(async () => {
+      try {
+        const responseEmpresas = await axios.get('https://localhost:7255/api/Empresa/Empresas/' + localStorage.getItem('gerenteId'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        empresas.value = responseEmpresas.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
     return {
       atendimentos,
       tipoServicos,
@@ -342,6 +366,7 @@ export default {
       filteredAtendimentos,
       tipoServicoLoc,
       cargoId,
+      empresas,
     };
   },
   methods: {
@@ -413,6 +438,7 @@ export default {
           this.formData.ativo = true;
           this.formData.usuarioId = '';
           this.formData.tipoServicoId = '';
+          this.formData.empresaId = '';
 
           // Exibir o modal de sucesso
           this.$refs.componentGetAtendimento.getAtendimentos();

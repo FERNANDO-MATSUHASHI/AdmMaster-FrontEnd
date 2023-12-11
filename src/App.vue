@@ -172,6 +172,16 @@
                                     <router-link to="/Veiculo" class="nav-link">Veículo Valores</router-link>
                                 </nav>
                             </div>
+                            <a v-if="this.formLogado.cargoId === 1" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseEmpresas" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Empresas
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseEmpresas" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <router-link to="/Empresa" class="nav-link">Empresas Parceiras</router-link>
+                                </nav>
+                            </div>
 
 
 

@@ -61,7 +61,7 @@
 
         <div class="col-md-6">
           <label for="cpf" class="form-label">CPF:</label>
-          <input type="text" class="form-control" id="cpf" name="cpf" @input="formatarCPF" required v-model="formDataPut.cpf"><br>
+          <input type="text" class="form-control" id="cpf" name="cpf" @input="formatarCPF" required v-model="formDataPut.cpf" disabled="isInputLocked"><br>
         </div>
 
         <div class="col-md-2">
@@ -107,7 +107,7 @@
 
         <div class="col-md-6">
           <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" name="email" required v-model="formDataPut.email"><br>
+          <input type="email" class="form-control" id="email" name="email" required v-model="formDataPut.email" disabled="isInputLocked"><br>
         </div>
 
         <div class="col-md-6">
@@ -375,6 +375,26 @@
       </div>
     </div>
   </div>
+
+  <div class="modal" v-if="erroEmailModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Erro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModalErroEmail()"></button>
+          </div>
+          <div class="modal-body">
+            e-mail já cadastrado!
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="fecharModalErroEmail()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
 </template>
 
 <script>
@@ -415,6 +435,7 @@ export default {
       colaboradorID: 0,
       maisInfoModal: false,
       erroModal: false,
+      erroEmailModal: false,
     }
   },
   setup() {
@@ -497,6 +518,9 @@ export default {
     fecharModalErro() {
       this.erroModal = false;
     },
+    fecharModalErroEmail() {
+      this.erroEmailModal = false;
+    },
     editarColaborador(colaborador) {
       this.formDataPut.nome = colaborador.nome.toString();
       this.formDataPut.cpf = this.formatarCPF(colaborador.cpf);
@@ -574,6 +598,7 @@ export default {
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
+          this.erroEmailModal = true;
         });
     },
     excluirSimNaoFormulario() {
@@ -669,9 +694,9 @@ export default {
 
       return retorno;
     },
-    formatarTelefone(tel) {
+    formatarTelefone(telefone) {
       // Remove todos os caracteres não numéricos
-      // const telefoneLimpo = telefone.replace(/\D/g, '');
+      const telefoneLimpo = telefone.replace(/\D/g, '');
 
       if (telefone.length == 11){
         const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 7)}-${telefoneLimpo.slice(7, 11)}`;

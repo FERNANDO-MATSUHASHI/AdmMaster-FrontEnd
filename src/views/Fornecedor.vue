@@ -122,7 +122,27 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
+
+<div class="modal" v-if="erroCNPJModal">
+    <div class="modal-dialog">
+      <div class="msg1">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="successModalLabel">Erro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModalErroCNPJ()"></button>
+          </div>
+          <div class="modal-body">
+            CNPJ já cadastrado!
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" @click="fecharModalErroCNPJ()">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
 
 </main>
 </template>
@@ -157,6 +177,7 @@ export default {
       showModal: false,
       successModal: false,
       erroModal: false,
+      erroCNPJModal: false,
     };
   },
   setup() {
@@ -204,6 +225,9 @@ export default {
     fecharModalErro() {
       this.erroModal = false;
     },
+    fecharModalErroCNPJ() {
+      this.erroCNPJModal = false;
+    },
     enviarFormulario() {
       this.formData.gerenteId = localStorage.getItem('gerenteId');
       this.formData.cnpj = this.formData.cnpj.replace(/\D/g, '');
@@ -238,6 +262,7 @@ export default {
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
+          this.erroCNPJModal = true;
         });
     },
     formatarCNPJ() {

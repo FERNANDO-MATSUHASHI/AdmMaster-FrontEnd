@@ -21,30 +21,35 @@
 
         <form id="modalForm" class="row" @submit.prevent="enviarFormulario()">
           <h1>Novo Colaborador</h1>
-          
+
           <div class="col-md-6">
             <label for="nome" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="nome" name="nome" required v-model="formData.nome" placeholder="Ex... João Silva"><br>
+            <input type="text" class="form-control" id="nome" name="nome" required v-model="formData.nome"
+              placeholder="Ex... João Silva"><br>
           </div>
 
           <div class="col-md-6">
             <label for="cpf" class="form-label">CPF:</label>
             <input type="text" class="form-control" id="cpf" name="cpf" required @input="formatarCPF" v-model="formData.cpf" placeholder="Ex... 123.456.789-00"><br>
+            <p v-if="cpfModal" style="color: red">CPF <strong>{{ this.cpf ? "válido" : "inválido" }}</strong></p>
           </div>
-          
+
           <div class="col-md-3">
             <label for="telefone" class="form-label">telefone:</label>
-            <input type="text" class="form-control" id="telefone" name="telefone" required @input="formatarTelefone" v-model="formData.telefone" placeholder="Ex... (14)99989-1020"><br>
+            <input type="text" class="form-control" id="telefone" name="telefone" required @input="formatarTelefone"
+              v-model="formData.telefone" placeholder="Ex... (14)99989-1020"><br>
           </div>
 
           <div class="col-md-2">
             <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
-            <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required v-model="formData_nascimento"><br>
+            <input type="date" class="form-control" id="data_nascimento" name="data_nascimento" required
+              v-model="formData_nascimento"><br>
           </div>
 
           <div class="col-md-2">
             <label for="cep" class="form-label">CEP:</label>
-            <input type="text" class="form-control" id="cep" name="cep" required v-model="formData.cep" placeholder="Ex... 17506000"><br>
+            <input type="text" class="form-control" id="cep" name="cep" required v-model="formData.cep"
+              placeholder="Ex... 17506000"><br>
           </div>
 
           <div class="col-2">
@@ -54,27 +59,32 @@
 
           <div class="col-md-6">
             <label for="rua" class="form-label">Rua:</label>
-            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua" disabled="isInputLocked"><br>
+            <input type="text" class="form-control" id="rua" name="rua" required v-model="formData.rua"
+              disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
             <label for="numero" class="form-label">Número:</label>
-            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero" placeholder="Ex... 100" ref="numero"><br>
+            <input type="text" class="form-control" id="numero" name="numero" required v-model="formData.numero"
+              placeholder="Ex... 100" ref="numero"><br>
           </div>
 
           <div class="col-md-6">
             <label for="cidade" class="form-label">Cidade:</label>
-            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade" disabled="isInputLocked"><br>
+            <input type="text" class="form-control" id="cidade" name="cidade" required v-model="formData.cidade"
+              disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
             <label for="estado" class="form-label">Estado:</label>
-            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado" disabled="isInputLocked"><br>
+            <input type="text" class="form-control" id="estado" name="estado" required v-model="formData.estado"
+              disabled="isInputLocked"><br>
           </div>
 
           <div class="col-md-6">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required v-model="formData.email"  placeholder="Ex... teste@teste.com"><br>
+            <input type="email" class="form-control" id="email" name="email" required v-model="formData.email"
+              placeholder="Ex... teste@teste.com"><br>
           </div>
 
           <div class="col-md-6">
@@ -92,7 +102,8 @@
 
           <div class="col-md-6">
             <label for="comissao" class="form-label">Comissão %:</label>
-            <input type="text" class="form-control" id="comissao" name="comissao" required v-model="formData.comissao" placeholder="Ex... 20"><br>
+            <input type="text" class="form-control" id="comissao" name="comissao" required v-model="formData.comissao"
+              placeholder="Ex... 20"><br>
           </div>
 
           <div class="col-md-6">
@@ -115,7 +126,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Sucesso</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="fecharModal()"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
             Cadastro realizado com sucesso!
@@ -128,24 +140,44 @@
     </div>
 
     <div class="modal" v-if="erroModal">
-    <div class="modal-dialog">
-      <div class="msg1">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="successModalLabel">Erro</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
-              @click="fecharModalErro()"></button>
-          </div>
-          <div class="modal-body">
-            CEP inválido!
-          </div>
-          <div class="modal-footer">
-            <button class="btn btn-primary" @click="fecharModalErro()">Fechar</button>
+      <div class="modal-dialog">
+        <div class="msg1">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="successModalLabel">Erro</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+                @click="fecharModalErro()"></button>
+            </div>
+            <div class="modal-body">
+              CEP inválido!
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" @click="fecharModalErro()">Fechar</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <div class="modal" v-if="erroEmailModal">
+      <div class="modal-dialog">
+        <div class="msg1">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="successModalLabel">Erro</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+                @click="fecharModalErroEmail()"></button>
+            </div>
+            <div class="modal-body">
+              e-mail já cadastrado!
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-primary" @click="fecharModalErroEmail()">Fechar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
@@ -182,7 +214,9 @@ export default {
       showModal: false,
       successModal: false,
       erroModal: false,
+      erroEmailModal: false,
       formData_nascimento: '',
+      cpfModal: false,
     };
   },
   setup() {
@@ -191,7 +225,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
+        const response = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -229,11 +263,19 @@ export default {
     fecharModalErro() {
       this.erroModal = false;
     },
+    fecharModalErroEmail() {
+      this.erroEmailModal = false;
+    },
     enviarFormulario() {
       this.formData.data_nascimento = new Date(this.formData_nascimento);
       this.formData.gerenteId = localStorage.getItem('gerenteId');
       this.formData.cpf = this.formData.cpf.replace(/\D/g, '');
       this.formData.telefone = this.formData.telefone.replace(/\D/g, '');
+      if (!this.validarCPF(this.formData.cpf)){
+        this.cpfModal = true;
+        return;
+      }
+      this.cpfModal = false;
 
       axios.post('https://localhost:7255/api/Usuario', this.formData, {
         headers: {
@@ -247,6 +289,7 @@ export default {
           // Limpar o formulário
           this.formData.nome = '';
           this.formData.cpf = '';
+          this.formData.telefone = '',
           this.formData.email = '';
           this.formData.data_nascimento = '',
           this.formData.cep = '';
@@ -268,6 +311,7 @@ export default {
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
+          this.erroEmailModal = true;
         });
     },
     formatarCPF() {
@@ -284,17 +328,17 @@ export default {
       // Remove todos os caracteres não numéricos
       const telefoneLimpo = this.formData.telefone.replace(/\D/g, '');
 
-      if (telefoneLimpo.length == 10){
-        this.formData.telefone = telefoneLimpo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');  
+      if (telefoneLimpo.length == 10) {
+        this.formData.telefone = telefoneLimpo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
       } else {
         this.formData.telefone = telefoneLimpo.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-      }      
+      }
     },
     async pesquisarCEP() {
       const cep = this.formData.cep;
       try {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    
+
         if (!response.ok) {
           throw new Error('Erro ao buscar endereço.');
         }
@@ -313,6 +357,28 @@ export default {
         this.erroModal = true;
         throw error;
       }
+    },
+    validarCPF(cpf) {
+      var soma = 0;
+      var i;
+      var resto;
+
+      if (cpf == "00000000000") return false;
+      for (i = 1; i <= 9; i++)
+        soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+      resto = (soma * 10) % 11;
+
+      if (resto == 10 || resto == 11) resto = 0;
+      if (resto != parseInt(cpf.substring(9, 10))) return false;
+
+      soma = 0;
+      for (i = 1; i <= 10; i++)
+        soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+      resto = (soma * 10) % 11;
+
+      if (resto == 10 || resto == 11) resto = 0;
+      if (resto != parseInt(cpf.substring(10, 11))) return false;
+      return true;
     },
   }
 };
@@ -351,5 +417,4 @@ export default {
   color: black;
   text-decoration: none;
   cursor: pointer;
-}
-</style>
+}</style>

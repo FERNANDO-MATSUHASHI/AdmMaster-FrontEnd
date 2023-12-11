@@ -18,6 +18,7 @@
         <th scope="col">Adic. Noturno</th>
         <th scope="col">Valor</th>
         <th scope="col">Colaborador</th>
+        <th scope="col">Empresa</th>
         <th scope="col">Opções</th>
         <th scope="col">Cancelado</th>
         <th scope="col">Ativo</th>
@@ -42,6 +43,7 @@
         <td>{{ atendimento.noturno ? 'Sim' : 'Não' }}</td>
         <td>{{ atendimento.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
         <td>{{ obterUsuario(atendimento.usuarioId) }}</td>
+        <td>{{ obterEmpresa(atendimento.empresaId) }}</td>
 
         <td>
           <i v-if="this.cargoId == 1" class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
@@ -159,6 +161,13 @@
             <option v-for="usuario in this.usuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nome }}</option>
           </select>
         </div>
+
+        <div class="col-md-3">
+            <label for="usuarioId" class="form-label">Empresa:</label>
+            <select id="inputState2" class="form-select" required v-model="formDataPut.empresaId">
+              <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}</option>
+            </select>
+          </div>
 
         <div class="col-md-2">
           <br>
@@ -409,7 +418,8 @@ export default {
         usuarioId: '',
         em_analise: false,
         cancelado: false,
-        ativo: true
+        ativo: true,
+        empresaId: '',
       },
       editarModal: false,
       successModal: false,
@@ -434,6 +444,7 @@ export default {
     const tipoVeiculos = ref([]);
     const veiculos = ref([]);
     const tipoServicoLoc = ref([]);
+    const empresas = ref([]);
 
     const cargoId = localStorage.getItem('cargoId');
 
@@ -519,6 +530,19 @@ export default {
       }
     });
 
+    onMounted(async () => {
+      try {
+        const responseEmpresas = await axios.get('https://localhost:7255/api/Empresa/Empresas/' + localStorage.getItem('gerenteId'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        empresas.value = responseEmpresas.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
     return {
       atendimentos,
       tipoServicos,
@@ -530,6 +554,7 @@ export default {
       filteredAtendimentos,
       tipoServicoLoc,
       cargoId,
+      empresas,
     };
   },
   methods: {
@@ -619,6 +644,7 @@ export default {
       this.formDataPut.usuarioId = atendimento.usuarioId;
       this.formDataPut.gerenteId = atendimento.gerenteId;
       this.atendimentoID = atendimento.id;
+      this.formDataPut.empresaId = atendimento.empresaId;
 
       this.editarModal = true;
     },
@@ -665,6 +691,7 @@ export default {
           this.formDataPut.em_analise = false;
           this.formDataPut.cancelado = false;
           this.formDataPut.ativo = true;
+          this.formDataPut.empresaId = '';
 
           // Exibir o modal de sucesso
           this.editarModal = false;
@@ -1045,6 +1072,10 @@ export default {
       this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
 
       this.maisInfoModal = true;
+    },
+    obterEmpresa(empresaId) {
+      const empresa = this.empresas.find(c => c.id === empresaId);
+      return empresa ? empresa.nome_empresa : 'Empresa Desconhecida';
     },
   }
 }
