@@ -16,9 +16,10 @@
 
   <div class="modal" v-if="showModal">
     <div class="modal-content">
+      <span class="close" @click="fecharModal()">&times;</span>
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h1>Adicionar Despesa</h1>
-        <span class="close" @click="fecharModal()">&times;</span>
+
       </div>
 
       <form id="modalForm" class="row" @submit.prevent="">

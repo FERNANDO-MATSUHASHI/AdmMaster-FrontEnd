@@ -32,7 +32,7 @@
             <input type="text" class="form-control" id="cpf" name="cpf" required @input="formatarCPF" v-model="formData.cpf" placeholder="Ex... 123.456.789-00"><br>
           </div>
           
-          <div class="col-md-2">
+          <div class="col-md-3">
             <label for="telefone" class="form-label">telefone:</label>
             <input type="text" class="form-control" id="telefone" name="telefone" required @input="formatarTelefone" v-model="formData.telefone" placeholder="Ex... (14)99989-1020"><br>
           </div>
@@ -284,12 +284,11 @@ export default {
       // Remove todos os caracteres não numéricos
       const telefoneLimpo = this.formData.telefone.replace(/\D/g, '');
 
-      if (telefone.length == 11){
-        const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 7)}-${telefoneLimpo.slice(7, 11)}`;
-        return retorno;
-      }
-      const retorno = `(${telefoneLimpo.slice(0, 2)}) ${telefoneLimpo.slice(2, 6)}-${telefoneLimpo.slice(6, 10)}`;
-      return retorno;
+      if (telefoneLimpo.length == 10){
+        this.formData.telefone = telefoneLimpo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');  
+      } else {
+        this.formData.telefone = telefoneLimpo.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      }      
     },
     async pesquisarCEP() {
       const cep = this.formData.cep;

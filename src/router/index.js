@@ -49,6 +49,31 @@ const router = createRouter({
       name: 'Fornecedor',
       component: () => import('../views/Fornecedor.vue')
     },
+    {
+      path: '/TipoViatura',
+      name: 'TipoViatura',
+      component: () => import('../views/TipoViatura.vue')
+    },
+    {
+      path: '/Viatura',
+      name: 'Viatura',
+      component: () => import('../views/Viatura.vue')
+    },
+    {
+      path: '/TipoVeiculo',
+      name: 'TipoVeiculo',
+      component: () => import('../views/TipoVeiculo.vue')
+    },
+    {
+      path: '/TipoServico',
+      name: 'TipoServico',
+      component: () => import('../views/TipoServico.vue')
+    },
+    {
+      path: '/Veiculo',
+      name: 'Veiculo',
+      component: () => import('../views/Veiculo.vue')
+    },
   ]
 });
 

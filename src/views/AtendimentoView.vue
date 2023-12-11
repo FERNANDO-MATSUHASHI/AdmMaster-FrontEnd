@@ -4,9 +4,9 @@
     <div class="d-flex justify-content">
       <i style="font-size: 40px; margin-left: 35px;" class="fi fi-rr-hand-holding-medical" ></i>
       <div style="margin-left: 20px;" class="col">
-        <h1>Adicionar Atendimento</h1>
+        <h1>Atendimento</h1>
       </div>
-      <div class="col-6 d-flex justify-content-end align-items-center">
+      <div class="col-6 d-flex justify-content-end align-items-center" v-if="this.cargoId == 1">
           <button class="btn btn-primary mr-3" @click="incluirAtendimento()">Incluir Atendimento</button>
       </div>
 
@@ -233,6 +233,7 @@ export default {
       formData_data: '',
       kmTotal: '',
       horaTotal: '',
+      cargoId: '',
     };
   },
   setup() {
@@ -244,6 +245,8 @@ export default {
     const tipoVeiculos = ref([]);
     const veiculos = ref([]);   
     const tipoServicoLoc = ref([]);
+
+    const cargoId = localStorage.getItem('cargoId');
 
     // Filtro
     const filteredAtendimentos = computed(() => {
@@ -265,7 +268,12 @@ export default {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        atendimentos.value = response.data;
+        if (cargoId == '1'){
+          atendimentos.value = response.data;;
+        } else{
+          const atendimentoFilter = response.data;
+          usuarios.value = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(cargoId));
+        };
         
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -274,7 +282,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseTipoServicos = await axios.get('https://localhost:7255/api/TipoServico');
+        const responseTipoServicos = await axios.get('https://localhost:7255/api/TipoServico/TipoServicos/' + localStorage.getItem('gerenteId'));
         tipoServicos.value = responseTipoServicos.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -283,7 +291,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura');
+        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura/Viaturas/' + localStorage.getItem('gerenteId'));
         viaturas.value = responseViaturas.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -292,7 +300,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo');
+        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo/Veiculos/' + localStorage.getItem('gerenteId'));
         veiculos.value = responseVeiculos.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -301,7 +309,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo');
+        const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo/TipoVeiculos/' + localStorage.getItem('gerenteId'));
         tipoVeiculos.value = responseVeiculo.data;
         // console.log('Veiculos: ', responseVeiculo.data);
       } catch (error) {
@@ -317,6 +325,7 @@ export default {
           }
         });
         usuarios.value = responseUsuarios.data;
+        
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -331,7 +340,8 @@ export default {
       searchTerm,
       veiculos,
       filteredAtendimentos,
-      tipoServicoLoc
+      tipoServicoLoc,
+      cargoId,
     };
   },
   methods: {

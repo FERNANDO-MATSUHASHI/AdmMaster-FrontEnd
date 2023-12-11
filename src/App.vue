@@ -93,7 +93,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <button class="dropdown-item" type="button" @click="Perfil()">Perfil</button>
-                    <!-- <button class="dropdown-item" type="button">Configurações</button> -->
+                
                     <button class="dropdown-item" type="button" @click="Logout()">Logout</button>
                 </ul>
             </div>
@@ -104,71 +104,39 @@
                 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                     <div class="sb-sidenav-menu">
                         <div class="nav">
-                            <a class="nav-link">
+                            <a class="nav-link" v-if="this.formLogado.cargoId === 1">
                                 <i class="fi fi-rr-user-add"></i>
                                 <router-link to="/Colaborador" class="nav-link">Colaboradores</router-link>
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-hand-holding-medical"></i>
-                                <router-link to="/Atendimento" class="nav-link">Adicionar Atendimento</router-link>
+                                <router-link to="/Atendimento" class="nav-link">Atendimento</router-link>
                             </a>
                             <a class="nav-link">
                                 <i class="fi fi-rr-usd-circle"></i>
                                 <router-link to="/Comissoes" class="nav-link">Comissões</router-link>
                             </a>
-                            <a class="nav-link">
+                            <a class="nav-link" v-if="this.formLogado.cargoId === 1">
                                 <i class="fi fi-rr-chart-histogram"></i>
                                 <router-link to="/Faturamento" class="nav-link">Faturamento</router-link>
                             </a>
-                            <a class="nav-link">
+                            <a class="nav-link" v-if="this.formLogado.cargoId === 1">
                                 <i class="fi fi-rr-add"></i>
                                 <router-link to="/DespesasAtendimento" class="nav-link">Despesas de Atendimento</router-link>
                             </a>
-                            <!-- <a class="nav-link">
-                                <i class="fi fi-rr-hand-holding-usd"></i>
-                                <router-link to="/GastosFrota" class="nav-link">Gastos da Frota</router-link>
-                            </a> -->
-
-
-
-                            
-                            <!-- <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGastos" aria-expanded="false" aria-controls="collapseGastos">
-                                <div class="sb-nav-link-icon"><i class="fi fi-rr-hand-holding-usd" style="color:white"></i></div>
-                                Gastos da Frota
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a> -->
-                            <!-- <div class="collapse" id="collapseGastos" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <router-link to="/Abastecimentos" class="nav-link">Abastecimentos</router-link>
-                                    <router-link to="/Manutencao" class="nav-link">Manutenção</router-link>
-                                </nav>
-                            </div> -->
-
-
-                            <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGastos" aria-expanded="false" aria-controls="collapseGastos">
+                            <a v-if="this.formLogado.cargoId === 1" class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#collapseGastos" aria-expanded="false" aria-controls="collapseGastos">
                                 <div class="sb-nav-link-icon"><i class="fi fi-rr-hand-holding-usd" style="color:white"></i></div>
                                 Gastos da Frota
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" id="collapseGastos" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <div v-if="this.formLogado.cargoId === 1" class="collapse" id="collapseGastos" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    <!-- <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                        Fornecedor
-                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>
-                                    <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="#">Cadastrar</a>
-                                            <a class="nav-link" href="#">Consultar</a>
-                                        </nav>
-                                    </div> -->
-
                                     <a class="nav-link">
                                         <router-link to="/Fornecedor" class="nav-link">Fornecedor</router-link>
                                     </a>
 
                                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                        Adicionar Gastos
+                                        Gastos
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                     </a>
                                     <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
@@ -180,6 +148,30 @@
                                 </nav>
                             </div>
 
+                            <div class="sb-sidenav-menu-heading" v-if="this.formLogado.cargoId === 1">Cadastros</div>
+                            <a v-if="this.formLogado.cargoId === 1" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseViatura" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Viatura
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseViatura" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <router-link to="/TipoViatura" class="nav-link">Tipo de Viatura</router-link>
+                                    <router-link to="/Viatura" class="nav-link">Viatura</router-link>
+                                </nav>
+                            </div>
+                            <a v-if="this.formLogado.cargoId === 1" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseVeiculo" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Veículo
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseVeiculo" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <router-link to="/TipoVeiculo" class="nav-link">Tipo de Veículo Removido</router-link>
+                                    <router-link to="/TipoServico" class="nav-link">Tipo de Serviço</router-link>
+                                    <router-link to="/Veiculo" class="nav-link">Veículo Valores</router-link>
+                                </nav>
+                            </div>
 
 
 
@@ -214,6 +206,7 @@
             <h4><strong>E-mail:</strong> {{ this.formLogado.email }}</h4>
             <h4><strong>Data de Nascimento:</strong> {{ parseData(this.formLogado.data_nascimento) }}</h4>
             <h4><strong>Gerente Id:</strong> {{ this.formLogado.gerenteId }}</h4>
+            <h4><strong>Cargo:</strong> {{ obterNomeDoCargo(this.formLogado.cargoId) }}</h4>
         </div>
     </div>
 </template>
@@ -221,7 +214,7 @@
 <script>
 import axios from 'axios';
 import { RouterView, RouterLink } from 'vue-router';
-// $('#erroModal').modal('hide');
+import { ref, computed, onMounted } from 'vue';
 
 export default {
     components: {
@@ -240,11 +233,28 @@ export default {
                 email: '',
                 data_nascimento: '',
                 gerenteId: '',
+                cargoId: '',
             },
             visivel: false,
             showModal: false,
         };
     },
+    setup() {
+    const cargos = ref([]);
+
+    onMounted(async () => {
+      try {
+        const responseCargo = await axios.get('https://localhost:7255/api/Cargo');
+        cargos.value = responseCargo.data;
+      } catch (error) {
+        console.error('Erro na solicitação:', error);
+      }
+    });
+
+    return {
+      cargos
+    };
+  },
     methods: {
         Login() {
             axios.post('https://localhost:7255/api/Usuario/Login', this.formLogin, {
@@ -273,6 +283,10 @@ export default {
                             this.formLogado.data_nascimento = response.data.data_nascimento;
                             this.formLogado.gerenteId = response.data.gerenteId;
                             localStorage.setItem('gerenteId', response.data.gerenteId);
+                            localStorage.setItem('cargoId', response.data.cargoId);
+                            localStorage.setItem('IdUsuarioLogado', response.data.id);
+                            // console.log('Id Usuário Logado Login-> ', localStorage.getItem('IdUsuarioLogado'));
+                            this.formLogado.cargoId = response.data.cargoId;
                         })
                         .catch(error => {
                             console.error('Erro ao enviar formulário:', error);
@@ -313,6 +327,11 @@ export default {
 
             // Formatar a data como "DD/MM/YYYY"
             return `${dia.toString().padStart(2, '0')}/${mes.toString().padStart(2, '0')}/${ano}`;
+        },
+        // Método para obter o nome do cargo com base no cargoId
+        obterNomeDoCargo(idcargo) {
+            const cargo = this.cargos.find(c => c.id === idcargo);
+            return cargo ? cargo.descricao : 'Cargo Desconhecido';
         },
     },
     mounted() {

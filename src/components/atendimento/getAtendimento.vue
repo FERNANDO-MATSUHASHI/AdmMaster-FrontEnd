@@ -44,14 +44,21 @@
         <td>{{ obterUsuario(atendimento.usuarioId) }}</td>
 
         <td>
-          <i class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
+          <i v-if="this.cargoId == 1" class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
           <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"  @click="maisInfoAtendimento(atendimento)"  data-toggle="tooltip" data-placement="top" title="Mais Informações"></i>
         </td>
 
-        <td :style="{ color: atendimento.cancelado ? 'red' : 'black' }"><i style="cursor: pointer;" @click="cancelado(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Cancelado - Alterar Status">{{ atendimento.cancelado ? 'Sim' : 'Não' }}</i></td>
-        <td :style="{ color: atendimento.ativo ? 'black' : 'red' }"><i style="cursor: pointer;" @click="ativo(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Ativo - Alterar Status">{{ atendimento.ativo ? 'Sim' : 'Não' }}</i></td>
+        <td :style="{ color: atendimento.cancelado ? 'red' : 'black' }">
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : cancelado(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Cancelado - Alterar Status">{{ atendimento.cancelado ? 'Sim' : 'Não' }}</i>
+        </td>
 
-        <td :style="{ color: atendimento.em_analise ? 'red' : 'black' }"><i style="cursor: pointer;" @click="emAnalise(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i></td>
+        <td :style="{ color: atendimento.ativo ? 'black' : 'red' }">
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : ativo(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Ativo - Alterar Status">{{ atendimento.ativo ? 'Sim' : 'Não' }}</i>
+        </td>
+
+        <td :style="{ color: atendimento.em_analise ? 'red' : 'black' }">
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : emAnalise(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i>
+        </td>
 
       </tr>
     </tbody>
@@ -414,7 +421,8 @@ export default {
       atendimentoID: 0,
       maisInfoModal: false,
       canceladoModal: false,
-      ativoModal: false
+      ativoModal: false,
+      cargoId: '',
     }
   },
   setup() {
@@ -426,6 +434,8 @@ export default {
     const tipoVeiculos = ref([]);
     const veiculos = ref([]);
     const tipoServicoLoc = ref([]);
+
+    const cargoId = localStorage.getItem('cargoId');
 
     // Filtro
     const filteredAtendimentos = computed(() => {
@@ -446,7 +456,13 @@ export default {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        atendimentos.value = response.data;
+        // atendimentos.value = response.data;
+        if (cargoId == '1'){
+          atendimentos.value = response.data;
+        } else{
+          const atendimentoFilter = response.data;
+          atendimentos.value = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(cargoId));
+        };
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -454,7 +470,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseTipoServicos = await axios.get('https://localhost:7255/api/TipoServico');
+        const responseTipoServicos = await axios.get('https://localhost:7255/api/TipoServico/TipoServicos/' + localStorage.getItem('gerenteId'));
         tipoServicos.value = responseTipoServicos.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -463,7 +479,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura');
+        const responseViaturas = await axios.get('https://localhost:7255/api/Viatura/Viaturas/' + localStorage.getItem('gerenteId'));
         viaturas.value = responseViaturas.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -472,7 +488,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo');
+        const responseVeiculos = await axios.get('https://localhost:7255/api/Veiculo/Veiculos/' + localStorage.getItem('gerenteId'));
         veiculos.value = responseVeiculos.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
@@ -481,7 +497,7 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo');
+        const responseVeiculo = await axios.get('https://localhost:7255/api/TipoVeiculo/TipoVeiculos/' + localStorage.getItem('gerenteId'));
         tipoVeiculos.value = responseVeiculo.data;
         // console.log('Veiculos: ', responseVeiculo.data);
       } catch (error) {
@@ -512,7 +528,8 @@ export default {
       searchTerm,
       veiculos,
       filteredAtendimentos,
-      tipoServicoLoc
+      tipoServicoLoc,
+      cargoId,
     };
   },
   methods: {
@@ -525,8 +542,17 @@ export default {
       })
         .then(res => {
           if (res.status == 200) {
-            this.filteredAtendimentos = res.data;
-            this.atendimentos = res.data;
+            // this.filteredAtendimentos = res.data;
+            // this.atendimentos = res.data;
+
+            if (this.cargoId == '1'){
+              this.filteredAtendimentos = res.data;
+              this.atendimentos = res.data;
+            } else{
+              const atendimentoFilter = res.data;
+              this.atendimentos = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(this.cargoId));
+              this.filteredAtendimentos = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(this.cargoId));
+            };
             return;
           }
           this.filteredAtendimentos = [];
@@ -1084,4 +1110,10 @@ export default {
 .tooltip-content {
   cursor: pointer;
 }
+
+.click-disabled {
+  pointer-events: none; /* Desativa apenas a interação do clique */
+  opacity: 0.5; /* Opacidade reduzida para indicar visualmente que o clique está desativado */
+}
+
 </style>

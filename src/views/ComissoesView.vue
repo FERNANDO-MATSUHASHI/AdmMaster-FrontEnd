@@ -13,8 +13,7 @@
     <div class="col-11 d-flex justify-content-end align-items-center">
       <div class="col-md-3">
         <label for="data_inicial" class="form-label">Data Inicial:</label>
-        <input type="date" class="form-control" id="data_inicial" name="data_inicial" required
-          v-model="original_dataInicial">
+        <input type="date" class="form-control" id="data_inicial" name="data_inicial" required v-model="original_dataInicial">
       </div>
       <div class="col-md-3">
         <label for="data_final" class="form-label">Data Final:</label>
@@ -89,12 +88,15 @@ export default {
       original_dataInicial: '',
       original_dataFinal: '',
       showComissao: false,
+      cargoId: '',
     }
   },
   setup() {
     const usuarios = ref([]);
     const comissoes = ref([]);
     const searchTerm = ref(null);
+
+    const cargoId = localStorage.getItem('cargoId');
 
     // Filtro
     const filteredComissao = computed(() => {
@@ -116,7 +118,13 @@ export default {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        usuarios.value = responseUsuarios.data;
+        if (cargoId == '1'){
+          usuarios.value = responseUsuarios.data;
+        } else{
+          const usuarioFilter = responseUsuarios.data;
+          usuarios.value = usuarioFilter.filter(usuario => usuario.id === parseInt(cargoId));
+        };
+        
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -127,6 +135,7 @@ export default {
       comissoes,
       searchTerm,
       filteredComissao,
+      cargoId,
     }
   },
   methods: {
