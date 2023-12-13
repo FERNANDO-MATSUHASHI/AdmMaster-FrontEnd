@@ -50,15 +50,17 @@
         :data="comissao.data"
         :atendimentoNome="comissao.atendimentoNome"
         :usuarioNome="comissao.usuarioNome"
+        :qtdAtendimento="comissao.qtdAtendimento"
         :valorAtendimento="comissao.valorAtendimento"
         :valorComissao="comissao.valorComissao"
         :comissoes="comissoes"/>
         <tr>
+      <th>Quantidade de Serviço: {{ comissoes.qtdAtendimento }}</th>
       <th></th>
-      <th></th>
+
       <th>Porcentagem da Comissão: {{ comissoes.porcentagem }} %</th>
-      <th>Valor Total Bruto: R$ {{ comissoes.total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
-      <th>Valor Comissão: R$ {{ comissoes.totalComissao.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
+      <th>Total Bruto: R$ {{ comissoes.total.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
+      <th>Comissão: R$ {{ comissoes.totalComissao.toLocaleString('pt-br',{style: 'currency', currency: 'BRL'}) }}</th>
       </tr>
       <br>
       <br>
@@ -89,6 +91,7 @@ export default {
       original_dataFinal: '',
       showComissao: false,
       cargoId: '',
+      valorTotal: 0,
     }
   },
   setup() {
@@ -164,7 +167,7 @@ export default {
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
-    }
+    },
   }
 }
 </script>

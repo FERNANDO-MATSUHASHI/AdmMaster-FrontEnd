@@ -25,9 +25,9 @@
         <th scope="row">{{ tipoViatura.id }}</th>
         <td>{{ tipoViatura.marca }}</td>
         <td>{{ tipoViatura.modelo }}</td>
+        <td>{{ tipoViatura.placa }}</td>
         <td>{{ tipoViatura.ano }}</td>
         <td>{{ tipoViatura.ano_modelo }}</td>
-        <td>{{ tipoViatura.placa }}</td>
         <td>{{ tipoViatura.descricao }}</td>
         <td>
           <!-- Ícone de editar -->

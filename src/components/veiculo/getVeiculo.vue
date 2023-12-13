@@ -7,6 +7,7 @@
     <thead>
       <tr>
         <th scope="col">#</th>
+        <th scope="col">Viatura</th>
         <th scope="col">Valor Saída</th>
         <th scope="col">Valor Km</th>
         <th scope="col">Adicional Noturno</th>
@@ -17,7 +18,6 @@
         <th scope="col">Descrição</th>
         <th scope="col">Tipo de Serviço</th>
         <th scope="col">Tipo de Veículo</th>
-        <th scope="col">Viatura</th>
         <th scope="col">Opções</th>
       </tr>
     </thead>
@@ -28,6 +28,7 @@
       </tr>
       <tr v-for="veiculo in filteredVeiculos">
         <th scope="row">{{ veiculo.id }}</th>
+        <td>{{ obterViatura(veiculo.viaturaId) }}</td>
         <td>{{ veiculo.valor_saida.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
         <td>{{ veiculo.valor_km.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
         <td>{{ veiculo.adicional_noturno.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
@@ -38,7 +39,6 @@
         <td>{{ veiculo.descricao }}</td>
         <td>{{ obterDescricaoTipo(veiculo.tipo_ServicoId) }}</td>
         <td>{{ obterDescricaoTipoVeiculo(veiculo.tipo_VeiculoId) }}</td>
-        <td>{{ obterViatura(veiculo.viaturaId) }}</td>
         <td>
           <!-- Ícone de editar -->
           <i class="fi-rr-edit" @click="editarVeiculo(veiculo)" data-toggle="tooltip" data-placement="top" title="Editar"

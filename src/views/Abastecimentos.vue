@@ -54,6 +54,11 @@
       </div>
 
       <div class="col-md-3">
+        <label for="qtd" class="form-label">Quantidade Litros:</label>
+        <input type="text" class="form-control" id="qtd" name="qtd" required v-model="formData.qtd" placeholder="Ex... 100.50"><br>
+      </div>
+
+      <div class="col-md-3">
         <label for="valor_total_abastecimento" class="form-label">Valor Total R$:</label>
         <input type="text" class="form-control" id="valor_total_abastecimento" name="valor_total_abastecimento" required v-model="formData.valor_total_abastecimento" placeholder="Ex... 100.00"><br>
       </div>
@@ -102,6 +107,7 @@ export default {
       formData: {
         data_abastecimento: '',
         valor_unid_abastecimento: '',
+        qtd: '',
         valor_total_abastecimento: '',
         viaturaId: '',
         fornecedorId: '',
@@ -201,12 +207,13 @@ export default {
           console.log('Resposta da API:', response.data);
 
           // Limpar o formulário
-          this.formData.data_abastecimento = '',
-          this.formData.valor_unid_abastecimento = '',
-          this.formData.valor_total_abastecimento = '',
-          this.formData.viaturaId = '',
-          this.formData.fornecedorId = '',
-          this.formData.tipo_combustivelId = '',
+          this.formData.data_abastecimento = '';
+          this.formData.valor_unid_abastecimento = '';
+          this.formData.qtd = '';
+          this.formData.valor_total_abastecimento = '';
+          this.formData.viaturaId = '';
+          this.formData.fornecedorId = '';
+          this.formData.tipo_combustivelId = '';
           this.formData.gerenteId = '';
 
           // Exibir o modal de sucesso

@@ -13,7 +13,6 @@
     </div>
     <faturamento-table :filteredFaturamento="filteredFaturamento" />
   </main>
-
 </template>
 <script>
 import axios from 'axios';
@@ -25,14 +24,18 @@ export default {
   components: {
     FaturamentoTable,
     axios
-    
-},
+
+  },
   setup() {
     const searchTerm = ref(null);
     const atendimentos = ref([]);
     const despesas = ref([]);
+    const abastecimentos = ref([]);
+    const manutencoes = ref([]);
     const faturamentoMensal = ref([]);
     const despesaMensal = ref([]);
+    const abastecimentoMensal = ref([]);
+    const manutencaoMensal = ref([]);
     const dadosCombinados = ref([]);
 
     const parseData = (dataString) => {
@@ -41,6 +44,14 @@ export default {
       const mes = traduzirMes(dataFormatada.getUTCMonth() + 1).toString().padStart(2, '0');
       return `${mes}`;
     };
+
+    const parseDataAno = (dataString) => {
+      const data = new Date(dataString);
+      const dataFormatada = new Date(data.getFullYear(), data.getMonth(), data.getDate());
+      const ano = dataFormatada.getFullYear();
+      return `${ano}`;
+    };
+
     // Filtro por mês
     const filteredFaturamento = computed(() => {
       if (!searchTerm.value) {
@@ -57,15 +68,26 @@ export default {
       const faturamentoMensalObj = {};
       for (const atendimento of atendimentos.value) {
         const mes = parseData(atendimento.data);
-        if (faturamentoMensalObj[mes]) {
-          faturamentoMensalObj[mes] += atendimento.valor_total;
+        const ano = parseDataAno(atendimento.data);
+        // // console.log('Ano-> ', ano);
+        // if (faturamentoMensalObj[mes]) {
+        //   faturamentoMensalObj[mes] += atendimento.valor_total;
+        // } else {
+        //   faturamentoMensalObj[mes] = atendimento.valor_total;
+        // }
+        const chave = `${ano}-${mes}`; // Usar uma chave única para cada mês/ano
+
+        if (faturamentoMensalObj[chave]) {
+          faturamentoMensalObj[chave].total += atendimento.valor_total;
         } else {
-          faturamentoMensalObj[mes] = atendimento.valor_total;
+          faturamentoMensalObj[chave] = { mes, ano, total: atendimento.valor_total };
         }
       }
       // Converter o objeto faturamentoMensalObj em um array de objetos
-      const faturamentoMensalArray = Object.entries(faturamentoMensalObj).map(([mes, total]) => ({ mes, total }));
+      // const faturamentoMensalArray = Object.entries(faturamentoMensalObj).map(([mes, ano, total]) => ({ mes, ano, total }));
+      const faturamentoMensalArray = Object.values(faturamentoMensalObj);
       faturamentoMensal.value = faturamentoMensalArray;
+      console.log('Faturamento-> ', faturamentoMensalArray);
     };
     const calcularDespesaMensal = () => {
       const despesaMensalObj = {};
@@ -91,36 +113,207 @@ export default {
 
       despesaMensal.value = despesaMensalArray;
     };
+    const calcularAbastecimentoMensal = () => {
+      const abastecimentoMensalObj = {};
+      for (const abastecimento of abastecimentos.value) {
+        const mes = parseData(abastecimento.data_abastecimento);
+        if (abastecimentoMensalObj[mes]) {
+          abastecimentoMensalObj[mes].total += abastecimento.valor_total_abastecimento;
+        } else {
+          abastecimentoMensalObj[mes] = {
+            mes: mes,
+            total: abastecimento.valor_total_abastecimento
+          };
+        };
+      };
+
+      // Converter o objeto despesaMensalObj em um array de objetos
+      const abastecimentoMensalArray = Object.values(abastecimentoMensalObj);
+      abastecimentoMensal.value = abastecimentoMensalArray;
+      // console.log('Valor Abastecimento-> ', abastecimentoMensalArray);
+    };
+    const calcularManutencaoMensal = () => {
+      const manutencaoMensalObj = {};
+      for (const manutencao of manutencoes.value) {
+        const mes = parseData(manutencao.data_manutencao);
+        if (manutencaoMensalObj[mes]) {
+          manutencaoMensalObj[mes].total += manutencao.valor_total_manutencao;
+        } else {
+          manutencaoMensalObj[mes] = {
+            mes: mes,
+            total: abastecimento.valor_total_manutencao
+          };
+        };
+      };
+
+      // Converter o objeto manutencaoMensalObj em um array de objetos
+      const manutencaoMensalArray = Object.values(manutencaoMensalObj);
+      manutencaoMensal.value = manutencaoMensalArray;
+      // console.log('Manutencao-> ', manutencaoMensalArray);
+    };
     const combinarFaturamentoDespesa = () => {
       // Crie um objeto para armazenar os dados combinados
       const dadosCombinados = [];
       for (const faturamentoItem of faturamentoMensal.value) {
         const mes = faturamentoItem.mes;
+        const ano = faturamentoItem.ano;
         const valorFaturamento = faturamentoItem.total;
+
         // Encontre a despesa correspondente com base no mês
         const despesaCorrespondente = despesaMensal.value.find(despesa => despesa.mes === mes);
-        if (despesaCorrespondente) {
+
+        // Encontre o abastecimento correspondente com base no mês
+        const abastecimentoCorrespondente = abastecimentoMensal.value.find(abastecimento => abastecimento.mes === mes);
+
+        // Encontre o manutencao correspondente com base no mês
+        const manutencaoCorrespondente = manutencaoMensal.value.find(manutencao => manutencao.mes === mes);
+
+        if (despesaCorrespondente && abastecimentoCorrespondente && manutencaoCorrespondente) {
           const valorDespesa = despesaCorrespondente.total;
-          const valorLiquido = valorFaturamento - valorDespesa;
-          // Adicione os dados combinados ao objeto
+          const valorAbastecimento = abastecimentoCorrespondente.total;
+          const valorManutencao = manutencaoCorrespondente.total;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+          mes,
+          ano,
+          valorFaturamento,
+          valorDespesa,
+          valorAbastecimento,
+          valorManutencao,
+          valorLiquido
+          })
+        } else if (!despesaCorrespondente && abastecimentoCorrespondente && manutencaoCorrespondente){
+          const valorDespesa = 0;
+          const valorAbastecimento = abastecimentoCorrespondente.total;
+          const valorManutencao = manutencaoCorrespondente.total;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+          mes,
+          ano,
+          valorFaturamento,
+          valorDespesa,
+          valorAbastecimento,
+          valorManutencao,
+          valorLiquido
+          })
+        } else if (!despesaCorrespondente && !abastecimentoCorrespondente && manutencaoCorrespondente) {
+          const valorDespesa = 0;
+          const valorAbastecimento = 0;
+          const valorManutencao = manutencaoCorrespondente.total;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
           dadosCombinados.push({
             mes,
+            ano,
             valorFaturamento,
             valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
             valorLiquido
-          });
+          })
+        } else if (!despesaCorrespondente && !abastecimentoCorrespondente && !manutencaoCorrespondente){
+          const valorDespesa = 0;
+          const valorAbastecimento = 0;
+          const valorManutencao = 0;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+            mes,
+            ano,
+            valorFaturamento,
+            valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
+            valorLiquido
+          })
+        }else if (despesaCorrespondente && !abastecimentoCorrespondente && !manutencaoCorrespondente) {
+          const valorDespesa = despesaCorrespondente.total;
+          const valorAbastecimento = 0;
+          const valorManutencao = 0;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+            mes,
+            ano,
+            valorFaturamento,
+            valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
+            valorLiquido
+          })
+        } else if (despesaCorrespondente && abastecimentoCorrespondente && !manutencaoCorrespondente){
+          const valorDespesa = despesaCorrespondente.total;
+          const valorAbastecimento = abastecimentoCorrespondente.total;
+          const valorManutencao = 0;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+            mes,
+            ano,
+            valorFaturamento,
+            valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
+            valorLiquido
+          })
+        } else if (despesaCorrespondente && !abastecimentoCorrespondente && manutencaoCorrespondente){
+          const valorDespesa = despesaCorrespondente.total;
+          const valorAbastecimento = 0;
+          const valorManutencao = manutencaoCorrespondente.total;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+          dadosCombinados.push({
+            mes,
+            ano,
+            valorFaturamento,
+            valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
+            valorLiquido
+          })
         } else {
           const valorDespesa = 0;
-          const valorLiquido = valorFaturamento - valorDespesa;
-          // Adicione os dados combinados ao objeto
+          const valorAbastecimento = abastecimentoCorrespondente.total;
+          const valorManutencao = 0;
+          const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
           dadosCombinados.push({
             mes,
+            ano,
             valorFaturamento,
             valorDespesa,
+            valorAbastecimento,
+            valorManutencao,
             valorLiquido
-          });
+          })
         }
+
+        // if (despesaCorrespondente) {
+        //   const valorDespesa = despesaCorrespondente.total;
+        //   const valorAbastecimento = abastecimentoCorrespondente.total;
+        //   const valorManutencao = manutencaoCorrespondente.total;
+        //   const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+
+        //   // Adicione os dados combinados ao objeto
+        //   dadosCombinados.push({
+        //     mes,
+        //     valorFaturamento,
+        //     valorDespesa,
+        //     valorAbastecimento,
+        //     valorManutencao,
+        //     valorLiquido
+        //   });
+        // } else {
+        //   const valorDespesa = 0;
+        //   const valorAbastecimento = abastecimentoCorrespondente.total;
+        //   const valorManutencao = manutencaoCorrespondente.total;
+        //   const valorLiquido = valorFaturamento - valorDespesa - valorAbastecimento - valorManutencao;
+        //   // Adicione os dados combinados ao objeto
+        //   dadosCombinados.push({
+        //     mes,
+        //     valorFaturamento,
+        //     valorDespesa,
+        //     valorAbastecimento,
+        //     valorManutencao,
+        //     valorLiquido
+        //   });
+        // };
       }
+      // console.log('Dados Combinados-> ', dadosCombinados);
       return dadosCombinados;
     };
     const MesesEnum = {
@@ -147,7 +340,7 @@ export default {
       }
       return 'Mês inválido';
     }
-     const ordenarDadosPorMes = () => {
+    const ordenarDadosPorMes = () => {
       // Ordene o array dadosCombinados com base no mês
       dadosCombinados.value.sort((a, b) => {
         const mesA = MesesEnum[a.mes.toUpperCase()];
@@ -157,32 +350,48 @@ export default {
     };
     onMounted(async () => {
       try {
-        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
+        // Atendimento
+        const response = await axios.get('https://localhost:7255/api/Atendimento/GerenteTodos/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
 
         atendimentos.value = response.data;
-        // console.log('Dados retornados da API Atendimentos', response.data);
-        // console.log('Atendimeknto - ', atendimentos.value);
         calcularFaturamentoMensal();
-        // console.log('Faturamento mensal', faturamentoMensal.value)
+
+        // Despesas Atendimento
         const responseDespesas = await axios.get('https://localhost:7255/api/DespesasAtendimento', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         despesas.value = responseDespesas.data;
-        // console.log('Dados retornados da API Despesas atendimentos', response.data);
-        // console.log('Despesas atendimentos', despesas.value);
         calcularDespesaMensal();
+
+        // Abastecimento
+        const responseAbastecimentos = await axios.get('https://localhost:7255/api/Abastecimento/Abastecimento/' + localStorage.getItem('gerenteId'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        abastecimentos.value = responseAbastecimentos.data;
+        // console.log('Abastecimentos-> ', responseAbastecimentos.data);
+        calcularAbastecimentoMensal();
+
+        // Manutenção
+        const responseManutencoes = await axios.get('https://localhost:7255/api/Manutencao/Manutencao/' + localStorage.getItem('gerenteId'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        manutencoes.value = responseManutencoes.data;
+        calcularManutencaoMensal();
+
         dadosCombinados.value = combinarFaturamentoDespesa();
-        // console.log('Dados combuinador', dadosCombinados.value);
-        // console.log('Despesa mensal', despesaMensal.value);
-         dadosCombinados.value = combinarFaturamentoDespesa();
-      // Ordenar os dados por mês após combinar faturamento e despesa
-      ordenarDadosPorMes();
+
+        // Ordenar os dados por mês após combinar faturamento e despesa
+        ordenarDadosPorMes();
       } catch (error) {
         console.error('Erro na solicitação:', error);
 
@@ -192,11 +401,15 @@ export default {
       atendimentos,
       faturamentoMensal,
       despesas,
+      abastecimentos,
+      manutencoes,
       despesaMensal,
+      abastecimentoMensal,
+      manutencaoMensal,
       dadosCombinados,
       searchTerm,
       filteredFaturamento,
-      parseData
+      parseData,
     };
 
   }

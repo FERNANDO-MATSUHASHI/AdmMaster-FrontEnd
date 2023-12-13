@@ -119,6 +119,11 @@
         </div>
 
         <div class="col-md-3">
+          <label for="qtd" class="form-label">Quantidade Litros:</label>
+          <input type="text" class="form-control" id="qtd" name="qtd" required v-model="formDataPut.qtd" placeholder="Ex... 100.50"><br>
+        </div>
+
+        <div class="col-md-3">
           <label for="valor_total_abastecimento" class="form-label">Valor Total R$:</label>
           <input type="text" class="form-control" id="valor_total_abastecimento" name="valor_total_abastecimento" required
             v-model="formDataPut.valor_total_abastecimento" placeholder="Ex... 100.00"><br>
@@ -195,6 +200,11 @@
         </div>
 
         <div class="col-md-3">
+          <label for="qtd" class="form-label">Quantidade Litros:</label>
+          <input type="text" class="form-control" id="qtd" name="qtd" required v-model="formDataPut.qtd" disabled="isInputLocked"><br>
+        </div>
+
+        <div class="col-md-3">
           <label for="valor_total_abastecimento" class="form-label">Valor Total R$:</label>
           <input type="text" class="form-control" id="valor_total_abastecimento" name="valor_total_abastecimento"
             v-model="formDataPut.valor_total_abastecimento" disabled="isInputLocked"><br>
@@ -261,6 +271,7 @@ export default {
       formDataPut: {
         data_abastecimento: '',
         valor_unid_abastecimento: '',
+        qtd: '',
         valor_total_abastecimento: '',
         viaturaId: '',
         fornecedorId: '',
@@ -385,6 +396,7 @@ export default {
     editarAbastecimento(abastecimento) {
       this.formDataPut.data_abastecimento = this.parseDataUSA(abastecimento.data_abastecimento);
       this.formDataPut.valor_unid_abastecimento = abastecimento.valor_unid_abastecimento.toFixed(2).toString();
+      this.formDataPut.qtd = abastecimento.qtd.toFixed(2).toString();
       this.formDataPut.valor_total_abastecimento = abastecimento.valor_total_abastecimento.toFixed(2).toString();
       this.formDataPut.viaturaId = abastecimento.viatura.tipo_ViaturaId;
       this.formDataPut.fornecedorId = abastecimento.fornecedor.id;
@@ -397,6 +409,7 @@ export default {
     excluirAbastecimento(abastecimento) {
       this.formDataPut.data_abastecimento = this.parseDataUSA(abastecimento.data_abastecimento);
       this.formDataPut.valor_unid_abastecimento = abastecimento.valor_unid_abastecimento.toFixed(2).toString();
+      this.formDataPut.qtd = abastecimento.qtd.toFixed(2).toString();
       this.formDataPut.valor_total_abastecimento = abastecimento.valor_total_abastecimento.toFixed(2).toString();
       this.formDataPut.viaturaId = abastecimento.viatura.tipo_ViaturaId;
       this.formDataPut.fornecedorId = abastecimento.fornecedor.id;
@@ -420,12 +433,13 @@ export default {
       })
         .then(response => {
           // Limpar o formulário
-          this.formDataPut.data_abastecimento = '',
-            this.formDataPut.valor_unid_abastecimento = '',
-            this.formDataPut.valor_total_abastecimento = '',
-            this.formDataPut.viaturaId = '',
-            this.formDataPut.fornecedorId = '',
-            this.formDataPut.tipo_combustivelId = '',
+          this.formDataPut.data_abastecimento = '';
+            this.formDataPut.valor_unid_abastecimento = '';
+            this.formDataPut.qtd = '';
+            this.formDataPut.valor_total_abastecimento = '';
+            this.formDataPut.viaturaId = '';
+            this.formDataPut.fornecedorId = '';
+            this.formDataPut.tipo_combustivelId = '';
             this.formDataPut.gerenteId = '';
 
           // Exibir o modal de sucesso
@@ -452,13 +466,14 @@ export default {
       })
         .then(response => {
           // Limpar o formulário
-          this.formDataPut.data_abastecimento = '',
-            this.formDataPut.valor_unid_abastecimento = '',
-            this.formDataPut.valor_total_abastecimento = '',
-            this.formDataPut.viaturaId = '',
-            this.formDataPut.fornecedorId = '',
-            this.formDataPut.tipo_combustivelId = '',
-            this.formDataPut.gerenteId = '';
+          this.formDataPut.data_abastecimento = '';
+          this.formDataPut.valor_unid_abastecimento = '';
+          this.formDataPut.qtd = '';
+          this.formDataPut.valor_total_abastecimento = '';
+          this.formDataPut.viaturaId = '';
+          this.formDataPut.fornecedorId = '';
+          this.formDataPut.tipo_combustivelId = '';
+          this.formDataPut.gerenteId = '';
 
           // Exibir o modal de sucesso
           this.excluirModal = false;

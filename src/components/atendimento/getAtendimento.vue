@@ -1,4 +1,21 @@
 <template>
+  <div class="row" style="padding: 10px 0; display: flex; align-items: center; ">
+
+    <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+      <span>Data Inicial: </span>
+      <input type="date" v-model="dataInicial" />
+    </div>
+
+    <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+      <span>Data Final: </span>
+      <input type="date" v-model="dataFinal" />
+    </div>
+
+    <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+      <button class="btn btn-primary mr-5" @click="buscarAtendimentos">Pesquisar</button>
+    </div>
+
+  </div>
   <div class="input-group input-group-sm mb-3">
     <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
   </div>
@@ -6,6 +23,7 @@
   <table class="tabela table table-hover">
     <thead>
       <tr>
+        <th scope="col"></th>
         <th scope="col">Data</th>
         <th scope="col">Sigla</th>
         <th scope="col">QRU</th>
@@ -30,7 +48,9 @@
       <tr v-if="this.filteredAtendimentos.length == 0">
         <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
       </tr>
+      <tr style="color: white;">{{ this.valorTotal = 0 }}</tr>
       <tr v-for="atendimento in filteredAtendimentos">
+        <th style="color: white;">{{ this.valorTotal += 1 }}</th>
         <th class="largura" scope="row">{{ parseDataGet(atendimento.data) }}</th>
         <td>{{ obterViatura(atendimento.viaturaId) }}</td>
         <td class="largura">{{ atendimento.qru }}</td>
@@ -46,25 +66,34 @@
         <td>{{ obterEmpresa(atendimento.empresaId) }}</td>
 
         <td>
-          <i v-if="this.cargoId == 1" class="fi-rr-edit" style="font-size: 20px; cursor: pointer;" @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
-          <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"  @click="maisInfoAtendimento(atendimento)"  data-toggle="tooltip" data-placement="top" title="Mais Informações"></i>
+          <i v-if="this.cargoId == 1" class="fi-rr-edit" style="font-size: 20px; cursor: pointer;"
+            @click="editarAtendimento(atendimento)" data-toggle="tooltip" data-placement="top" title="Editar"></i>
+          <i class="fi fi-rr-add" style="margin-left: 12px; font-size: 20px; cursor: pointer;"
+            @click="maisInfoAtendimento(atendimento)" data-toggle="tooltip" data-placement="top"
+            title="Mais Informações"></i>
         </td>
 
         <td :style="{ color: atendimento.cancelado ? 'red' : 'black' }">
-          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : cancelado(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Cancelado - Alterar Status">{{ atendimento.cancelado ? 'Sim' : 'Não' }}</i>
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : cancelado(atendimento)" data-toggle="tooltip"
+            data-placement="top" title="Serviço Cancelado - Alterar Status">{{ atendimento.cancelado ? 'Sim' : 'Não'
+            }}</i>
         </td>
 
         <td :style="{ color: atendimento.ativo ? 'black' : 'red' }">
-          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : ativo(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço Ativo - Alterar Status">{{ atendimento.ativo ? 'Sim' : 'Não' }}</i>
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : ativo(atendimento)" data-toggle="tooltip"
+            data-placement="top" title="Serviço Ativo - Alterar Status">{{ atendimento.ativo ? 'Sim' : 'Não' }}</i>
         </td>
 
         <td :style="{ color: atendimento.em_analise ? 'red' : 'black' }">
-          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : emAnalise(atendimento)" data-toggle="tooltip" data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não' }}</i>
+          <i style="cursor: pointer;" @click="this.cargoId === '3' ? null : emAnalise(atendimento)" data-toggle="tooltip"
+            data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não'
+            }}</i>
         </td>
 
       </tr>
     </tbody>
   </table>
+  <th>Quantidade de Serviço: {{ this.valorTotal }}</th>
   <br>
   <br>
   <br>
@@ -163,13 +192,13 @@
         </div>
 
         <div class="col-md-3">
-            <label for="usuarioId" class="form-label">Empresa:</label>
-            <select id="inputState2" class="form-select" required v-model="formDataPut.empresaId">
-              <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}</option>
-            </select>
-          </div>
+          <label for="usuarioId" class="form-label">Empresa:</label>
+          <select id="inputState2" class="form-select" required v-model="formDataPut.empresaId">
+            <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}</option>
+          </select>
+        </div>
 
-        <div class="col-md-2">
+        <div class="col-md-1">
           <br>
           <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno"
             name="noturno" v-model="formDataPut.noturno">
@@ -189,13 +218,15 @@
         </div>
 
         <div class="col-md-2">
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="cancelado" v-model="formDataPut.cancelado">
-            <label style="margin-left: 35px;" for="cancelado" class="form-check-label">Cancelado</label>
-            <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="ativo" v-model="formDataPut.ativo">
-            <label style="margin-left: 35px;" for="ativo" class="form-check-label">Ativo</label>
-          </div>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins"
+            name="cancelado" v-model="formDataPut.cancelado">
+          <label style="margin-left: 35px;" for="cancelado" class="form-check-label">Cancelado</label>
+          <br>
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra"
+            name="ativo" v-model="formDataPut.ativo">
+          <label style="margin-left: 35px;" for="ativo" class="form-check-label">Ativo</label>
+        </div>
 
         <div class="col-md-4">
           <label for="adicionais" class="col-form-label">Adicionais R$:</label>
@@ -332,51 +363,61 @@
 
         <div class="col-md-2">
           <label for="rua" class="form-label">QRU:</label>
-          <input type="text" class="form-control" id="qru" name="qru" required v-model="formDataPut.qru" disabled="isInputLocked"><br>
+          <input type="text" class="form-control" id="qru" name="qru" required v-model="formDataPut.qru"
+            disabled="isInputLocked"><br>
         </div>
 
         <div class="col-md-2">
           <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formDataPut.qtd_hora_parada" disabled="isInputLocked">
+          <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada"
+            v-model="formDataPut.qtd_hora_parada" disabled="isInputLocked">
         </div>
 
         <div class="col-md-3">
           <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formDataPut.obs_hora_parada" disabled="isInputLocked">
+          <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada"
+            v-model="formDataPut.obs_hora_parada" disabled="isInputLocked">
         </div>
 
         <div class="col-md-2">
           <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formDataPut.qtd_pedagio" disabled="isInputLocked"><br>
+          <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formDataPut.qtd_pedagio"
+            disabled="isInputLocked"><br>
         </div>
 
         <div class="col-md-3">
           <label for="pedagio" class="col-form-label">Pedágio R$:</label>
-          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio" disabled="isInputLocked">
+          <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formDataPut.pedagio"
+            disabled="isInputLocked">
         </div>
 
         <div class="col-md-3">
           <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
-          <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formDataPut.hospedagem" disabled="isInputLocked">
+          <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formDataPut.hospedagem"
+            disabled="isInputLocked">
         </div>
 
         <div class="col-md-2">
           <br>
-          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formDataPut.patins" disabled="isInputLocked">
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins"
+            name="patins" v-model="formDataPut.patins" disabled="isInputLocked">
           <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
           <br>
-          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formDataPut.rodaExtra" disabled="isInputLocked">
+          <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra"
+            name="rodaExtra" v-model="formDataPut.rodaExtra" disabled="isInputLocked">
           <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
         </div>
 
         <div class="col-md-4">
           <label for="adicionais" class="col-form-label">Adicionais R$:</label>
-          <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais" disabled="isInputLocked">
+          <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formDataPut.adicionais"
+            disabled="isInputLocked">
         </div>
 
         <div class="col-md-3">
           <label for="obs_adicionais" class="col-form-label">Obs:</label>
-          <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formDataPut.obs_adicionais" disabled="isInputLocked">
+          <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais"
+            v-model="formDataPut.obs_adicionais" disabled="isInputLocked">
         </div>
 
       </form>
@@ -468,9 +509,9 @@ export default {
           }
         });
         // atendimentos.value = response.data;
-        if (cargoId == '1'){
+        if (cargoId == '1') {
           atendimentos.value = response.data;
-        } else{
+        } else {
           const atendimentoFilter = response.data;
           atendimentos.value = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(cargoId));
         };
@@ -570,10 +611,10 @@ export default {
             // this.filteredAtendimentos = res.data;
             // this.atendimentos = res.data;
 
-            if (this.cargoId == '1'){
+            if (this.cargoId == '1') {
               this.filteredAtendimentos = res.data;
               this.atendimentos = res.data;
-            } else{
+            } else {
               const atendimentoFilter = res.data;
               this.atendimentos = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(this.cargoId));
               this.filteredAtendimentos = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(this.cargoId));
@@ -610,8 +651,8 @@ export default {
       this.successExcluirModal = false;
       this.emAnaliseModal = false;
       this.maisInfoModal = false;
-      this.canceladoModal= false;
-      this.ativoModal= false;
+      this.canceladoModal = false;
+      this.ativoModal = false;
     },
     voltarModal() {
       this.confirmarSimNaoModal = false;
@@ -796,6 +837,7 @@ export default {
       this.formDataPut.cancelado = atendimento.cancelado;
       this.formDataPut.ativo = atendimento.ativo;
       this.atendimentoID = atendimento.id;
+      this.formDataPut.empresaId = atendimento.empresaId;
 
       this.emAnaliseModal = true;
     },
@@ -888,6 +930,7 @@ export default {
       this.formDataPut.cancelado = atendimento.cancelado;
       this.formDataPut.ativo = atendimento.ativo;
       this.atendimentoID = atendimento.id;
+      this.formDataPut.empresaId = atendimento.empresaId;
 
       this.canceladoModal = true;
     },
@@ -906,6 +949,8 @@ export default {
       this.formDataPut.data = formattedDate;
 
       this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+      console.log('Atendimento Cancelado Status-> ', this.formDataPut.empresaId);
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -940,6 +985,7 @@ export default {
           this.formDataPut.em_analise = false;
           this.formDataPut.cancelado = false;
           this.formDataPut.ativo = true;
+          this.formDataPut.empresaId = '';
 
           this.canceladoModal = false;
           this.getAtendimentos();
@@ -975,6 +1021,7 @@ export default {
       this.formDataPut.cancelado = atendimento.cancelado;
       this.formDataPut.ativo = atendimento.ativo;
       this.atendimentoID = atendimento.id;
+      this.formDataPut.empresaId = atendimento.empresaId;
 
       this.ativoModal = true;
     },
@@ -1027,6 +1074,7 @@ export default {
           this.formDataPut.em_analise = false;
           this.formDataPut.cancelado = false;
           this.formDataPut.ativo = true;
+          this.formDataPut.empresaId = '';
 
           this.ativoModal = false;
           this.getAtendimentos();
@@ -1076,6 +1124,44 @@ export default {
     obterEmpresa(empresaId) {
       const empresa = this.empresas.find(c => c.id === empresaId);
       return empresa ? empresa.nome_empresa : 'Empresa Desconhecida';
+    },
+    buscarAtendimentos() {
+      this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+      if (this.dataInicial && !this.dataFinal) {
+        alert("Por Favor, Selecione uma Data Final.");
+        return;
+      }
+      if (!this.dataInicial && this.dataFinal) {
+        alert("Por Favor, Selecione uma Data Inicial.");
+        return;
+      }
+      if (new Date(this.dataInicial) > new Date(this.dataFinal)) {
+        alert("Data Inicial não pode ser maior que a Data Final.");
+        return;
+      }
+
+      let url = 'https://localhost:7255/api/Atendimento/GetAtendimentosByFilter?';
+      url += this.dataInicial && this.dataFinal ? `gerenteId=${this.formDataPut.gerenteId}&dataInicial=${this.dataInicial}&dataFinal=${this.dataFinal}` : '';
+      // https://localhost:7255/api/Atendimento/GetAtendimentosByFilter?gerenteId=1&dataInicial=2023-11-03&dataFinal=2023-11-30
+
+      console.log(url)
+
+      axios.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      })
+        .then(res => {
+          this.atendimentos = res.data;
+          this.valorTotal = 0;
+          // console.log('Atendimento Filtrados-> ', this.atendimentos);
+          return;
+        })
+        .catch(error => {
+          console.log(error)
+        })
     },
   }
 }
@@ -1143,8 +1229,8 @@ export default {
 }
 
 .click-disabled {
-  pointer-events: none; /* Desativa apenas a interação do clique */
-  opacity: 0.5; /* Opacidade reduzida para indicar visualmente que o clique está desativado */
-}
-
-</style>
+  pointer-events: none;
+  /* Desativa apenas a interação do clique */
+  opacity: 0.5;
+  /* Opacidade reduzida para indicar visualmente que o clique está desativado */
+}</style>

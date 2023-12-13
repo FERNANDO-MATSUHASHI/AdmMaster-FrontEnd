@@ -1,28 +1,30 @@
 <template>
   <main class="atendimento">
-  <div class="row">
-    <div class="d-flex justify-content">
-      <i style="font-size: 40px; margin-left: 35px;" class="fi fi-rr-hand-holding-medical" ></i>
-      <div style="margin-left: 20px;" class="col">
-        <h1>Atendimento</h1>
-      </div>
-      <div class="col-6 d-flex justify-content-end align-items-center" v-if="this.cargoId == 1">
+    <div class="row">
+
+      <div class="d-flex justify-content">
+        <i style="font-size: 40px; margin-left: 35px;" class="fi fi-rr-hand-holding-medical"></i>
+        <div style="margin-left: 20px;" class="col">
+          <h1>Atendimento</h1>
+        </div>
+        <div class="col-6 d-flex justify-content-end align-items-center" v-if="this.cargoId == 1">
           <button class="btn btn-primary mr-3" @click="incluirAtendimento()">Incluir Atendimento</button>
-      </div>
+        </div>
 
-      <div class="d-flex justify-content-end align-items-center">
+        <div class="d-flex justify-content-end align-items-center">
           <button class="btn btn-primary mr-3" @click="emAnalisaAtendimento()">Atendimentos em Análise</button>
-      </div>
+        </div>
 
-      <div class="d-flex justify-content-end align-items-center">
+        <div class="d-flex justify-content-end align-items-center">
           <button class="btn btn-primary mr-3" @click="limparPesquisa()">Limpar Pesquisa</button>
+        </div>
       </div>
+
     </div>
-  </div>
 
-  <getAtendimento ref="componentGetAtendimento"></getAtendimento>
+    <getAtendimento ref="componentGetAtendimento"></getAtendimento>
 
-  <div class="modal" v-if="showModal">
+    <div class="modal" v-if="showModal">
       <div class="modal-content">
         <span class="close" @click="fecharModal()">&times;</span>
 
@@ -43,62 +45,72 @@
 
           <div class="col-md-3">
             <label for="rua" class="form-label">QRU:</label>
-            <input type="text" class="form-control" id="qru" name="qru" required v-model="formData.qru"  placeholder="Ex... 01/1001223-23"><br>
+            <input type="text" class="form-control" id="qru" name="qru" required v-model="formData.qru"
+              placeholder="Ex... 01/1001223-23"><br>
           </div>
 
           <div class="col-md-3">
             <label for="tipoServicoId" class="form-label">Tipo Serviço:</label>
             <select id="inputState2" class="form-select" required v-model="formData.tipoServicoId">
-              <option v-for="tipoServico in tipoServicos" :key="tipoServico.id" :value="tipoServico.id">{{ tipoServico.descricao }}</option>
+              <option v-for="tipoServico in tipoServicos" :key="tipoServico.id" :value="tipoServico.id">{{
+                tipoServico.descricao }}</option>
             </select>
           </div>
 
           <div class="col-md-3">
             <label for="tipoVeiculoId" class="form-label">Tipo Veículo:</label>
             <select id="inputState2" class="form-select" required v-model="formData.tipoVeiculoId">
-              <option v-for="tipoVeiculo in tipoVeiculos" :key="tipoVeiculo.id" :value="tipoVeiculo.id">{{ tipoVeiculo.modelo }}</option>
+              <option v-for="tipoVeiculo in tipoVeiculos" :key="tipoVeiculo.id" :value="tipoVeiculo.id">{{
+                tipoVeiculo.modelo }}</option>
             </select>
             <br>
           </div>
-          
+
           <div class="col-md-3">
             <label for="qth" class="form-label">QTH:</label>
-            <input type="text" class="form-control" id="qth" name="qth" required v-model="formData.qth" placeholder="Ex... Marília"><br>
+            <input type="text" class="form-control" id="qth" name="qth" required v-model="formData.qth"
+              placeholder="Ex... Marília"><br>
           </div>
 
           <div class="col-md-3">
             <label for="qti" class="form-label">QTI:</label>
-            <input type="text" class="form-control" id="qti" name="qti" v-model="formData.qti" placeholder="Ex... São Paulo"><br>
+            <input type="text" class="form-control" id="qti" name="qti" v-model="formData.qti"
+              placeholder="Ex... São Paulo"><br>
           </div>
 
           <div class="col-md-3">
             <label for="km" class="form-label">Km:</label>
-            <input type="text" class="form-control" id="km" name="km" v-model="formData.km"  placeholder="Ex... 1000"><br>
+            <input type="text" class="form-control" id="km" name="km" v-model="formData.km" placeholder="Ex... 1000"><br>
           </div>
 
           <div class="col-md-3">
             <label for="qtd_hora_parada" class="col-form-label">Hora Parada:</label>
-            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada" v-model="formData.qtd_hora_parada" placeholder="Ex... 1">
+            <input type="text" class="form-control" id="qtd_hora_parada" name="qtd_hora_parada"
+              v-model="formData.qtd_hora_parada" placeholder="Ex... 1">
           </div>
 
           <div class="col-md-3">
             <label for="obs_hora_parada" class="col-form-label">Obs Hora Parada:</label>
-            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada" v-model="formData.obs_hora_parada" placeholder="Ex... das 19:00 às 20:00 esperando o táxi">
+            <input type="text" class="form-control" id="obs_hora_parada" name="obs_hora_parada"
+              v-model="formData.obs_hora_parada" placeholder="Ex... das 19:00 às 20:00 esperando o táxi">
           </div>
 
           <div class="col-md-3">
             <label for="qtd_pedagio" class="col-form-label">Qtd. Pedágio:</label>
-            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio" placeholder="Ex... 12"><br>
+            <input type="text" class="form-control" id="qtd_pedagio" name="qtd_pedagio" v-model="formData.qtd_pedagio"
+              placeholder="Ex... 12"><br>
           </div>
 
           <div class="col-md-3">
             <label for="pedagio" class="col-form-label">Pedágio R$:</label>
-            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio" placeholder="Ex... 120.00">
+            <input type="text" class="form-control" id="pedagio" name="pedagio" v-model="formData.pedagio"
+              placeholder="Ex... 120.00">
           </div>
 
           <div class="col-md-3">
             <label for="hospedagem" class="col-form-label">Hospedagem R$:</label>
-            <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem" placeholder="Ex... 180.50">
+            <input type="text" class="form-control" id="hospedagem" name="hospedagem" v-model="formData.hospedagem"
+              placeholder="Ex... 180.50">
           </div>
 
           <div class="col-md-3">
@@ -111,44 +123,54 @@
           <div class="col-md-3">
             <label for="usuarioId" class="form-label">Empresa:</label>
             <select id="inputState2" class="form-select" required v-model="formData.empresaId">
-              <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}</option>
+              <option v-for="empresa in empresas" :key="empresa.id" :value="empresa.id">{{ empresa.nome_empresa }}
+              </option>
             </select>
           </div>
 
           <div class="col-md-1">
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno" name="noturno" v-model="formData.noturno">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="noturno"
+              name="noturno" v-model="formData.noturno">
             <label style="margin-left: 35px;" for="noturno" class="form-check-label">Adicional Noturno</label>
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris" v-model="formData.ris">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="ris" name="ris"
+              v-model="formData.ris">
             <label style="margin-left: 35px;" for="ris" class="form-check-label">RIS</label>
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="patins" v-model="formData.patins">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins"
+              name="patins" v-model="formData.patins">
             <label style="margin-left: 35px;" for="patins" class="form-check-label">Patins</label>
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="rodaExtra" v-model="formData.rodaExtra">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra"
+              name="rodaExtra" v-model="formData.rodaExtra">
             <label style="margin-left: 35px;" for="rodaExtra" class="form-check-label">Roda Extra</label>
           </div>
 
           <div class="col-md-2">
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins" name="cancelado" v-model="formData.cancelado">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="patins"
+              name="cancelado" v-model="formData.cancelado">
             <label style="margin-left: 35px;" for="cancelado" class="form-check-label">Cancelado</label>
             <br>
-            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra" name="ativo" v-model="formData.ativo">
+            <input style="font-size: 20px; margin-left: 5px;" type="checkbox" class="form-check-input" id="rodaExtra"
+              name="ativo" v-model="formData.ativo">
             <label style="margin-left: 35px;" for="ativo" class="form-check-label">Ativo</label>
           </div>
 
           <div class="col-md-4">
             <label for="adicionais" class="col-form-label">Adicionais R$:</label>
-            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais" placeholder="Ex... 39.50">
+            <input type="text" class="form-control" id="adicionais" name="adicionais" v-model="formData.adicionais"
+              placeholder="Ex... 39.50">
 
             <label for="obs_adicionais" class="col-form-label">Obs:</label>
-            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais" v-model="formData.obs_adicionais" placeholder="Ex... Almoço">
-            
+            <input type="text" class="form-control" id="obs_adicionais" name="obs_adicionais"
+              v-model="formData.obs_adicionais" placeholder="Ex... Almoço">
+
             <b><label for="valor_total" class="col-form-label">Valor Total R$:</label></b>
-            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;" disabled="isInputLocked" required v-model="formData.valor_total"><br>
-          </div>          
+            <input type="text" class="form-control" id="valor_total" name="valor_total" style="font-weight: bold;"
+              disabled="isInputLocked" required v-model="formData.valor_total"><br>
+          </div>
 
           <div class="col-12 d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Calcular</button>
@@ -163,7 +185,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Sucesso</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="fecharModal()"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
             Cadastro realizado com sucesso!
@@ -180,7 +203,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Confirmar?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" @click="fecharModal()"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+              @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
             <h5>Valor Total R$ {{ formData.valor_total }}</h5>
@@ -191,8 +215,8 @@
           </div>
         </div>
       </div>
-    </div> 
-</main>
+    </div>
+  </main>
 </template>
 
 <script>
@@ -253,7 +277,7 @@ export default {
     const viaturas = ref([]);
     const usuarios = ref([]);
     const tipoVeiculos = ref([]);
-    const veiculos = ref([]);   
+    const veiculos = ref([]);
     const tipoServicoLoc = ref([]);
     const empresas = ref([]);
 
@@ -274,18 +298,18 @@ export default {
     onMounted(async () => {
       try {
         // console.log('GerenteId-> ', localStorage.getItem('gerenteId'));
-        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/'+localStorage.getItem('gerenteId'), {
+        const response = await axios.get('https://localhost:7255/api/Atendimento/Gerente/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        if (cargoId == '1'){
+        if (cargoId == '1') {
           atendimentos.value = response.data;;
-        } else{
+        } else {
           const atendimentoFilter = response.data;
           usuarios.value = atendimentoFilter.filter(usuario => usuario.usuarioId === parseInt(cargoId));
         };
-        
+
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -330,13 +354,13 @@ export default {
 
     onMounted(async () => {
       try {
-        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/'+localStorage.getItem('gerenteId'), {
+        const responseUsuarios = await axios.get('https://localhost:7255/api/Usuario/Colaboradores/' + localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
         usuarios.value = responseUsuarios.data;
-        
+
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
@@ -376,7 +400,7 @@ export default {
     fecharModal() {
       this.showModal = false;
       this.confirmarSimNaoModal = false;
-      this.successModal = false; 
+      this.successModal = false;
     },
     voltarModal() {
       this.confirmarSimNaoModal = false;
@@ -384,22 +408,22 @@ export default {
     },
     enviarFormulario() {
       this.formData.data = new Date(this.formData_data);
-      if (this.formData.km == ""){
+      if (this.formData.km == "") {
         this.formData.km = "0";
       }
-      if (this.formData.qtd_hora_parada == ""){
+      if (this.formData.qtd_hora_parada == "") {
         this.formData.qtd_hora_parada = "0";
       }
-      if (this.formData.pedagio == ""){
+      if (this.formData.pedagio == "") {
         this.formData.pedagio = "0";
       }
-      if (this.formData.qtd_pedagio == ""){
+      if (this.formData.qtd_pedagio == "") {
         this.formData.qtd_pedagio = "0";
       }
-      if (this.formData.hospedagem == ""){
+      if (this.formData.hospedagem == "") {
         this.formData.hospedagem = "0";
       }
-      if (this.formData.adicionais == ""){
+      if (this.formData.adicionais == "") {
         this.formData.adicionais = "0";
       }
       this.formData.gerenteId = localStorage.getItem('gerenteId');
@@ -421,7 +445,7 @@ export default {
           this.formData.patins = false;
           this.formData.rodaExtra = false;
           this.formData.tipoVeiculoId = '',
-          this.formData.qth = '';
+            this.formData.qth = '';
           this.formData.qti = '';
           this.formData.km = '';
           this.formData.noturno = false;
@@ -457,45 +481,45 @@ export default {
       // console.log('tipoVeiculoLoc-> ', tipoVeiculoLoc);
 
       // Efetuando a Soma
-      
-      if (this.formData.km == ""){
+
+      if (this.formData.km == "") {
         this.kmTotal = "0";
       } else {
         this.kmTotal = (Number(this.formData.km) * Number(tipoVeiculoLoc[0].valor_km));
       }
-      if (this.formData.qtd_hora_parada == ""){
+      if (this.formData.qtd_hora_parada == "") {
         this.horaTotal = "0";
       } else {
         this.horaTotal = (Number(this.formData.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
       }
-      if (this.formData.pedagio == ""){
+      if (this.formData.pedagio == "") {
         this.formData.pedagio = "0";
       }
-      if (this.formData.qtd_pedagio == ""){
+      if (this.formData.qtd_pedagio == "") {
         this.formData.qtd_pedagio = "0";
       }
-      if (this.formData.hospedagem == ""){
+      if (this.formData.hospedagem == "") {
         this.formData.hospedagem = "0";
-      } 
-      if (this.formData.adicionais == ""){
+      }
+      if (this.formData.adicionais == "") {
         this.formData.adicionais = "0";
-      }      
-      
-      if (this.formData.noturno == true){
+      }
+
+      if (this.formData.noturno == true) {
         this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
       } else {
         this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais)).toFixed(2);
       }
 
-      if (this.formData.ris == true){
+      if (this.formData.ris == true) {
         this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
       }
-      if (this.formData.patins == true){
+      if (this.formData.patins == true) {
         this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].patins))).toFixed(2)
       }
-      if (this.formData.rodaExtra == true){
+      if (this.formData.rodaExtra == true) {
         this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].rodaExtra))).toFixed(2)
-      }      
+      }
 
       this.showModal = false;
       this.confirmarSimNaoModal = true;
@@ -514,7 +538,7 @@ export default {
     },
     limparPesquisa() {
       this.$refs.componentGetAtendimento.getAtendimentos();
-    }
+    },
   }
 };
 </script>
