@@ -15,8 +15,13 @@
       <button class="btn btn-primary mr-5" @click="buscarAtendimentos">Pesquisar</button>
     </div>
 
+    <div class="col-3 col-sm-3 col-md-3 col-lg-3 col-xl-3">
+      <th>Quantidade de Serviço: {{ this.qruTotal }}</th><br>
+      <th>Valor Total: {{ this.valorTotal.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</th>
+    </div>
+
   </div>
-  <div class="input-group input-group-sm mb-3">
+  <div class="input-group input-group-sm mb-4">
     <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por QRU" />
   </div>
 
@@ -48,9 +53,10 @@
       <tr v-if="this.filteredAtendimentos.length == 0">
         <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
       </tr>
+      <tr style="color: white;">{{ this.qruTotal = 0 }}</tr>
       <tr style="color: white;">{{ this.valorTotal = 0 }}</tr>
       <tr v-for="atendimento in filteredAtendimentos">
-        <th style="color: white;">{{ this.valorTotal += 1 }}</th>
+        <th style="color: white;">{{ this.qruTotal += 1 }}</th>
         <th class="largura" scope="row">{{ parseDataGet(atendimento.data) }}</th>
         <td>{{ obterViatura(atendimento.viaturaId) }}</td>
         <td class="largura">{{ atendimento.qru }}</td>
@@ -62,8 +68,9 @@
         <td>{{ atendimento.km }}</td>
         <td>{{ atendimento.noturno ? 'Sim' : 'Não' }}</td>
         <td>{{ atendimento.valor_total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</td>
+        {{ somaValor(atendimento.valor_total) }}
         <td>{{ obterUsuario(atendimento.usuarioId) }}</td>
-        <td>{{ obterEmpresa(atendimento.empresaId) }}</td>
+        <td :style="{ color: obterCorEmpresa(atendimento.empresaId) }">{{ obterEmpresa(atendimento.empresaId) }}</td>
 
         <td>
           <i v-if="this.cargoId == 1" class="fi-rr-edit" style="font-size: 20px; cursor: pointer;"
@@ -89,11 +96,11 @@
             data-placement="top" title="Serviço em Análise - Alterar Status">{{ atendimento.em_analise ? 'Sim' : 'Não'
             }}</i>
         </td>
-
       </tr>
     </tbody>
   </table>
-  <th>Quantidade de Serviço: {{ this.valorTotal }}</th>
+  <!-- <th>Quantidade de Serviço: {{ this.qruTotal }}</th><br>
+  <th>Valor Total: {{ this.valorTotal.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</th> -->
   <br>
   <br>
   <br>
@@ -474,6 +481,8 @@ export default {
       canceladoModal: false,
       ativoModal: false,
       cargoId: '',
+      qruTotal: 0,
+      valorTotal: 0,
     }
   },
   setup() {
@@ -673,12 +682,12 @@ export default {
       this.formDataPut.noturno = atendimento.noturno;
       this.formDataPut.qtd_hora_parada = atendimento.qtd_hora_parada.toString();
       this.formDataPut.obs_hora_parada = atendimento.obs_hora_parada.toString();
-      this.formDataPut.hospedagem = atendimento.hospedagem.toString();
+      this.formDataPut.hospedagem = atendimento.hospedagem.toFixed(2);
       this.formDataPut.qtd_pedagio = atendimento.qtd_pedagio.toString();
-      this.formDataPut.pedagio = atendimento.pedagio.toString();
-      this.formDataPut.adicionais = atendimento.adicionais.toString();
+      this.formDataPut.pedagio = atendimento.pedagio.toFixed(2);
+      this.formDataPut.adicionais = atendimento.adicionais.toFixed(2);
       this.formDataPut.obs_adicionais = atendimento.obs_adicionais.toString();
-      this.formDataPut.valor_total = atendimento.valor_total.toString();
+      this.formDataPut.valor_total = atendimento.valor_total.toFixed(2);
       this.formDataPut.em_analise = atendimento.em_analise;
       this.formDataPut.cancelado = atendimento.cancelado;
       this.formDataPut.ativo = atendimento.ativo;
@@ -690,14 +699,7 @@ export default {
       this.editarModal = true;
     },
     editarFormulario(id) {
-      // this.formDataPut.data = new Date(this.formDataPut.data);
-      // const dateString = this.formDataPut.data;
-      // const parts = dateString.split('/');
-      // const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
       this.formDataPut.data = this.parseData(this.formDataPut.data);
-      // console.log('Data-> ', this.formDataPut.data);
-      console.log('formDataPut-> ', this.formDataPut);
-
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -745,50 +747,54 @@ export default {
         });
     },
     confirmarSimNaoFormulario() {
-      const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formDataPut.viaturaId);
-      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId)
-      const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
-
-      // Efetuando a Soma
-
-      if (this.formDataPut.km == "") {
+      const tipoViatura = this.veiculos.filter(viatura => viatura.Id === this.formDataPut.viaturaId);
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId);
+      const tipoVeiculoLoc = this.veiculos.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
+      this.formDataPut.valor_total = 0;
+      
+      if (this.formDataPut.km == "0") {
         this.kmTotal = "0";
       } else {
         this.kmTotal = (Number(this.formDataPut.km) * Number(tipoVeiculoLoc[0].valor_km));
       }
-      if (this.formDataPut.qtd_hora_parada == "") {
+      if (this.formDataPut.qtd_hora_parada == "0") {
         this.horaTotal = "0";
       } else {
         this.horaTotal = (Number(this.formDataPut.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
       }
-      if (this.formDataPut.pedagio == "") {
-        this.formDataPut.pedagio = "0";
-      }
-      if (this.formDataPut.qtd_pedagio == "") {
-        this.formDataPut.qtd_pedagio = "0";
-      }
-      if (this.formDataPut.hospedagem == "") {
-        this.formDataPut.hospedagem = "0";
-      }
-      if (this.formDataPut.adicionais == "") {
-        this.formDataPut.adicionais = "0";
-      }
-
-      if (this.formDataPut.noturno == true) {
-        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
-      } else {
-        this.formDataPut.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais)).toFixed(2);
-      }
-
       if (this.formDataPut.ris == true) {
-        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
+        this.risTotal = tipoVeiculoLoc[0].ris;
+      } else {
+        this.risTotal = "0";
       }
       if (this.formDataPut.patins == true) {
-        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].patins))).toFixed(2)
+        this.patinsTotal = tipoVeiculoLoc[0].patins;
+      } else {
+        this.patinsTotal = "0";
       }
       if (this.formDataPut.rodaExtra == true) {
-        this.formDataPut.valor_total = ((Number(this.formDataPut.valor_total)) + (Number(tipoVeiculoLoc[0].rodaExtra))).toFixed(2)
+        this.rodaExtraTotal = tipoVeiculoLoc[0].rodaExtra;
+      } else {
+        this.rodaExtraTotal = "0";
       }
+
+      console.log('Cancelado-> ', this.formDataPut.cancelado);
+
+      if (this.formDataPut.cancelado == false) {
+        if (this.formDataPut.noturno == true){
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(tipoVeiculoLoc[0].adicional_noturno) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formDataPut.cancelado == false;
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
+      } else {
+        if (this.formDataPut.noturno == true){
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + (Number(tipoVeiculoLoc[0].adicional_noturno)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formDataPut.cancelado == true;
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
+      };
 
       this.editarModal = false;
       this.confirmarSimNaoModal = true;
@@ -936,10 +942,51 @@ export default {
     },
     alterarCancelado(id) {
       // Condição para mudança do Status Cancelado
+      const tipoViatura = this.veiculos.filter(viatura => viatura.Id === this.formDataPut.viaturaId);
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId);
+      const tipoVeiculoLoc = this.veiculos.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
+      this.formDataPut.valor_total = 0;
+      
+      if (this.formDataPut.km == "0") {
+        this.kmTotal = "0";
+      } else {
+        this.kmTotal = (Number(this.formDataPut.km) * Number(tipoVeiculoLoc[0].valor_km));
+      }
+      if (this.formDataPut.qtd_hora_parada == "0") {
+        this.horaTotal = "0";
+      } else {
+        this.horaTotal = (Number(this.formDataPut.qtd_hora_parada) * Number(tipoVeiculoLoc[0].hora_parada));
+      }
+      if (this.formDataPut.ris == true) {
+        this.risTotal = tipoVeiculoLoc[0].ris;
+      } else {
+        this.risTotal = "0";
+      }
+      if (this.formDataPut.patins == true) {
+        this.patinsTotal = tipoVeiculoLoc[0].patins;
+      } else {
+        this.patinsTotal = "0";
+      }
+      if (this.formDataPut.rodaExtra == true) {
+        this.rodaExtraTotal = tipoVeiculoLoc[0].rodaExtra;
+      } else {
+        this.rodaExtraTotal = "0";
+      }
+
       if (this.formDataPut.cancelado == true) {
         this.formDataPut.cancelado = false;
+        if (this.formDataPut.noturno == true){
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(tipoVeiculoLoc[0].adicional_noturno) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
       } else {
         this.formDataPut.cancelado = true;
+        if (this.formDataPut.noturno == true){
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + (Number(tipoVeiculoLoc[0].adicional_noturno)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
       };
 
       // this.formDataPut.data = new Date(this.formDataPut.data);
@@ -950,7 +997,7 @@ export default {
 
       this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
 
-      console.log('Atendimento Cancelado Status-> ', this.formDataPut.empresaId);
+      // console.log('Atendimento Cancelado Status-> ', this.formDataPut.empresaId);
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -1145,7 +1192,7 @@ export default {
       url += this.dataInicial && this.dataFinal ? `gerenteId=${this.formDataPut.gerenteId}&dataInicial=${this.dataInicial}&dataFinal=${this.dataFinal}` : '';
       // https://localhost:7255/api/Atendimento/GetAtendimentosByFilter?gerenteId=1&dataInicial=2023-11-03&dataFinal=2023-11-30
 
-      console.log(url)
+      // console.log(url)
 
       axios.get(url, {
         headers: {
@@ -1155,6 +1202,7 @@ export default {
       })
         .then(res => {
           this.atendimentos = res.data;
+          this.qruTotal = 0;
           this.valorTotal = 0;
           // console.log('Atendimento Filtrados-> ', this.atendimentos);
           return;
@@ -1162,6 +1210,21 @@ export default {
         .catch(error => {
           console.log(error)
         })
+    },
+    obterCorEmpresa(empresaId) {
+      // console.log('empresaId', empresaId);
+    if (empresaId === 1) {
+      return 'blue';
+    } else if (empresaId === 2) {
+      return 'lightblue';
+    } else if (empresaId === 3) {
+      return 'orange'
+    } else {
+      return 'brown';
+    }
+    },
+    somaValor(valor) {
+      this.valorTotal += parseFloat(valor);
     },
   }
 }
@@ -1230,7 +1293,18 @@ export default {
 
 .click-disabled {
   pointer-events: none;
-  /* Desativa apenas a interação do clique */
   opacity: 0.5;
-  /* Opacidade reduzida para indicar visualmente que o clique está desativado */
-}</style>
+}
+
+.titulo1 {
+  position: absolute;
+  top: 50px; /* Ajuste a posição vertical conforme necessário */
+  left: 20px; /* Ajuste a posição horizontal conforme necessário */
+}
+
+.titulo2 {
+  position: absolute;
+  top: 80px; /* Ajuste a posição vertical conforme necessário */
+  left: 20px; /* Ajuste a posição horizontal conforme necessário */
+}
+</style>

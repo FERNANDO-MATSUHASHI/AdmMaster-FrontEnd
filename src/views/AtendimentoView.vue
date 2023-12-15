@@ -476,7 +476,7 @@ export default {
     },
     confirmarSimNaoFormulario() {
       const tipoViatura = this.veiculos.filter(viatura => viatura.viaturaId === this.formData.viaturaId);
-      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId)
+      const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formData.tipoServicoId);
       const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formData.tipoVeiculoId);
       // console.log('tipoVeiculoLoc-> ', tipoVeiculoLoc);
 
@@ -504,12 +504,37 @@ export default {
       if (this.formData.adicionais == "") {
         this.formData.adicionais = "0";
       }
-
-      if (this.formData.noturno == true) {
-        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(tipoVeiculoLoc[0].adicional_noturno)).toFixed(2);
+      if (this.formData.ris == true) {
+        this.risTotal = tipoVeiculoLoc[0].ris;
       } else {
-        this.formData.valor_total = (Number(tipoVeiculoLoc[0].valor_saida) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais)).toFixed(2);
+        this.risTotal = "0";
       }
+      if (this.formData.patins == true) {
+        this.patinsTotal = tipoVeiculoLoc[0].patins;
+      } else {
+        this.patinsTotal = "0";
+      }
+      if (this.formData.rodaExtra == true) {
+        this.rodaExtraTotal = tipoVeiculoLoc[0].rodaExtra;
+      } else {
+        this.rodaExtraTotal = "0";
+      }
+
+      if (this.formData.cancelado == false) {
+        this.formData.cancelado = false;
+        if (this.formData.noturno == true){
+          this.formData.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(tipoVeiculoLoc[0].adicional_noturno) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formData.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
+      } else {
+        this.formData.cancelado = true;
+        if (this.formData.noturno == true){
+          this.formData.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + (Number(tipoVeiculoLoc[0].adicional_noturno)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        } else {
+          this.formData.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formData.pedagio) + Number(this.formData.hospedagem) + Number(this.formData.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
+        }
+      };
 
       if (this.formData.ris == true) {
         this.formData.valor_total = ((Number(this.formData.valor_total)) + (Number(tipoVeiculoLoc[0].ris))).toFixed(2)
