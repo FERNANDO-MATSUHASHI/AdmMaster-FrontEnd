@@ -1,30 +1,30 @@
 <template>
   <div class="input-group input-group-sm mb-3">
-    <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Nome" />
+    <input type="text" class="form-control" v-model="searchTerm" placeholder="Pesquisa por Nome Combustível" />
   </div>
 
   <table class="table table-hover">
     <thead>
       <tr>
         <th scope="col">#</th>
-        <th scope="col">Nome da Empresa</th>
+        <th scope="col">Nome Combustível</th>
         <th scope="col">Opções</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr v-if="this.filteredEmpresas.length == 0">
+      <tr v-if="this.filteredTipoCombustiveis.length == 0">
         <td colspan="18" class="text-center">Nenhum dado encontrado.</td>
       </tr>
-      <tr v-for="empresa in filteredEmpresas">
-        <th scope="row">{{ empresa.id }}</th>
-        <td :style="{ color: obterCorEmpresa(empresa.id) }">{{ empresa.nome_empresa }}</td>
+      <tr v-for="tipoCombustivel in filteredTipoCombustiveis">
+        <th scope="row">{{ tipoCombustivel.id }}</th>
+        <td>{{ tipoCombustivel.nome_combustivel }}</td>
         <td>
           <!-- Ícone de editar -->
-          <i class="fi-rr-edit" @click="editarEmpresa(empresa)" data-toggle="tooltip" data-placement="top" title="Editar"
+          <i class="fi-rr-edit" @click="editarTipoCombustivel(tipoCombustivel)" data-toggle="tooltip" data-placement="top" title="Editar"
             style="margin-right: 15px; font-size: 20px; cursor: pointer;"></i>
           <!-- Ícone de excluir -->
-          <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirEmpresa(empresa)" data-toggle="tooltip" data-placement="top" title="Excluir"></i>
+          <i class="fi-rr-trash" style="font-size: 21px; cursor: pointer;" @click="excluirTipoCombustivel(tipoCombustivel)" data-toggle="tooltip" data-placement="top" title="Excluir"></i>
         </td>
       </tr>
     </tbody>
@@ -40,14 +40,14 @@
     <div class="modal-content">
       <span class="close" @click="fecharModal()">&times;</span>
 
-      <form id="modalForm" class="row" @submit.prevent="editarFormulario(this.empresaId)">
-        <h1>Editar Empresa Parceira</h1>
+      <form id="modalForm" class="row" @submit.prevent="editarFormulario(this.tipoCombustivelId)">
+        <h1>Editar Tipo de Combustível</h1>
 
-        <div class="col-md-6">
-          <label for="nome_empresa" class="form-label">Nome da Empresa:</label>
-          <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required v-model="formDataPut.nome_empresa"><br>
-        </div>
-          
+          <div class="col-md-11">
+            <label for="nome_combustivel" class="form-label">Nome do Combustível:</label>
+            <input type="text" class="form-control" id="nome_combustivel" name="nome_combustivel" required v-model="formDataPut.nome_combustivel"><br>
+          </div>
+
         <div class="col-12">
           <br>
           <button type="submit" class="btn btn-primary">Cadastrar</button>
@@ -58,14 +58,14 @@
   <div class="modal" v-if="successModal">
     <div class="modal-dialog">
       <div class="msg1">
-        <div class="modal-content">
+        <div style="width: 400px;" class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Sucesso</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
               @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
-            Empresa atualizada com sucesso!
+            Tipo de Combustível atualizado com sucesso!
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" @click="fecharModal()">Fechar</button>
@@ -81,12 +81,12 @@
       <span class="close" @click="fecharModal()">&times;</span>
 
       <form id="modalForm" class="row" @submit.prevent="excluirSimNaoFormulario()">
-        <h1>Excluir Empresa Parceira</h1>
+        <h1>Excluir Tipo de Combustível</h1>
 
-        <div class="col-md-6">
-          <label for="nome_empresa" class="form-label">Nome da Empresa:</label>
-          <input type="text" class="form-control" id="nome_empresa" name="nome_empresa" required v-model="formDataPut.nome_empresa" disabled="isInputLocked"><br>
-        </div>
+        <div class="col-md-12">
+            <label for="nome_combustivel" class="form-label">Nome do Combustível</label>
+            <input type="text" class="form-control" id="nome_combustivel" name="nome_combustivel" required v-model="formDataPut.nome_combustivel" disabled="isInputLocked"><br>
+          </div>
 
         <div class="col-12">
           <br>
@@ -98,17 +98,17 @@
   <div class="modal" v-if="excluirSimNaoModal">
     <div class="modal-dialog">
       <div class="msg1">
-        <div class="modal-content">
+        <div style="width: 400px;" class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Excluir</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
               @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
-            Deseja excluir Empresa Parceira?
+            Deseja excluir Tipo de Combustível?
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-danger" @click="excluirFormulario(this.empresaId)">Excluir</button>
+            <button type="button" class="btn btn-danger" @click="excluirFormulario(this.tipoCombustivelId)">Excluir</button>
             <button type="button" class="btn btn-secondary" @click="fecharModal()">Fechar</button>
           </div>
         </div>
@@ -118,14 +118,14 @@
   <div class="modal" v-if="successExcluirModal">
     <div class="modal-dialog">
       <div class="msg1">
-        <div class="modal-content">
+        <div style="width: 400px;" class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="successModalLabel">Sucesso</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
               @click="fecharModal()"></button>
           </div>
           <div class="modal-body">
-            Empresa Parceira excluida com sucesso!
+            Tipo de Combustível excluida com sucesso!
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" @click="fecharModal()">Fechar</button>
@@ -148,7 +148,7 @@ export default {
   data() {
     return {
       formDataPut: {
-        nome_empresa: '',
+        nome_combustivel: '',
         gerenteId: '',
       },
       editarModal: false,
@@ -156,51 +156,50 @@ export default {
       excluirModal: false,
       excluirSimNaoModal: false,
       successExcluirModal: false,
-      empresaId: 0,
+      tipoCombustivelId: 0,
       erroModal: false,
     }
   },
   setup() {
-    const empresas = ref([]);
+    const combustiveis = ref([]);
     const searchTerm = ref(null);
-    const dataSourceEmpresas = ref([]);
+    const dataSourceTipoCombustiveis = ref([]);
 
     // Filtro
-    const filteredEmpresas = computed(() => {
+    const filteredTipoCombustiveis = computed(() => {
       if (!searchTerm.value) {
-        return dataSourceEmpresas.value;
+        return dataSourceTipoCombustiveis.value;
       }
       const searchTermLowerCase = searchTerm.value.toLowerCase();
-      return dataSourceEmpresas.value.filter(empresa => {
-        const nomeLowerCase = empresa.nome_empresa.toLowerCase();
+      return dataSourceTipoCombustiveis.value.filter(TipoCombustivel => {
+        const nomeLowerCase = TipoCombustivel.nome_combustivel.toLowerCase();
         return nomeLowerCase.includes(searchTermLowerCase);
       });
     });
 
     onMounted(async () => {
       try {
-        const responseEmpresas = await axios.get('https://localhost:7255/api/Empresa/Empresas/'+localStorage.getItem('gerenteId'), {
+        const responseTipoCombustiveis = await axios.get('https://localhost:7255/api/TipoCombustivel/TipoCombustivel/'+localStorage.getItem('gerenteId'), {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         });
-        dataSourceEmpresas.value = responseEmpresas.data;
-        console.log('Empresas---> ', responseEmpresas);
+        dataSourceTipoCombustiveis.value = responseTipoCombustiveis.data;
       } catch (error) {
         console.error('Erro na solicitação:', error);
       }
     });
 
     return {
-      empresas,
+      combustiveis,
       searchTerm,
-      filteredEmpresas,
-      dataSourceEmpresas,
+      filteredTipoCombustiveis,
+      dataSourceTipoCombustiveis,
     };
   },
   methods: {
-    getEmpresa() {
-      axios.get('https://localhost:7255/api/Empresa/Empresas/'+localStorage.getItem('gerenteId'), {
+    getTipoCombustivel() {
+      axios.get('https://localhost:7255/api/TipoCombustivel/TipoCombustivel/'+localStorage.getItem('gerenteId'), {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -208,12 +207,11 @@ export default {
       })
         .then(res => {
           if (res.status == 200) {
-            this.filteredEmpresas = res.data;
-            this.dataSourceEmpresas = res.data;
-            // console.log('Empresas---> ', res.data);
+            this.filteredTipoCombustiveis = res.data;
+            this.dataSourceTipoCombustiveis = res.data;
             return;
           }
-          this.filteredEmpresas = [];
+          this.filteredTipoCombustiveis = [];
           return;
         });
     },
@@ -228,22 +226,24 @@ export default {
     fecharModalErro() {
       this.erroModal = false;
     },
-    editarEmpresa(empresa) {
-      this.formDataPut.nome_empresa = empresa.nome_empresa;
+    editarTipoCombustivel(tipoCombustivel) {
+      this.formDataPut.nome_combustivel = tipoCombustivel.nome_combustivel.toString();
       this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
-      this.empresaId = empresa.id;
+      this.tipoCombustivelId = tipoCombustivel.id;
 
       this.editarModal = true;
     },
-    excluirEmpresa(empresa) {
-      this.formDataPut.nome_empresa = empresa.nome_empresa;
+    excluirTipoCombustivel(tipoCombustivel) {
+      this.formDataPut.nome_combustivel = tipoCombustivel.nome_combustivel.toString();
       this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
-      this.empresaId = empresa.id;
+      this.tipoCombustivelId = tipoCombustivel.id;
 
       this.excluirModal = true;
     },
     editarFormulario(id) {
-      axios.put('https://localhost:7255/api/Empresa/' + id, this.formDataPut, {
+      this.formDataPut.gerenteId = localStorage.getItem('gerenteId');
+
+      axios.put('https://localhost:7255/api/TipoCombustivel/' + id, this.formDataPut, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -251,13 +251,13 @@ export default {
       })
         .then(response => {
           // Limpar o formulário
-          this.formDataPut.nome_empresa = '';
-          this.formDataPut.gerenteIdPut = '';
+          this.formDataPut.nome_combustivel = '';
+          this.formDataPut.gerenteId = '';
 
           // Exibir o modal de sucesso
           this.editarModal = false;
           this.successModal = true;
-          this.getEmpresa();
+          this.getTipoCombustivel();
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
@@ -268,7 +268,7 @@ export default {
       this.excluirSimNaoModal = true;
     },
     excluirFormulario(id) {
-      axios.delete('https://localhost:7255/api/Empresa/' + id, {
+      axios.delete('https://localhost:7255/api/TipoCombustivel/' + id, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -276,33 +276,20 @@ export default {
       })
         .then(response => {
           // Limpar o formulário
-          this.formDataPut.nome_empresa = '';
-          this.formDataPut.gerenteIdPut = '';
+
 
           // Exibir o modal de sucesso
           this.excluirModal = false;
           this.excluirSimNaoModal = false;
           this.successExcluirModal = true;
-          this.getEmpresa();
+          this.getTipoCombustivel();
         })
         .catch(error => {
           console.error('Erro ao enviar formulário:', error);
         });
     },
-    obterCorEmpresa(empresaId) {
-      // console.log('empresaId', empresaId);
-    if (empresaId === 1) {
-      return 'blue';
-    } else if (empresaId === 2) {
-      return 'lightblue';
-    } else if (empresaId === 3) {
-      return 'orange'
-    } else {
-      return 'brown';
-    }
-    },
     mounted() {
-      this.getEmpresa()
+      this.getTipoCombustivel()
     }
   }
 }
@@ -331,7 +318,7 @@ export default {
   margin: 5% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 30%;
   z-index: 1;
 }
 

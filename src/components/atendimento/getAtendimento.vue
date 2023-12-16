@@ -99,8 +99,6 @@
       </tr>
     </tbody>
   </table>
-  <!-- <th>Quantidade de Serviço: {{ this.qruTotal }}</th><br>
-  <th>Valor Total: {{ this.valorTotal.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }) }}</th> -->
   <br>
   <br>
   <br>
@@ -700,6 +698,7 @@ export default {
     },
     editarFormulario(id) {
       this.formDataPut.data = this.parseData(this.formDataPut.data);
+      console.log('ID-> ', id);
 
       axios.put('https://localhost:7255/api/Atendimento/' + id, this.formDataPut, {
         headers: {
@@ -747,9 +746,12 @@ export default {
         });
     },
     confirmarSimNaoFormulario() {
-      const tipoViatura = this.veiculos.filter(viatura => viatura.Id === this.formDataPut.viaturaId);
+      const tipoViatura = this.veiculos.filter(veiculo => veiculo.viaturaId === this.formDataPut.viaturaId);
+
       const tipoServicoLoc = tipoViatura.filter(servico => servico.tipo_ServicoId === this.formDataPut.tipoServicoId);
-      const tipoVeiculoLoc = this.veiculos.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
+
+      const tipoVeiculoLoc = tipoServicoLoc.filter(veiculo => veiculo.tipo_VeiculoId === this.formDataPut.tipoVeiculoId);
+
       this.formDataPut.valor_total = 0;
       
       if (this.formDataPut.km == "0") {
@@ -778,20 +780,18 @@ export default {
         this.rodaExtraTotal = "0";
       }
 
-      console.log('Cancelado-> ', this.formDataPut.cancelado);
-
       if (this.formDataPut.cancelado == false) {
         if (this.formDataPut.noturno == true){
           this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(tipoVeiculoLoc[0].adicional_noturno) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
         } else {
-          this.formDataPut.cancelado == false;
+          // this.formDataPut.cancelado == false;
           this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
         }
       } else {
         if (this.formDataPut.noturno == true){
           this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + (Number(tipoVeiculoLoc[0].adicional_noturno)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
         } else {
-          this.formDataPut.cancelado == true;
+          // this.formDataPut.cancelado == true;
           this.formDataPut.valor_total = ((Number(tipoVeiculoLoc[0].valor_saida)/2) + Number(this.kmTotal) + Number(this.horaTotal) + Number(this.formDataPut.pedagio) + Number(this.formDataPut.hospedagem) + Number(this.formDataPut.adicionais) + Number(this.risTotal) + Number(this.patinsTotal) + Number(this.rodaExtraTotal)).toFixed(2);
         }
       };

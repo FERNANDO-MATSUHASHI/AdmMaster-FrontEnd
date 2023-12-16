@@ -79,6 +79,11 @@ const router = createRouter({
       name: 'Empresa',
       component: () => import('../views/Empresa.vue')
     },
+    {
+      path: '/TipoCombustivel',
+      name: 'TipoCombustivel',
+      component: () => import('../views/TipoCombustivel.vue')
+    },
   ]
 });
 
